@@ -14,52 +14,57 @@
  * \brief Scan grid tracking
  */
 
+#include <assert.h>
+#include <string.h>
+
+#include "dmtx.h"
+#include "dmtxstatic.h"
+
 /**
  * \brief  Initialize scan grid pattern
  * \param  dec
  * \return Initialized grid
  */
-static DmtxScanGrid
-InitScanGrid(DmtxDecode *dec)
+static DmtxScanGrid InitScanGrid(DmtxDecode *dec)
 {
-   int scale, smallestFeature;
-   int xExtent, yExtent, maxExtent;
-   int extent;
-   DmtxScanGrid grid;
+    int scale, smallestFeature;
+    int xExtent, yExtent, maxExtent;
+    int extent;
+    DmtxScanGrid grid;
 
-   memset(&grid, 0x00, sizeof(DmtxScanGrid));
+    memset(&grid, 0x00, sizeof(DmtxScanGrid));
 
-   scale = dmtxDecodeGetProp(dec, DmtxPropScale);
-   smallestFeature = dmtxDecodeGetProp(dec, DmtxPropScanGap) / scale;
+    scale = dmtxDecodeGetProp(dec, DmtxPropScale);
+    smallestFeature = dmtxDecodeGetProp(dec, DmtxPropScanGap) / scale;
 
-   grid.xMin = dmtxDecodeGetProp(dec, DmtxPropXmin);
-   grid.xMax = dmtxDecodeGetProp(dec, DmtxPropXmax);
-   grid.yMin = dmtxDecodeGetProp(dec, DmtxPropYmin);
-   grid.yMax = dmtxDecodeGetProp(dec, DmtxPropYmax);
+    grid.xMin = dmtxDecodeGetProp(dec, DmtxPropXmin);
+    grid.xMax = dmtxDecodeGetProp(dec, DmtxPropXmax);
+    grid.yMin = dmtxDecodeGetProp(dec, DmtxPropYmin);
+    grid.yMax = dmtxDecodeGetProp(dec, DmtxPropYmax);
 
-   /* Values that get set once */
-   xExtent = grid.xMax - grid.xMin;
-   yExtent = grid.yMax - grid.yMin;
-   maxExtent = (xExtent > yExtent) ? xExtent : yExtent;
+    /* Values that get set once */
+    xExtent = grid.xMax - grid.xMin;
+    yExtent = grid.yMax - grid.yMin;
+    maxExtent = (xExtent > yExtent) ? xExtent : yExtent;
 
-   assert(maxExtent > 1);
+    assert(maxExtent > 1);
 
-   for(extent = 1; extent < maxExtent; extent = ((extent + 1) * 2) - 1)
-      if(extent <= smallestFeature)
-         grid.minExtent = extent;
+    for (extent = 1; extent < maxExtent; extent = ((extent + 1) * 2) - 1)
+        if (extent <= smallestFeature)
+            grid.minExtent = extent;
 
-   grid.maxExtent = extent;
+    grid.maxExtent = extent;
 
-   grid.xOffset = (grid.xMin + grid.xMax - grid.maxExtent) / 2;
-   grid.yOffset = (grid.yMin + grid.yMax - grid.maxExtent) / 2;
+    grid.xOffset = (grid.xMin + grid.xMax - grid.maxExtent) / 2;
+    grid.yOffset = (grid.yMin + grid.yMax - grid.maxExtent) / 2;
 
-   /* Values that get reset for every level */
-   grid.total = 1;
-   grid.extent = grid.maxExtent;
+    /* Values that get reset for every level */
+    grid.total = 1;
+    grid.extent = grid.maxExtent;
 
-   SetDerivedFields(&grid);
+    SetDerivedFields(&grid);
 
-   return grid;
+    return grid;
 }
 
 /**
@@ -69,20 +74,19 @@ InitScanGrid(DmtxDecode *dec)
  * \param  grid
  * \return void
  */
-static int
-PopGridLocation(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
+static int PopGridLocation(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
 {
-   int locStatus;
+    int locStatus;
 
-   do {
-      locStatus = GetGridCoordinates(grid, locPtr);
+    do {
+        locStatus = GetGridCoordinates(grid, locPtr);
 
-      /* Always leave grid pointing at next available location */
-      grid->pixelCount++;
+        /* Always leave grid pointing at next available location */
+        grid->pixelCount++;
 
-   } while(locStatus == DmtxRangeBad);
+    } while (locStatus == DmtxRangeBad);
 
-   return locStatus;
+    return locStatus;
 }
 
 /**
@@ -91,75 +95,72 @@ PopGridLocation(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
  * \param  grid
  * \return Pixel location
  */
-static int
-GetGridCoordinates(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
+static int GetGridCoordinates(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
 {
-   int count, half, quarter;
-   DmtxPixelLoc loc;
+    int count, half, quarter;
+    DmtxPixelLoc loc;
 
-   /* Initially pixelCount may fall beyond acceptable limits. Update grid
-    * state before testing coordinates */
+    /* Initially pixelCount may fall beyond acceptable limits. Update grid
+     * state before testing coordinates */
 
-   /* Jump to next cross pattern horizontally if current column is done */
-   if(grid->pixelCount >= grid->pixelTotal) {
-      grid->pixelCount = 0;
-      grid->xCenter += grid->jumpSize;
-   }
+    /* Jump to next cross pattern horizontally if current column is done */
+    if (grid->pixelCount >= grid->pixelTotal) {
+        grid->pixelCount = 0;
+        grid->xCenter += grid->jumpSize;
+    }
 
-   /* Jump to next cross pattern vertically if current row is done */
-   if(grid->xCenter > grid->maxExtent) {
-      grid->xCenter = grid->startPos;
-      grid->yCenter += grid->jumpSize;
-   }
+    /* Jump to next cross pattern vertically if current row is done */
+    if (grid->xCenter > grid->maxExtent) {
+        grid->xCenter = grid->startPos;
+        grid->yCenter += grid->jumpSize;
+    }
 
-   /* Increment level when vertical step goes too far */
-   if(grid->yCenter > grid->maxExtent) {
-      grid->total *= 4;
-      grid->extent /= 2;
-      SetDerivedFields(grid);
-   }
+    /* Increment level when vertical step goes too far */
+    if (grid->yCenter > grid->maxExtent) {
+        grid->total *= 4;
+        grid->extent /= 2;
+        SetDerivedFields(grid);
+    }
 
-   if(grid->extent == 0 || grid->extent < grid->minExtent) {
-      locPtr->X = locPtr->Y = -1;
-      return DmtxRangeEnd;
-   }
+    if (grid->extent == 0 || grid->extent < grid->minExtent) {
+        locPtr->X = locPtr->Y = -1;
+        return DmtxRangeEnd;
+    }
 
-   count = grid->pixelCount;
+    count = grid->pixelCount;
 
-   assert(count < grid->pixelTotal);
+    assert(count < grid->pixelTotal);
 
-   if(count == grid->pixelTotal - 1) {
-      /* center pixel */
-      loc.X = grid->xCenter;
-      loc.Y = grid->yCenter;
-   }
-   else {
-      half = grid->pixelTotal / 2;
-      quarter = half / 2;
+    if (count == grid->pixelTotal - 1) {
+        /* center pixel */
+        loc.X = grid->xCenter;
+        loc.Y = grid->yCenter;
+    } else {
+        half = grid->pixelTotal / 2;
+        quarter = half / 2;
 
-      /* horizontal portion */
-      if(count < half) {
-         loc.X = grid->xCenter + ((count < quarter) ? (count - quarter) : (half - count));
-         loc.Y = grid->yCenter;
-      }
-      /* vertical portion */
-      else {
-         count -= half;
-         loc.X = grid->xCenter;
-         loc.Y = grid->yCenter + ((count < quarter) ? (count - quarter) : (half - count));
-      }
-   }
+        /* horizontal portion */
+        if (count < half) {
+            loc.X = grid->xCenter + ((count < quarter) ? (count - quarter) : (half - count));
+            loc.Y = grid->yCenter;
+        }
+        /* vertical portion */
+        else {
+            count -= half;
+            loc.X = grid->xCenter;
+            loc.Y = grid->yCenter + ((count < quarter) ? (count - quarter) : (half - count));
+        }
+    }
 
-   loc.X += grid->xOffset;
-   loc.Y += grid->yOffset;
+    loc.X += grid->xOffset;
+    loc.Y += grid->yOffset;
 
-   *locPtr = loc;
+    *locPtr = loc;
 
-   if(loc.X < grid->xMin || loc.X > grid->xMax ||
-         loc.Y < grid->yMin || loc.Y > grid->yMax)
-      return DmtxRangeBad;
+    if (loc.X < grid->xMin || loc.X > grid->xMax || loc.Y < grid->yMin || loc.Y > grid->yMax)
+        return DmtxRangeBad;
 
-   return DmtxRangeGood;
+    return DmtxRangeGood;
 }
 
 /**
@@ -167,12 +168,11 @@ GetGridCoordinates(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
  * \param  grid
  * \return void
  */
-static void
-SetDerivedFields(DmtxScanGrid *grid)
+static void SetDerivedFields(DmtxScanGrid *grid)
 {
-   grid->jumpSize = grid->extent + 1;
-   grid->pixelTotal = 2 * grid->extent - 1;
-   grid->startPos = grid->extent / 2;
-   grid->pixelCount = 0;
-   grid->xCenter = grid->yCenter = grid->startPos;
+    grid->jumpSize = grid->extent + 1;
+    grid->pixelTotal = 2 * grid->extent - 1;
+    grid->startPos = grid->extent / 2;
+    grid->pixelCount = 0;
+    grid->xCenter = grid->yCenter = grid->startPos;
 }

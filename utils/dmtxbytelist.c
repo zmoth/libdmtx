@@ -13,130 +13,118 @@
  * \file file.c
  */
 
+#include <stdio.h>
+#include <string.h>
+
+#include "dmtx.h"
+
 /**
  *
  *
  */
-extern DmtxByteList
-dmtxByteListBuild(DmtxByte *storage, int capacity)
+extern DmtxByteList dmtxByteListBuild(DmtxByte *storage, int capacity)
 {
-   DmtxByteList list;
+    DmtxByteList list;
 
-   list.b = storage;
-   list.capacity = capacity;
-   list.length = 0;
+    list.b = storage;
+    list.capacity = capacity;
+    list.length = 0;
 
-   return list;
+    return list;
 }
 
 /**
  *
  *
  */
-extern void
-dmtxByteListInit(DmtxByteList *list, int length, DmtxByte value, DmtxPassFail *passFail)
+extern void dmtxByteListInit(DmtxByteList *list, int length, DmtxByte value, DmtxPassFail *passFail)
 {
-   if(length > list->capacity)
-   {
-      *passFail = DmtxFail;
-   }
-   else
-   {
-      list->length = length;
-      memset(list->b, value, sizeof(DmtxByte) * list->capacity);
-      *passFail = DmtxPass;
-   }
+    if (length > list->capacity) {
+        *passFail = DmtxFail;
+    } else {
+        list->length = length;
+        memset(list->b, value, sizeof(DmtxByte) * list->capacity);
+        *passFail = DmtxPass;
+    }
 }
 
 /**
  *
  *
  */
-extern void
-dmtxByteListClear(DmtxByteList *list)
+extern void dmtxByteListClear(DmtxByteList *list)
 {
-   memset(list->b, 0x00, sizeof(DmtxByte) * list->capacity);
-   list->length = 0;
+    memset(list->b, 0x00, sizeof(DmtxByte) * list->capacity);
+    list->length = 0;
 }
 
 /**
  *
  *
  */
-extern DmtxBoolean
-dmtxByteListHasCapacity(DmtxByteList *list)
+extern DmtxBoolean dmtxByteListHasCapacity(DmtxByteList *list)
 {
-   return (list->length < list->capacity) ? DmtxTrue : DmtxFalse;
+    return (list->length < list->capacity) ? DmtxTrue : DmtxFalse;
 }
 
 /**
  *
  *
  */
-extern void
-dmtxByteListCopy(DmtxByteList *dst, const DmtxByteList *src, DmtxPassFail *passFail)
+extern void dmtxByteListCopy(DmtxByteList *dst, const DmtxByteList *src, DmtxPassFail *passFail)
 {
-   int length;
+    int length;
 
-   if(dst->capacity < src->length)
-   {
-      *passFail = DmtxFail; /* dst must be large enough to hold src data */
-   }
-   else
-   {
-      /* Copy as many bytes as dst can hold or src can provide (smaller of two) */
-      length = (dst->capacity < src->capacity) ? dst->capacity : src->capacity;
+    if (dst->capacity < src->length) {
+        *passFail = DmtxFail; /* dst must be large enough to hold src data */
+    } else {
+        /* Copy as many bytes as dst can hold or src can provide (smaller of two) */
+        length = (dst->capacity < src->capacity) ? dst->capacity : src->capacity;
 
-      dst->length = src->length;
-      memcpy(dst->b, src->b, sizeof(unsigned char) * length);
-      *passFail = DmtxPass;
-   }
+        dst->length = src->length;
+        memcpy(dst->b, src->b, sizeof(unsigned char) * length);
+        *passFail = DmtxPass;
+    }
 }
 
 /**
  *
  *
  */
-extern void
-dmtxByteListPush(DmtxByteList *list, DmtxByte value, DmtxPassFail *passFail)
+extern void dmtxByteListPush(DmtxByteList *list, DmtxByte value, DmtxPassFail *passFail)
 {
-   if(list->length >= list->capacity)
-   {
-      *passFail = DmtxFail;
-   }
-   else
-   {
-      list->b[list->length++] = value;
-      *passFail = DmtxPass;
-   }
+    if (list->length >= list->capacity) {
+        *passFail = DmtxFail;
+    } else {
+        list->b[list->length++] = value;
+        *passFail = DmtxPass;
+    }
 }
 
 /**
  *
  *
  */
-extern DmtxByte
-dmtxByteListPop(DmtxByteList *list, DmtxPassFail *passFail)
+extern DmtxByte dmtxByteListPop(DmtxByteList *list, DmtxPassFail *passFail)
 {
-   *passFail = (list->length > 0) ? DmtxPass : DmtxFail;
+    *passFail = (list->length > 0) ? DmtxPass : DmtxFail;
 
-   return list->b[--(list->length)];
+    return list->b[--(list->length)];
 }
 
 /**
  *
  *
  */
-extern void
-dmtxByteListPrint(DmtxByteList *list, char *prefix)
+extern void dmtxByteListPrint(DmtxByteList *list, char *prefix)
 {
-   int i;
+    int i;
 
-   if(prefix != NULL)
-      fprintf(stdout, "%s", prefix);
+    if (prefix != NULL)
+        fprintf(stdout, "%s", prefix);
 
-   for(i = 0; i < list->length; i++)
-      fprintf(stdout, " %d", list->b[i]);
+    for (i = 0; i < list->length; i++)
+        fprintf(stdout, " %d", list->b[i]);
 
-   fputc('\n', stdout);
+    fputc('\n', stdout);
 }

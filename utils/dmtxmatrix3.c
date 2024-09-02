@@ -14,16 +14,24 @@
  * \brief 2D Matrix (3x3) math
  */
 
+#include <assert.h>
+#include <float.h>
+#include <math.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "dmtx.h"
+#include "dmtxstatic.h"
+
 /**
  * \brief  Copy matrix contents
  * \param  m0 Copy target
  * \param  m1 Copy source
  * \return void
  */
-extern void
-dmtxMatrix3Copy(DmtxMatrix3 m0, DmtxMatrix3 m1)
+extern void dmtxMatrix3Copy(DmtxMatrix3 m0, DmtxMatrix3 m1)
 {
-   memcpy(m0, m1, sizeof(DmtxMatrix3));
+    memcpy(m0, m1, sizeof(DmtxMatrix3));
 }
 
 /**
@@ -45,13 +53,10 @@ dmtxMatrix3Copy(DmtxMatrix3 m0, DmtxMatrix3 m1)
  *  (0,0)     (1,0)      |/     (0,0)     (1,0)
  *
  */
-extern void
-dmtxMatrix3Identity(DmtxMatrix3 m)
+extern void dmtxMatrix3Identity(DmtxMatrix3 m)
 {
-   static DmtxMatrix3 tmp = { {1, 0, 0},
-                              {0, 1, 0},
-                              {0, 0, 1} };
-   dmtxMatrix3Copy(m, tmp);
+    static DmtxMatrix3 tmp = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+    dmtxMatrix3Copy(m, tmp);
 }
 
 /**
@@ -77,9 +82,9 @@ dmtxMatrix3Identity(DmtxMatrix3 m)
  */
 void dmtxMatrix3Translate(DmtxMatrix3 m, double tx, double ty)
 {
-   dmtxMatrix3Identity(m);
-   m[2][0] = tx;
-   m[2][1] = ty;
+    dmtxMatrix3Identity(m);
+    m[2][0] = tx;
+    m[2][1] = ty;
 }
 
 /**
@@ -101,19 +106,18 @@ void dmtxMatrix3Translate(DmtxMatrix3 m, double tx, double ty)
  *  (0,0)     (1,0)                     (0,0)
  *
  */
-extern void
-dmtxMatrix3Rotate(DmtxMatrix3 m, double angle)
+extern void dmtxMatrix3Rotate(DmtxMatrix3 m, double angle)
 {
-   double sinAngle, cosAngle;
+    double sinAngle, cosAngle;
 
-   sinAngle = sin(angle);
-   cosAngle = cos(angle);
+    sinAngle = sin(angle);
+    cosAngle = cos(angle);
 
-   dmtxMatrix3Identity(m);
-   m[0][0] = cosAngle;
-   m[0][1] = sinAngle;
-   m[1][0] = -sinAngle;
-   m[1][1] = cosAngle;
+    dmtxMatrix3Identity(m);
+    m[0][0] = cosAngle;
+    m[0][1] = sinAngle;
+    m[1][0] = -sinAngle;
+    m[1][1] = cosAngle;
 }
 
 /**
@@ -137,12 +141,11 @@ dmtxMatrix3Rotate(DmtxMatrix3 m, double angle)
  *  (0,0)     (1,0)                (0,0)            (sx,0)
  *
  */
-extern void
-dmtxMatrix3Scale(DmtxMatrix3 m, double sx, double sy)
+extern void dmtxMatrix3Scale(DmtxMatrix3 m, double sx, double sy)
 {
-   dmtxMatrix3Identity(m);
-   m[0][0] = sx;
-   m[1][1] = sy;
+    dmtxMatrix3Identity(m);
+    m[0][0] = sx;
+    m[1][1] = sy;
 }
 
 /**
@@ -156,12 +159,11 @@ dmtxMatrix3Scale(DmtxMatrix3 m, double sx, double sy)
  * m = | shx  0    0 |
  *     | 0    0    1 |
  */
-extern void
-dmtxMatrix3Shear(DmtxMatrix3 m, double shx, double shy)
+extern void dmtxMatrix3Shear(DmtxMatrix3 m, double shx, double shy)
 {
-   dmtxMatrix3Identity(m);
-   m[1][0] = shx;
-   m[0][1] = shy;
+    dmtxMatrix3Identity(m);
+    m[1][0] = shx;
+    m[0][1] = shy;
 }
 
 /**
@@ -190,15 +192,14 @@ dmtxMatrix3Shear(DmtxMatrix3 m, double shx, double shy)
  *  (0,0)    (sz,0)                (0,0)    (sz,0)
  *
  */
-extern void
-dmtxMatrix3LineSkewTop(DmtxMatrix3 m, double b0, double b1, double sz)
+extern void dmtxMatrix3LineSkewTop(DmtxMatrix3 m, double b0, double b1, double sz)
 {
-   assert(b0 >= DmtxAlmostZero);
+    assert(b0 >= DmtxAlmostZero);
 
-   dmtxMatrix3Identity(m);
-   m[0][0] = b1/b0;
-   m[1][1] = sz/b0;
-   m[0][2] = (b1 - b0)/(sz*b0);
+    dmtxMatrix3Identity(m);
+    m[0][0] = b1 / b0;
+    m[1][1] = sz / b0;
+    m[0][2] = (b1 - b0) / (sz * b0);
 }
 
 /**
@@ -209,15 +210,14 @@ dmtxMatrix3LineSkewTop(DmtxMatrix3 m, double b0, double b1, double sz)
  * \param  sz
  * \return void
  */
-extern void
-dmtxMatrix3LineSkewTopInv(DmtxMatrix3 m, double b0, double b1, double sz)
+extern void dmtxMatrix3LineSkewTopInv(DmtxMatrix3 m, double b0, double b1, double sz)
 {
-   assert(b1 >= DmtxAlmostZero);
+    assert(b1 >= DmtxAlmostZero);
 
-   dmtxMatrix3Identity(m);
-   m[0][0] = b0/b1;
-   m[1][1] = b0/sz;
-   m[0][2] = (b0 - b1)/(sz*b1);
+    dmtxMatrix3Identity(m);
+    m[0][0] = b0 / b1;
+    m[1][1] = b0 / sz;
+    m[0][2] = (b0 - b1) / (sz * b1);
 }
 
 /**
@@ -228,15 +228,14 @@ dmtxMatrix3LineSkewTopInv(DmtxMatrix3 m, double b0, double b1, double sz)
  * \param  sz
  * \return void
  */
-extern void
-dmtxMatrix3LineSkewSide(DmtxMatrix3 m, double b0, double b1, double sz)
+extern void dmtxMatrix3LineSkewSide(DmtxMatrix3 m, double b0, double b1, double sz)
 {
-   assert(b0 >= DmtxAlmostZero);
+    assert(b0 >= DmtxAlmostZero);
 
-   dmtxMatrix3Identity(m);
-   m[0][0] = sz/b0;
-   m[1][1] = b1/b0;
-   m[1][2] = (b1 - b0)/(sz*b0);
+    dmtxMatrix3Identity(m);
+    m[0][0] = sz / b0;
+    m[1][1] = b1 / b0;
+    m[1][2] = (b1 - b0) / (sz * b0);
 }
 
 /**
@@ -247,15 +246,14 @@ dmtxMatrix3LineSkewSide(DmtxMatrix3 m, double b0, double b1, double sz)
  * \param  sz
  * \return void
  */
-extern void
-dmtxMatrix3LineSkewSideInv(DmtxMatrix3 m, double b0, double b1, double sz)
+extern void dmtxMatrix3LineSkewSideInv(DmtxMatrix3 m, double b0, double b1, double sz)
 {
-   assert(b1 >= DmtxAlmostZero);
+    assert(b1 >= DmtxAlmostZero);
 
-   dmtxMatrix3Identity(m);
-   m[0][0] = b0/sz;
-   m[1][1] = b0/b1;
-   m[1][2] = (b0 - b1)/(sz*b1);
+    dmtxMatrix3Identity(m);
+    m[0][0] = b0 / sz;
+    m[1][1] = b0 / b1;
+    m[1][2] = (b0 - b1) / (sz * b1);
 }
 
 /**
@@ -265,21 +263,20 @@ dmtxMatrix3LineSkewSideInv(DmtxMatrix3 m, double b0, double b1, double sz)
  * \param  m1
  * \return void
  */
-extern void
-dmtxMatrix3Multiply(DmtxMatrix3 mOut, DmtxMatrix3 m0, DmtxMatrix3 m1)
+extern void dmtxMatrix3Multiply(DmtxMatrix3 mOut, DmtxMatrix3 m0, DmtxMatrix3 m1)
 {
-   int i, j, k;
-   double val;
+    int i, j, k;
+    double val;
 
-   for(i = 0; i < 3; i++) {
-      for(j = 0; j < 3; j++) {
-         val = 0.0;
-         for(k = 0; k < 3; k++) {
-            val += m0[i][k] * m1[k][j];
-         }
-         mOut[i][j] = val;
-      }
-   }
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            val = 0.0;
+            for (k = 0; k < 3; k++) {
+                val += m0[i][k] * m1[k][j];
+            }
+            mOut[i][j] = val;
+        }
+    }
 }
 
 /**
@@ -288,13 +285,12 @@ dmtxMatrix3Multiply(DmtxMatrix3 mOut, DmtxMatrix3 m0, DmtxMatrix3 m1)
  * \param  m1
  * \return void
  */
-extern void
-dmtxMatrix3MultiplyBy(DmtxMatrix3 m0, DmtxMatrix3 m1)
+extern void dmtxMatrix3MultiplyBy(DmtxMatrix3 m0, DmtxMatrix3 m1)
 {
-   DmtxMatrix3 mTmp;
+    DmtxMatrix3 mTmp;
 
-   dmtxMatrix3Copy(mTmp, m0);
-   dmtxMatrix3Multiply(m0, mTmp, m1);
+    dmtxMatrix3Copy(mTmp, m0);
+    dmtxMatrix3Multiply(m0, mTmp, m1);
 }
 
 /**
@@ -304,22 +300,21 @@ dmtxMatrix3MultiplyBy(DmtxMatrix3 m0, DmtxMatrix3 m1)
  * \param  m Matrix to be multiplied
  * \return DmtxPass | DmtxFail
  */
-extern int
-dmtxMatrix3VMultiply(DmtxVector2 *vOut, DmtxVector2 *vIn, DmtxMatrix3 m)
+extern int dmtxMatrix3VMultiply(DmtxVector2 *vOut, DmtxVector2 *vIn, DmtxMatrix3 m)
 {
-   double w;
+    double w;
 
-   w = vIn->X*m[0][2] + vIn->Y*m[1][2] + m[2][2];
-   if(fabs(w) <= DmtxAlmostZero) {
-      vOut->X = FLT_MAX;
-      vOut->Y = FLT_MAX;
-      return DmtxFail;
-   }
+    w = vIn->X * m[0][2] + vIn->Y * m[1][2] + m[2][2];
+    if (fabs(w) <= DmtxAlmostZero) {
+        vOut->X = FLT_MAX;
+        vOut->Y = FLT_MAX;
+        return DmtxFail;
+    }
 
-   vOut->X = (vIn->X*m[0][0] + vIn->Y*m[1][0] + m[2][0])/w;
-   vOut->Y = (vIn->X*m[0][1] + vIn->Y*m[1][1] + m[2][1])/w;
+    vOut->X = (vIn->X * m[0][0] + vIn->Y * m[1][0] + m[2][0]) / w;
+    vOut->Y = (vIn->X * m[0][1] + vIn->Y * m[1][1] + m[2][1]) / w;
 
-   return DmtxPass;
+    return DmtxPass;
 }
 
 /**
@@ -328,16 +323,15 @@ dmtxMatrix3VMultiply(DmtxVector2 *vOut, DmtxVector2 *vIn, DmtxMatrix3 m)
  * \param  m Matrix to be multiplied
  * \return DmtxPass | DmtxFail
  */
-extern int
-dmtxMatrix3VMultiplyBy(DmtxVector2 *v, DmtxMatrix3 m)
+extern int dmtxMatrix3VMultiplyBy(DmtxVector2 *v, DmtxMatrix3 m)
 {
-   int success;
-   DmtxVector2 vOut;
+    int success;
+    DmtxVector2 vOut;
 
-   success = dmtxMatrix3VMultiply(&vOut, v, m);
-   *v = vOut;
+    success = dmtxMatrix3VMultiply(&vOut, v, m);
+    *v = vOut;
 
-   return success;
+    return success;
 }
 
 /**
@@ -345,11 +339,10 @@ dmtxMatrix3VMultiplyBy(DmtxVector2 *v, DmtxMatrix3 m)
  * \param  m
  * \return void
  */
-extern void
-dmtxMatrix3Print(DmtxMatrix3 m)
+extern void dmtxMatrix3Print(DmtxMatrix3 m)
 {
-   fprintf(stdout, "%8.8f\t%8.8f\t%8.8f\n", m[0][0], m[0][1], m[0][2]);
-   fprintf(stdout, "%8.8f\t%8.8f\t%8.8f\n", m[1][0], m[1][1], m[1][2]);
-   fprintf(stdout, "%8.8f\t%8.8f\t%8.8f\n", m[2][0], m[2][1], m[2][2]);
-   fprintf(stdout, "\n");
+    fprintf(stdout, "%8.8f\t%8.8f\t%8.8f\n", m[0][0], m[0][1], m[0][2]);
+    fprintf(stdout, "%8.8f\t%8.8f\t%8.8f\n", m[1][0], m[1][1], m[1][2]);
+    fprintf(stdout, "%8.8f\t%8.8f\t%8.8f\n", m[2][0], m[2][1], m[2][2]);
+    fprintf(stdout, "\n");
 }

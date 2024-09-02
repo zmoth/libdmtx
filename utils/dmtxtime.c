@@ -14,87 +14,88 @@
  * \brief Time handling
  */
 
+#include <errno.h>
+
+#include "dmtx.h"
+
 #define DMTX_USEC_PER_SEC 1000000
 
 #if defined(HAVE_SYS_TIME_H) && defined(HAVE_GETTIMEOFDAY)
 
-#include <sys/time.h>
-#include <time.h>
-#define DMTX_TIME_PREC_USEC 1
+#    include <sys/time.h>
+#    include <time.h>
+#    define DMTX_TIME_PREC_USEC 1
 
 /**
  * \brief  GETTIMEOFDAY version
  * \return Time now
  */
-extern DmtxTime
-dmtxTimeNow(void)
+extern DmtxTime dmtxTimeNow(void)
 {
-   DmtxPassFail err;
-   struct timeval tv;
-   DmtxTime tNow;
+    DmtxPassFail err;
+    struct timeval tv;
+    DmtxTime tNow;
 
-   err = gettimeofday(&tv, NULL);
-   if(err != 0)
-      ; /* XXX handle error better here */
+    err = gettimeofday(&tv, NULL);
+    if (err != 0)
+        ; /* XXX handle error better here */
 
-   tNow.sec = tv.tv_sec;
-   tNow.usec = tv.tv_usec;
+    tNow.sec = tv.tv_sec;
+    tNow.usec = tv.tv_usec;
 
-   return tNow;
+    return tNow;
 }
 
 #elif defined(_MSC_VER)
 
-#include <Windows.h>
-#define DMTX_TIME_PREC_USEC 1
+#    include <Windows.h>
+#    define DMTX_TIME_PREC_USEC 1
 
 /**
  * \brief  MICROSOFT VC++ version
  * \return Time now
  */
-extern DmtxTime
-dmtxTimeNow(void)
+extern DmtxTime dmtxTimeNow(void)
 {
-   FILETIME ft;
-   unsigned __int64 tm;
-   DmtxTime tNow;
+    FILETIME ft;
+    unsigned __int64 tm;
+    DmtxTime tNow;
 
-   GetSystemTimeAsFileTime(&ft);
+    GetSystemTimeAsFileTime(&ft);
 
-   tm = ft.dwHighDateTime;
-   tm <<= 32;
-   tm |= ft.dwLowDateTime;
-   tm /= 10;
+    tm = ft.dwHighDateTime;
+    tm <<= 32;
+    tm |= ft.dwLowDateTime;
+    tm /= 10;
 
-   tNow.sec = tm / 1000000UL;
-   tNow.usec = tm % 1000000UL;
+    tNow.sec = tm / 1000000UL;
+    tNow.usec = tm % 1000000UL;
 
-   return tNow;
+    return tNow;
 }
 
 #else
 
-#include <time.h>
-#define DMTX_TIME_PREC_USEC 1000000
+#    include <time.h>
+#    define DMTX_TIME_PREC_USEC 1000000
 
 /**
  * \brief  Generic 1 second resolution version
  * \return Time now
  */
-extern DmtxTime
-dmtxTimeNow(void)
+extern DmtxTime dmtxTimeNow(void)
 {
-   time_t s;
-   DmtxTime tNow;
+    time_t s;
+    DmtxTime tNow;
 
-   s = time(NULL);
-   if(errno != 0)
-      ; /* XXX handle error better here */
+    s = time(NULL);
+    if (errno != 0)
+        ; /* XXX handle error better here */
 
-   tNow.sec = s;
-   tNow.usec = 0;
+    tNow.sec = s;
+    tNow.usec = 0;
 
-   return tNow;
+    return tNow;
 }
 
 #endif
@@ -105,28 +106,27 @@ dmtxTimeNow(void)
  * \param  msec
  * \return Adjusted time
  */
-extern DmtxTime
-dmtxTimeAdd(DmtxTime t, long msec)
+extern DmtxTime dmtxTimeAdd(DmtxTime t, long msec)
 {
-   int usec;
+    int usec;
 
-   usec = msec * 1000;
+    usec = msec * 1000;
 
-   /* Ensure that time difference will register on local system */
-   if(usec > 0 && usec < DMTX_TIME_PREC_USEC)
-      usec = DMTX_TIME_PREC_USEC;
+    /* Ensure that time difference will register on local system */
+    if (usec > 0 && usec < DMTX_TIME_PREC_USEC)
+        usec = DMTX_TIME_PREC_USEC;
 
-   /* Add time */
-   t.sec += usec/DMTX_USEC_PER_SEC;
-   t.usec += usec%DMTX_USEC_PER_SEC;
+    /* Add time */
+    t.sec += usec / DMTX_USEC_PER_SEC;
+    t.usec += usec % DMTX_USEC_PER_SEC;
 
-   /* Roll extra usecs into secs */
-   while(t.usec >= DMTX_USEC_PER_SEC) {
-      t.sec++;
-      t.usec -= DMTX_USEC_PER_SEC;
-   }
+    /* Roll extra usecs into secs */
+    while (t.usec >= DMTX_USEC_PER_SEC) {
+        t.sec++;
+        t.usec -= DMTX_USEC_PER_SEC;
+    }
 
-   return t;
+    return t;
 }
 
 /**
@@ -134,14 +134,13 @@ dmtxTimeAdd(DmtxTime t, long msec)
  * \param  timeout
  * \return 1 (true) | 0 (false)
  */
-extern int
-dmtxTimeExceeded(DmtxTime timeout)
+extern int dmtxTimeExceeded(DmtxTime timeout)
 {
-   DmtxTime now;
+    DmtxTime now;
 
-   now = dmtxTimeNow();
+    now = dmtxTimeNow();
 
-   return (now.sec > timeout.sec || (now.sec == timeout.sec && now.usec > timeout.usec));
+    return (now.sec > timeout.sec || (now.sec == timeout.sec && now.usec > timeout.usec));
 }
 
 #undef DMTX_TIME_PREC_USEC

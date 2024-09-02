@@ -14,41 +14,43 @@
  * \brief Main libdmtx source file
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
-#include <ctype.h>
-#include <limits.h>
-#include <float.h>
-#include <string.h>
-#include <errno.h>
-#include <assert.h>
-#include <math.h>
 #include "dmtx.h"
+
+#include <assert.h>
+#include <ctype.h>
+#include <errno.h>
+#include <float.h>
+#include <limits.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+
 #include "dmtxstatic.h"
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+#    include "config.h"
 #endif
 
 #ifndef CALLBACK_POINT_PLOT
-#define CALLBACK_POINT_PLOT(a,b,c,d)
+#    define CALLBACK_POINT_PLOT(a, b, c, d)
 #endif
 
 #ifndef CALLBACK_POINT_XFRM
-#define CALLBACK_POINT_XFRM(a,b,c,d)
+#    define CALLBACK_POINT_XFRM(a, b, c, d)
 #endif
 
 #ifndef CALLBACK_MODULE
-#define CALLBACK_MODULE(a,b,c,d,e)
+#    define CALLBACK_MODULE(a, b, c, d, e)
 #endif
 
 #ifndef CALLBACK_MATRIX
-#define CALLBACK_MATRIX(a)
+#    define CALLBACK_MATRIX(a)
 #endif
 
 #ifndef CALLBACK_FINAL
-#define CALLBACK_FINAL(a,b)
+#    define CALLBACK_FINAL(a, b)
 #endif
 
 /**
@@ -59,33 +61,29 @@
  * "externally" from the other source files in this list.
  */
 
-#include "encode/dmtxencode.c"
-#include "encode/dmtxencodestream.c"
-#include "encode/dmtxencodescheme.c"
-#include "encode/dmtxencodeoptimize.c"
-#include "encode/dmtxencodeascii.c"
-#include "encode/dmtxencodec40textx12.c"
-#include "encode/dmtxencodeedifact.c"
-#include "encode/dmtxencodebase256.c"
-
 #include "decode/dmtxdecode.c"
 #include "decode/dmtxdecodescheme.c"
-
 #include "dmtxmessage.c"
-#include "dmtxregion.c"
-#include "dmtxsymbol.c"
 #include "dmtxplacemod.c"
 #include "dmtxreedsol.c"
+#include "dmtxregion.c"
 #include "dmtxscangrid.c"
-
-#include "utils/dmtximage.c"
+#include "dmtxsymbol.c"
+#include "encode/dmtxencode.c"
+#include "encode/dmtxencodeascii.c"
+#include "encode/dmtxencodebase256.c"
+#include "encode/dmtxencodec40textx12.c"
+#include "encode/dmtxencodeedifact.c"
+#include "encode/dmtxencodeoptimize.c"
+#include "encode/dmtxencodescheme.c"
+#include "encode/dmtxencodestream.c"
 #include "utils/dmtxbytelist.c"
+#include "utils/dmtximage.c"
+#include "utils/dmtxmatrix3.c"
 #include "utils/dmtxtime.c"
 #include "utils/dmtxvector2.c"
-#include "utils/dmtxmatrix3.c"
 
-extern char *
-dmtxVersion(void)
+extern char *dmtxVersion(void)
 {
-   return DmtxVersion;
+    return DmtxVersion;
 }
