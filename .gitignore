@@ -1,1 +1,25 @@
-build
+/*[Bb]uild*
+/out
+
+# Doxygen
+/html
+
+# clangd
+.cache
+
+# JetBrains
+.idea/
+
+# Visual Studio
+.vs/
+
+# Visual Studio Code
+.vscode/*
+!.vscode/launch.json
+
+# QtCreator
+*.user
+*.user.*
+
+# MacOS
+.DS_Store
