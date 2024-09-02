@@ -59,17 +59,17 @@
  * "externally" from the other source files in this list.
  */
 
-#include "dmtxencode.c"
-#include "dmtxencodestream.c"
-#include "dmtxencodescheme.c"
-#include "dmtxencodeoptimize.c"
-#include "dmtxencodeascii.c"
-#include "dmtxencodec40textx12.c"
-#include "dmtxencodeedifact.c"
-#include "dmtxencodebase256.c"
+#include "encode/dmtxencode.c"
+#include "encode/dmtxencodestream.c"
+#include "encode/dmtxencodescheme.c"
+#include "encode/dmtxencodeoptimize.c"
+#include "encode/dmtxencodeascii.c"
+#include "encode/dmtxencodec40textx12.c"
+#include "encode/dmtxencodeedifact.c"
+#include "encode/dmtxencodebase256.c"
 
-#include "dmtxdecode.c"
-#include "dmtxdecodescheme.c"
+#include "decode/dmtxdecode.c"
+#include "decode/dmtxdecodescheme.c"
 
 #include "dmtxmessage.c"
 #include "dmtxregion.c"
@@ -78,11 +78,11 @@
 #include "dmtxreedsol.c"
 #include "dmtxscangrid.c"
 
-#include "dmtximage.c"
-#include "dmtxbytelist.c"
-#include "dmtxtime.c"
-#include "dmtxvector2.c"
-#include "dmtxmatrix3.c"
+#include "utils/dmtximage.c"
+#include "utils/dmtxbytelist.c"
+#include "utils/dmtxtime.c"
+#include "utils/dmtxvector2.c"
+#include "utils/dmtxmatrix3.c"
 
 extern char *
 dmtxVersion(void)
