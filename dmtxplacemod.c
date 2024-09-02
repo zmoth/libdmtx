@@ -44,16 +44,19 @@ int dmtxSymbolModuleStatus(DmtxMessage *message, int sizeIdx, int symbolRow, int
     mappingCol = symbolCol - 1 - 2 * (symbolCol / (dataRegionCols + 2));
 
     /* Solid portion of alignment patterns */
-    if (symbolRow % (dataRegionRows + 2) == 0 || symbolCol % (dataRegionCols + 2) == 0)
+    if (symbolRow % (dataRegionRows + 2) == 0 || symbolCol % (dataRegionCols + 2) == 0) {
         return (DmtxModuleOnRGB | (!DmtxModuleData));
+    }
 
     /* Horinzontal calibration bars */
-    if ((symbolRow + 1) % (dataRegionRows + 2) == 0)
+    if ((symbolRow + 1) % (dataRegionRows + 2) == 0) {
         return (((symbolCol & 0x01) ? 0 : DmtxModuleOnRGB) | (!DmtxModuleData));
+    }
 
     /* Vertical calibration bars */
-    if ((symbolCol + 1) % (dataRegionCols + 2) == 0)
+    if ((symbolCol + 1) % (dataRegionCols + 2) == 0) {
         return (((symbolRow & 0x01) ? 0 : DmtxModuleOnRGB) | (!DmtxModuleData));
+    }
 
     /* Data modules */
     return (message->array[mappingRow * mappingCols + mappingCol] | DmtxModuleData);
@@ -84,19 +87,21 @@ static int ModulePlacementEcc200(unsigned char *modules, unsigned char *codeword
 
     do {
         /* Repeatedly first check for one of the special corner cases */
-        if ((row == mappingRows) && (col == 0))
+        if ((row == mappingRows) && (col == 0)) {
             PatternShapeSpecial1(modules, mappingRows, mappingCols, &(codewords[chr++]), moduleOnColor);
-        else if ((row == mappingRows - 2) && (col == 0) && (mappingCols % 4 != 0))
+        } else if ((row == mappingRows - 2) && (col == 0) && (mappingCols % 4 != 0)) {
             PatternShapeSpecial2(modules, mappingRows, mappingCols, &(codewords[chr++]), moduleOnColor);
-        else if ((row == mappingRows - 2) && (col == 0) && (mappingCols % 8 == 4))
+        } else if ((row == mappingRows - 2) && (col == 0) && (mappingCols % 8 == 4)) {
             PatternShapeSpecial3(modules, mappingRows, mappingCols, &(codewords[chr++]), moduleOnColor);
-        else if ((row == mappingRows + 4) && (col == 2) && (mappingCols % 8 == 0))
+        } else if ((row == mappingRows + 4) && (col == 2) && (mappingCols % 8 == 0)) {
             PatternShapeSpecial4(modules, mappingRows, mappingCols, &(codewords[chr++]), moduleOnColor);
+        }
 
         /* Sweep upward diagonally, inserting successive characters */
         do {
-            if ((row < mappingRows) && (col >= 0) && !(modules[row * mappingCols + col] & DmtxModuleVisited))
+            if ((row < mappingRows) && (col >= 0) && !(modules[row * mappingCols + col] & DmtxModuleVisited)) {
                 PatternShapeStandard(modules, mappingRows, mappingCols, row, col, &(codewords[chr++]), moduleOnColor);
+            }
             row -= 2;
             col += 2;
         } while ((row >= 0) && (col < mappingCols));
@@ -105,8 +110,9 @@ static int ModulePlacementEcc200(unsigned char *modules, unsigned char *codeword
 
         /* Sweep downward diagonally, inserting successive characters */
         do {
-            if ((row >= 0) && (col < mappingCols) && !(modules[row * mappingCols + col] & DmtxModuleVisited))
+            if ((row >= 0) && (col < mappingCols) && !(modules[row * mappingCols + col] & DmtxModuleVisited)) {
                 PatternShapeStandard(modules, mappingRows, mappingCols, row, col, &(codewords[chr++]), moduleOnColor);
+            }
             row += 2;
             col -= 2;
         } while ((row < mappingRows) && (col >= 0));
@@ -264,15 +270,17 @@ static void PlaceModule(unsigned char *modules, int mappingRows, int mappingCols
 
     /* If module has already been assigned then we are decoding the pattern into codewords */
     if ((modules[row * mappingCols + col] & DmtxModuleAssigned) != 0) {
-        if ((modules[row * mappingCols + col] & moduleOnColor) != 0)
+        if ((modules[row * mappingCols + col] & moduleOnColor) != 0) {
             *codeword |= mask;
-        else
+        } else {
             *codeword &= (0xff ^ mask);
+        }
     }
     /* Otherwise we are encoding the codewords into a pattern */
     else {
-        if ((*codeword & mask) != 0x00)
+        if ((*codeword & mask) != 0x00) {
             modules[row * mappingCols + col] |= moduleOnColor;
+        }
 
         modules[row * mappingCols + col] |= DmtxModuleAssigned;
     }

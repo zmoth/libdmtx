@@ -70,12 +70,14 @@ extern DmtxImage *dmtxImageCreate(unsigned char *pxl, int width, int height, int
     //   DmtxPassFail err;
     DmtxImage *img;
 
-    if (pxl == NULL || width < 1 || height < 1)
+    if (pxl == NULL || width < 1 || height < 1) {
         return NULL;
+    }
 
     img = (DmtxImage *)calloc(1, sizeof(DmtxImage));
-    if (img == NULL)
+    if (img == NULL) {
         return NULL;
+    }
 
     img->pxl = pxl;
     img->width = width;
@@ -154,8 +156,9 @@ extern DmtxImage *dmtxImageCreate(unsigned char *pxl, int width, int height, int
  */
 extern DmtxPassFail dmtxImageDestroy(DmtxImage **img)
 {
-    if (img == NULL || *img == NULL)
+    if (img == NULL || *img == NULL) {
         return DmtxFail;
+    }
 
     free(*img);
 
@@ -170,8 +173,9 @@ extern DmtxPassFail dmtxImageDestroy(DmtxImage **img)
  */
 extern DmtxPassFail dmtxImageSetChannel(DmtxImage *img, int channelStart, int bitsPerChannel)
 {
-    if (img->channelCount >= 4) /* IMAGE_MAX_CHANNEL */
+    if (img->channelCount >= 4) { /* IMAGE_MAX_CHANNEL */
         return DmtxFail;
+    }
 
     /* New channel extends beyond pixel data */
     /* if(channelStart + bitsPerChannel > img->bitsPerPixel)
@@ -191,8 +195,9 @@ extern DmtxPassFail dmtxImageSetChannel(DmtxImage *img, int channelStart, int bi
  */
 extern DmtxPassFail dmtxImageSetProp(DmtxImage *img, int prop, int value)
 {
-    if (img == NULL)
+    if (img == NULL) {
         return DmtxFail;
+    }
 
     switch (prop) {
         case DmtxPropRowPadBytes:
@@ -216,8 +221,9 @@ extern DmtxPassFail dmtxImageSetProp(DmtxImage *img, int prop, int value)
  */
 extern int dmtxImageGetProp(DmtxImage *img, int prop)
 {
-    if (img == NULL)
+    if (img == NULL) {
         return DmtxUndefined;
+    }
 
     switch (prop) {
         case DmtxPropWidth:
@@ -257,11 +263,13 @@ extern int dmtxImageGetByteOffset(DmtxImage *img, int x, int y)
     assert(img != NULL);
     assert(!(img->imageFlip & DmtxFlipX)); /* DmtxFlipX is not an option */
 
-    if (dmtxImageContainsInt(img, 0, x, y) == DmtxFalse)
+    if (dmtxImageContainsInt(img, 0, x, y) == DmtxFalse) {
         return DmtxUndefined;
+    }
 
-    if (img->imageFlip & DmtxFlipY)
+    if (img->imageFlip & DmtxFlipY) {
         return (y * img->rowSizeBytes + x * img->bytesPerPixel);
+    }
 
     return ((img->height - y - 1) * img->rowSizeBytes + x * img->bytesPerPixel);
 }
@@ -282,8 +290,9 @@ extern DmtxPassFail dmtxImageGetPixelValue(DmtxImage *img, int x, int y, int cha
     assert(channel < img->channelCount);
 
     offset = dmtxImageGetByteOffset(img, x, y);
-    if (offset == DmtxUndefined)
+    if (offset == DmtxUndefined) {
         return DmtxFail;
+    }
 
     switch (img->bitsPerChannel[channel]) {
         case 1:
@@ -326,8 +335,9 @@ extern DmtxPassFail dmtxImageSetPixelValue(DmtxImage *img, int x, int y, int cha
     assert(channel < img->channelCount);
 
     offset = dmtxImageGetByteOffset(img, x, y);
-    if (offset == DmtxUndefined)
+    if (offset == DmtxUndefined) {
         return DmtxFail;
+    }
 
     switch (img->bitsPerChannel[channel]) {
         case 1:
@@ -366,8 +376,9 @@ extern DmtxBoolean dmtxImageContainsInt(DmtxImage *img, int margin, int x, int y
 {
     assert(img != NULL);
 
-    if (x - margin >= 0 && x + margin < img->width && y - margin >= 0 && y + margin < img->height)
+    if (x - margin >= 0 && x + margin < img->width && y - margin >= 0 && y + margin < img->height) {
         return DmtxTrue;
+    }
 
     return DmtxFalse;
 }
@@ -383,8 +394,9 @@ extern DmtxBoolean dmtxImageContainsFloat(DmtxImage *img, double x, double y)
 {
     assert(img != NULL);
 
-    if (x >= 0.0 && x < (double)img->width && y >= 0.0 && y < (double)img->height)
+    if (x >= 0.0 && x < (double)img->width && y >= 0.0 && y < (double)img->height) {
         return DmtxTrue;
+    }
 
     return DmtxFalse;
 }

@@ -17,6 +17,8 @@
 #ifndef __DMTXSTATIC_H__
 #define __DMTXSTATIC_H__
 
+#include "dmtx.h"
+
 #define DmtxAlmostZero 0.000001
 #define DmtxAlmostInfinity -1
 
@@ -183,7 +185,7 @@ static DmtxBestLine FindBestSolidLine(DmtxDecode *dec, DmtxRegion *reg, int step
                                       int houghAvoid);
 static DmtxBestLine FindBestSolidLine2(DmtxDecode *dec, DmtxPixelLoc loc0, int tripSteps, int sign, int houghAvoid);
 static DmtxPassFail FindTravelLimits(DmtxDecode *dec, DmtxRegion *reg, DmtxBestLine *line);
-static DmtxPassFail MatrixRegionAlignCalibEdge(DmtxDecode *dec, DmtxRegion *reg, int whichEdge);
+static DmtxPassFail MatrixRegionAlignCalibEdge(DmtxDecode *dec, DmtxRegion *reg, int edgeLoc);
 static DmtxBresLine BresLineInit(DmtxPixelLoc loc0, DmtxPixelLoc loc1, DmtxPixelLoc locInside);
 static DmtxPassFail BresLineGetStep(DmtxBresLine line, DmtxPixelLoc target, int *travel, int *outward);
 static DmtxPassFail BresLineStep(DmtxBresLine *line, int travel, int outward);

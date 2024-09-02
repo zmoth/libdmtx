@@ -55,8 +55,9 @@ extern DmtxPassFail DecodeDataStream(DmtxMessage *msg, int sizeIdx, unsigned cha
 
     while (ptr < dataEnd) {
         encScheme = GetEncodationScheme(*ptr);
-        if (encScheme != DmtxSchemeAscii)
+        if (encScheme != DmtxSchemeAscii) {
             ptr++;
+        }
 
         switch (encScheme) {
             case DmtxSchemeAscii:
@@ -80,13 +81,15 @@ extern DmtxPassFail DecodeDataStream(DmtxMessage *msg, int sizeIdx, unsigned cha
                 break;
         }
 
-        if (ptr == NULL)
+        if (ptr == NULL) {
             return DmtxFail;
+        }
     }
 
     /* Print macro trailer if required */
-    if (macro == DmtxTrue)
+    if (macro == DmtxTrue) {
         PushOutputMacroTrailer(msg);
+    }
 
     return DmtxPass;
 }
@@ -179,10 +182,11 @@ static void PushOutputMacroHeader(DmtxMessage *msg, int macroType)
     PushOutputWord(msg, '0');
 
     assert(macroType == DmtxValue05Macro || macroType == DmtxValue06Macro);
-    if (macroType == DmtxValue05Macro)
+    if (macroType == DmtxValue05Macro) {
         PushOutputWord(msg, '5');
-    else
+    } else {
         PushOutputWord(msg, '6');
+    }
 
     PushOutputWord(msg, 29); /* ASCII GS */
 }
@@ -212,15 +216,16 @@ static unsigned char *DecodeSchemeAscii(DmtxMessage *msg, unsigned char *ptr, un
     while (ptr < dataEnd) {
         int codeword = (int)(*ptr);
 
-        if (GetEncodationScheme(*ptr) != DmtxSchemeAscii)
+        if (GetEncodationScheme(*ptr) != DmtxSchemeAscii) {
             return ptr;
-        else
-            ptr++;
+        }
+        ptr++;
 
         if (upperShift == DmtxTrue) {
             int pushword = codeword + 127;
-            if (ValidOutputWord(pushword) != DmtxTrue)
+            if (ValidOutputWord(pushword) != DmtxTrue) {
                 return NULL;
+            }
             PushOutputWord(msg, pushword);
             upperShift = DmtxFalse;
         } else if (codeword == DmtxValueAsciiUpperShift) {
@@ -241,8 +246,9 @@ static unsigned char *DecodeSchemeAscii(DmtxMessage *msg, unsigned char *ptr, un
         } else if (codeword == DmtxValueFNC1) {
             if (msg->fnc1 != DmtxUndefined) {
                 int pushword = msg->fnc1;
-                if (ValidOutputWord(pushword) != DmtxTrue)
+                if (ValidOutputWord(pushword) != DmtxTrue) {
                     return NULL;
+                }
                 PushOutputWord(msg, pushword);
             }
         }
@@ -273,8 +279,9 @@ static unsigned char *DecodeSchemeC40Text(DmtxMessage *msg, unsigned char *ptr, 
     assert(encScheme == DmtxSchemeC40 || encScheme == DmtxSchemeText);
 
     /* Unlatch is implied if only one codeword remains */
-    if (dataEnd - ptr < 2)
+    if (dataEnd - ptr < 2) {
         return ptr;
+    }
 
     while (ptr < dataEnd) {
         /* FIXME Also check that ptr+1 is safe to access */
@@ -320,23 +327,26 @@ static unsigned char *DecodeSchemeC40Text(DmtxMessage *msg, unsigned char *ptr, 
                 if (encScheme == DmtxSchemeC40) {
                     PushOutputC40TextWord(msg, &state, c40Values[i] + 96);
                 } else if (encScheme == DmtxSchemeText) {
-                    if (c40Values[i] == 0)
+                    if (c40Values[i] == 0) {
                         PushOutputC40TextWord(msg, &state, c40Values[i] + 96);
-                    else if (c40Values[i] <= 26)
+                    } else if (c40Values[i] <= 26) {
                         PushOutputC40TextWord(msg, &state, c40Values[i] - 26 + 'Z'); /* A-Z */
-                    else
+                    } else {
                         PushOutputC40TextWord(msg, &state, c40Values[i] - 31 + 127); /* { | } ~ DEL */
+                    }
                 }
             }
         }
 
         /* Unlatch if codeword 254 follows 2 codewords in C40/Text encodation */
-        if (*ptr == DmtxValueCTXUnlatch)
+        if (*ptr == DmtxValueCTXUnlatch) {
             return ptr + 1;
+        }
 
         /* Unlatch is implied if only one codeword remains */
-        if (dataEnd - ptr < 2)
+        if (dataEnd - ptr < 2) {
             return ptr;
+        }
     }
 
     return ptr;
@@ -356,8 +366,9 @@ static unsigned char *DecodeSchemeX12(DmtxMessage *msg, unsigned char *ptr, unsi
     int x12Values[3];
 
     /* Unlatch is implied if only one codeword remains */
-    if (dataEnd - ptr < 2)
+    if (dataEnd - ptr < 2) {
         return ptr;
+    }
 
     while (ptr < dataEnd) {
         /* FIXME Also check that ptr+1 is safe to access */
@@ -368,27 +379,30 @@ static unsigned char *DecodeSchemeX12(DmtxMessage *msg, unsigned char *ptr, unsi
         ptr += 2;
 
         for (i = 0; i < 3; i++) {
-            if (x12Values[i] == 0)
+            if (x12Values[i] == 0) {
                 PushOutputWord(msg, 13);
-            else if (x12Values[i] == 1)
+            } else if (x12Values[i] == 1) {
                 PushOutputWord(msg, 42);
-            else if (x12Values[i] == 2)
+            } else if (x12Values[i] == 2) {
                 PushOutputWord(msg, 62);
-            else if (x12Values[i] == 3)
+            } else if (x12Values[i] == 3) {
                 PushOutputWord(msg, 32);
-            else if (x12Values[i] <= 13)
+            } else if (x12Values[i] <= 13) {
                 PushOutputWord(msg, x12Values[i] + 44);
-            else if (x12Values[i] <= 90)
+            } else if (x12Values[i] <= 90) {
                 PushOutputWord(msg, x12Values[i] + 51);
+            }
         }
 
         /* Unlatch if codeword 254 follows 2 codewords in C40/Text encodation */
-        if (*ptr == DmtxValueCTXUnlatch)
+        if (*ptr == DmtxValueCTXUnlatch) {
             return ptr + 1;
+        }
 
         /* Unlatch is implied if only one codeword remains */
-        if (dataEnd - ptr < 2)
+        if (dataEnd - ptr < 2) {
             return ptr;
+        }
     }
 
     return ptr;
@@ -407,8 +421,9 @@ static unsigned char *DecodeSchemeEdifact(DmtxMessage *msg, unsigned char *ptr, 
     unsigned char unpacked[4];
 
     /* Unlatch is implied if fewer than 3 codewords remain */
-    if (dataEnd - ptr < 3)
+    if (dataEnd - ptr < 3) {
         return ptr;
+    }
 
     while (ptr < dataEnd) {
         /* FIXME Also check that ptr+2 is safe to access -- shouldn't be a
@@ -421,8 +436,9 @@ static unsigned char *DecodeSchemeEdifact(DmtxMessage *msg, unsigned char *ptr, 
 
         for (i = 0; i < 4; i++) {
             /* Advance input ptr (4th value comes from already-read 3rd byte) */
-            if (i < 3)
+            if (i < 3) {
                 ptr++;
+            }
 
             /* Test for unlatch condition */
             if (unpacked[i] == DmtxValueEdifactUnlatch) {
@@ -434,8 +450,9 @@ static unsigned char *DecodeSchemeEdifact(DmtxMessage *msg, unsigned char *ptr, 
         }
 
         /* Unlatch is implied if fewer than 3 codewords remain */
-        if (dataEnd - ptr < 3)
+        if (dataEnd - ptr < 3) {
             return ptr;
+        }
     }
 
     return ptr;
@@ -502,11 +519,13 @@ static unsigned char *DecodeSchemeBase256(DmtxMessage *msg, unsigned char *ptr, 
         ptrEnd = ptr + (d0 - 249) * 250 + d1;
     }
 
-    if (ptrEnd > dataEnd)
+    if (ptrEnd > dataEnd) {
         return NULL;
+    }
 
-    while (ptr < ptrEnd)
+    while (ptr < ptrEnd) {
         PushOutputWord(msg, UnRandomize255State(*(ptr++), idx++));
+    }
 
     return ptr;
 }

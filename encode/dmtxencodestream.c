@@ -105,10 +105,11 @@ static void StreamOutputChainAppend(DmtxEncodeStream *stream, DmtxByte value)
 
     dmtxByteListPush(stream->output, value, &passFail);
 
-    if (passFail == DmtxPass)
+    if (passFail == DmtxPass) {
         stream->outputChainWordCount++;
-    else
+    } else {
         StreamMarkFatal(stream, DmtxErrorOutOfBounds);
+    }
 }
 
 /**
@@ -137,10 +138,11 @@ static DmtxByte StreamOutputChainRemoveLast(DmtxEncodeStream *stream)
  */
 static void StreamOutputSet(DmtxEncodeStream *stream, int index, DmtxByte value)
 {
-    if (index < 0 || index >= stream->output->length)
+    if (index < 0 || index >= stream->output->length) {
         StreamMarkFatal(stream, DmtxErrorOutOfBounds);
-    else
+    } else {
         stream->output->b[index] = value;
+    }
 }
 
 /**
@@ -160,10 +162,11 @@ static DmtxByte StreamInputPeekNext(DmtxEncodeStream *stream)
 {
     DmtxByte value = 0;
 
-    if (StreamInputHasNext(stream))
+    if (StreamInputHasNext(stream)) {
         value = stream->input->b[stream->inputNext];
-    else
+    } else {
         StreamMarkFatal(stream, DmtxErrorOutOfBounds);
+    }
 
     return value;
 }
@@ -180,8 +183,9 @@ static DmtxByte StreamInputAdvanceNext(DmtxEncodeStream *stream)
 
     value = StreamInputPeekNext(stream);
 
-    if (stream->status == DmtxStatusEncoding)
+    if (stream->status == DmtxStatusEncoding) {
         stream->inputNext++; /* XXX is this what we really mean here? */
+    }
 
     return value;
 }
@@ -194,8 +198,9 @@ static DmtxByte StreamInputAdvanceNext(DmtxEncodeStream *stream)
  */
 static void StreamInputAdvancePrev(DmtxEncodeStream *stream)
 {
-    if (stream->inputNext > 0)
+    if (stream->inputNext > 0) {
         stream->inputNext--;
-    else
+    } else {
         StreamMarkFatal(stream, DmtxErrorOutOfBounds);
+    }
 }

@@ -34,8 +34,9 @@ extern DmtxEncode *dmtxEncodeCreate(void)
     DmtxEncode *enc;
 
     enc = (DmtxEncode *)calloc(1, sizeof(DmtxEncode));
-    if (enc == NULL)
+    if (enc == NULL) {
         return NULL;
+    }
 
     enc->scheme = DmtxSchemeAscii;
     enc->sizeIdxRequest = DmtxSymbolSquareAuto;
@@ -68,8 +69,9 @@ extern DmtxEncode *dmtxEncodeCreate(void)
  */
 extern DmtxPassFail dmtxEncodeDestroy(DmtxEncode **enc)
 {
-    if (enc == NULL || *enc == NULL)
+    if (enc == NULL || *enc == NULL) {
         return DmtxFail;
+    }
 
     /* Free pixel array allocated in dmtxEncodeDataMatrix() */
     if ((*enc)->image != NULL && (*enc)->image->pxl != NULL) {
@@ -102,8 +104,9 @@ extern DmtxPassFail dmtxEncodeSetProp(DmtxEncode *enc, int prop, int value)
             enc->scheme = value;
             break;
         case DmtxPropSizeRequest:
-            if (value == DmtxSymbolShapeAuto)
+            if (value == DmtxSymbolShapeAuto) {
                 return DmtxFail;
+            }
             enc->sizeIdxRequest = value;
             break;
         case DmtxPropFnc1:
@@ -182,8 +185,9 @@ extern DmtxPassFail dmtxEncodeDataMatrix(DmtxEncode *enc, int inputSize, unsigne
 
     /* Encode input string into data codewords */
     sizeIdx = EncodeDataCodewords(&input, &output, enc->sizeIdxRequest, enc->scheme, enc->fnc1);
-    if (sizeIdx == DmtxUndefined || output.length <= 0)
+    if (sizeIdx == DmtxUndefined || output.length <= 0) {
         return DmtxFail;
+    }
 
     /* EncodeDataCodewords() should have updated any auto sizeIdx to a real one */
     assert(sizeIdx != DmtxSymbolSquareAuto && sizeIdx != DmtxSymbolRectAuto);
@@ -209,8 +213,9 @@ extern DmtxPassFail dmtxEncodeDataMatrix(DmtxEncode *enc, int inputSize, unsigne
     width = 2 * enc->marginSize + (enc->region.symbolCols * enc->moduleSize);
     height = 2 * enc->marginSize + (enc->region.symbolRows * enc->moduleSize);
     bitsPerPixel = GetBitsPerPixel(enc->pixelPacking);
-    if (bitsPerPixel == DmtxUndefined)
+    if (bitsPerPixel == DmtxUndefined) {
         return DmtxFail;
+    }
     assert(bitsPerPixel % 8 == 0);
 
     /* Allocate memory for the image to be generated */
@@ -274,16 +279,18 @@ extern DmtxPassFail dmtxEncodeDataMosaic(DmtxEncode *enc, int inputSize, unsigne
 
     /* Use 1/3 (floor) of dataWordCount establish first symbol size attempt */
     sizeIdxFirst = FindSymbolSize(tmpInputSize, enc->sizeIdxRequest);
-    if (sizeIdxFirst == DmtxUndefined)
+    if (sizeIdxFirst == DmtxUndefined) {
         return DmtxFail;
+    }
 
     /* Set the last possible symbol size for this symbol shape or specific size request */
-    if (enc->sizeIdxRequest == DmtxSymbolSquareAuto)
+    if (enc->sizeIdxRequest == DmtxSymbolSquareAuto) {
         sizeIdxLast = DmtxSymbolSquareCount - 1;
-    else if (enc->sizeIdxRequest == DmtxSymbolRectAuto)
+    } else if (enc->sizeIdxRequest == DmtxSymbolRectAuto) {
         sizeIdxLast = DmtxSymbolSquareCount + DmtxSymbolRectCount - 1;
-    else
+    } else {
         sizeIdxLast = sizeIdxFirst;
+    }
 
     encR = encG = encB = NULL;
 
@@ -307,18 +314,21 @@ extern DmtxPassFail dmtxEncodeDataMosaic(DmtxEncode *enc, int inputSize, unsigne
 
         /* RED LAYER - Holds temporary copy */
         dmtxEncodeDataMatrix(encR, inputSizeR, inputStringR);
-        if (encR->region.sizeIdx != sizeIdxAttempt)
+        if (encR->region.sizeIdx != sizeIdxAttempt) {
             continue;
+        }
 
         /* GREEN LAYER - Holds temporary copy */
         dmtxEncodeDataMatrix(encG, inputSizeG, inputStringG);
-        if (encG->region.sizeIdx != sizeIdxAttempt)
+        if (encG->region.sizeIdx != sizeIdxAttempt) {
             continue;
+        }
 
         /* BLUE LAYER - Holds temporary copy */
         dmtxEncodeDataMatrix(encB, inputSizeB, inputStringB);
-        if (encB->region.sizeIdx != sizeIdxAttempt)
+        if (encB->region.sizeIdx != sizeIdxAttempt) {
             continue;
+        }
 
         /* If we get this far we found a fit */
         break;

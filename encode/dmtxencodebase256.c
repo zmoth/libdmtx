@@ -75,8 +75,9 @@ static void CompleteIfDoneBase256(DmtxEncodeStream *stream, int sizeIdxRequest)
     int sizeIdx;
     int headerByteCount, outputLength, symbolRemaining;
 
-    if (stream->status == DmtxStatusComplete)
+    if (stream->status == DmtxStatusComplete) {
         return;
+    }
 
     if (!StreamInputHasNext(stream)) {
         headerByteCount = stream->outputChainWordCount - stream->outputChainValueCount;
@@ -235,10 +236,11 @@ static void Base256OutputChainRemoveFirst(DmtxEncodeStream *stream)
     }
 
     dmtxByteListPop(stream->output, &passFail);
-    if (passFail == DmtxPass)
+    if (passFail == DmtxPass) {
         stream->outputChainWordCount--;
-    else
+    } else {
         StreamMarkFatal(stream, DmtxErrorUnknown);
+    }
 }
 
 /**
@@ -270,8 +272,9 @@ static unsigned char UnRandomize255State(unsigned char value, int idx)
 
     pseudoRandom = ((149 * idx) % 255) + 1;
     tmp = value - pseudoRandom;
-    if (tmp < 0)
+    if (tmp < 0) {
         tmp += 256;
+    }
 
     assert(tmp >= 0 && tmp < 256);
 

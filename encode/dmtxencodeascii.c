@@ -49,8 +49,9 @@ static void EncodeNextChunkAscii(DmtxEncodeStream *stream, int option)
             if (stream->fnc1 != DmtxUndefined && (int)v1 == stream->fnc1) {
                 v1 = 0;
                 compactDigits = DmtxFalse;
-            } else
+            } else {
                 compactDigits = (ISDIGIT(v0) && ISDIGIT(v1)) ? DmtxTrue : DmtxFalse;
+            }
         } else /* option == DmtxEncodeFull */
         {
             v1 = 0;
@@ -108,8 +109,9 @@ static void CompleteIfDoneAscii(DmtxEncodeStream *stream, int sizeIdxRequest)
 {
     int sizeIdx;
 
-    if (stream->status == DmtxStatusComplete)
+    if (stream->status == DmtxStatusComplete) {
         return;
+    }
 
     if (!StreamInputHasNext(stream)) {
         sizeIdx = FindSymbolSize(stream->output->length, sizeIdxRequest);
@@ -171,10 +173,11 @@ static DmtxByteList EncodeTmpRemainingInAscii(DmtxEncodeStream *stream, DmtxByte
     streamAscii.output = &output;
 
     while (dmtxByteListHasCapacity(streamAscii.output)) {
-        if (StreamInputHasNext(&streamAscii))
+        if (StreamInputHasNext(&streamAscii)) {
             EncodeNextChunkAscii(&streamAscii, DmtxEncodeNormal); /* No CHKERR */
-        else
+        } else {
             break;
+        }
     }
 
     /*
@@ -183,10 +186,11 @@ static DmtxByteList EncodeTmpRemainingInAscii(DmtxEncodeStream *stream, DmtxByte
      * whether output.length can be trusted by the calling function.
      */
 
-    if (streamAscii.status == DmtxStatusInvalid || streamAscii.status == DmtxStatusFatal)
+    if (streamAscii.status == DmtxStatusInvalid || streamAscii.status == DmtxStatusFatal) {
         *passFail = DmtxFail;
-    else
+    } else {
         *passFail = DmtxPass;
+    }
 
     return output;
 }
@@ -203,8 +207,9 @@ static DmtxByte Randomize253State(DmtxByte cwValue, int cwPosition)
 
     pseudoRandom = ((149 * cwPosition) % 253) + 1;
     tmp = cwValue + pseudoRandom;
-    if (tmp > 254)
+    if (tmp > 254) {
         tmp -= 254;
+    }
 
     assert(tmp >= 0 && tmp < 256);
 

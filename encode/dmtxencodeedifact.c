@@ -133,8 +133,9 @@ static void CompleteIfDoneEdifact(DmtxEncodeStream *stream, int sizeIdxRequest)
     DmtxByte outputTmpStorage[3];
     DmtxByteList outputTmp;
 
-    if (stream->status == DmtxStatusComplete)
+    if (stream->status == DmtxStatusComplete) {
         return;
+    }
 
     /*
      * If we just completed a triplet (cleanBoundary), 1 or 2 symbol codewords

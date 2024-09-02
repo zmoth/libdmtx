@@ -115,12 +115,14 @@ static int EncodeSingleScheme(DmtxByteList *input, DmtxByteList *output, int siz
     }
 
     /* Continue encoding until complete */
-    while (stream.status == DmtxStatusEncoding)
+    while (stream.status == DmtxStatusEncoding) {
         EncodeNextChunk(&stream, scheme, DmtxEncodeNormal, sizeIdxRequest);
+    }
 
     /* Verify encoding completed and all inputs were consumed */
-    if (stream.status != DmtxStatusComplete || StreamInputHasNext(&stream))
+    if (stream.status != DmtxStatusComplete || StreamInputHasNext(&stream)) {
         return DmtxUndefined;
+    }
 
     return stream.sizeIdx;
 }
@@ -136,8 +138,9 @@ static void EncodeNextChunk(DmtxEncodeStream *stream, int scheme, int option, in
 {
     /* Special case: Prevent X12 from entering state with no way to unlatch */
     if (stream->currentScheme != DmtxSchemeX12 && scheme == DmtxSchemeX12) {
-        if (PartialX12ChunkRemains(stream))
+        if (PartialX12ChunkRemains(stream)) {
             scheme = DmtxSchemeAscii;
+        }
     }
 
     /* Change to target scheme if necessary */
@@ -148,8 +151,9 @@ static void EncodeNextChunk(DmtxEncodeStream *stream, int scheme, int option, in
     }
 
     /* Special case: Edifact may be done before writing first word */
-    if (scheme == DmtxSchemeEdifact)
+    if (scheme == DmtxSchemeEdifact) {
         CompleteIfDoneEdifact(stream, sizeIdxRequest);
+    }
     CHKERR;
 
     switch (stream->currentScheme) {
@@ -192,8 +196,9 @@ static void EncodeNextChunk(DmtxEncodeStream *stream, int scheme, int option, in
 static void EncodeChangeScheme(DmtxEncodeStream *stream, DmtxScheme targetScheme, int unlatchType)
 {
     /* Nothing to do */
-    if (stream->currentScheme == targetScheme)
+    if (stream->currentScheme == targetScheme) {
         return;
+    }
 
     /* Every latch must go through ASCII */
     switch (stream->currentScheme) {

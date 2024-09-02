@@ -37,8 +37,9 @@ extern DmtxMessage *dmtxMessageCreate(int sizeIdx, int symbolFormat)
     mappingCols = dmtxGetSymbolAttribute(DmtxSymAttribMappingMatrixCols, sizeIdx);
 
     message = (DmtxMessage *)calloc(1, sizeof(DmtxMessage));
-    if (message == NULL)
+    if (message == NULL) {
         return NULL;
+    }
 
     message->arraySize = sizeof(unsigned char) * mappingRows * mappingCols;
 
@@ -52,8 +53,9 @@ extern DmtxMessage *dmtxMessageCreate(int sizeIdx, int symbolFormat)
     message->codeSize = sizeof(unsigned char) * dmtxGetSymbolAttribute(DmtxSymAttribSymbolDataWords, sizeIdx) +
                         dmtxGetSymbolAttribute(DmtxSymAttribSymbolErrorWords, sizeIdx);
 
-    if (symbolFormat == DmtxFormatMosaic)
+    if (symbolFormat == DmtxFormatMosaic) {
         message->codeSize *= 3;
+    }
 
     message->code = (unsigned char *)calloc(message->codeSize, sizeof(unsigned char));
     if (message->code == NULL) {
@@ -83,17 +85,21 @@ extern DmtxMessage *dmtxMessageCreate(int sizeIdx, int symbolFormat)
  */
 extern DmtxPassFail dmtxMessageDestroy(DmtxMessage **msg)
 {
-    if (msg == NULL || *msg == NULL)
+    if (msg == NULL || *msg == NULL) {
         return DmtxFail;
+    }
 
-    if ((*msg)->array != NULL)
+    if ((*msg)->array != NULL) {
         free((*msg)->array);
+    }
 
-    if ((*msg)->code != NULL)
+    if ((*msg)->code != NULL) {
         free((*msg)->code);
+    }
 
-    if ((*msg)->output != NULL)
+    if ((*msg)->output != NULL) {
         free((*msg)->output);
+    }
 
     free(*msg);
 

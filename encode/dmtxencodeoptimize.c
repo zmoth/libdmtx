@@ -132,8 +132,9 @@ static int EncodeOptimizeBest(DmtxByteList *input, DmtxByteList *output, int siz
 
         /* Overwrite best streams with new results */
         for (state = 0; state < SchemeStateCount; state++) {
-            if (streamsBest[state].status != DmtxStatusComplete)
+            if (streamsBest[state].status != DmtxStatusComplete) {
                 StreamCopy(&(streamsBest[state]), &(streamsTemp[state]));
+            }
         }
 
         dmtxByteListClear(&ctxTemp);
@@ -157,8 +158,9 @@ static int EncodeOptimizeBest(DmtxByteList *input, DmtxByteList *output, int siz
     winner = NULL;
     for (state = 0; state < SchemeStateCount; state++) {
         if (streamsBest[state].status == DmtxStatusComplete) {
-            if (winner == NULL || streamsBest[state].output->length < winner->output->length)
+            if (winner == NULL || streamsBest[state].output->length < winner->output->length) {
                 winner = &(streamsBest[state]);
+            }
         }
     }
 
@@ -192,12 +194,13 @@ static void StreamAdvanceFromBest(DmtxEncodeStream *streamsNext, DmtxEncodeStrea
     streamTemp.output = &outputTemp; /* Set directly instead of calling StreamInit() */
     targetScheme = GetScheme(targetState);
 
-    if (targetState == AsciiFull)
+    if (targetState == AsciiFull) {
         encodeOption = DmtxEncodeFull;
-    else if (targetState == AsciiCompactOffset0 || targetState == AsciiCompactOffset1)
+    } else if (targetState == AsciiCompactOffset0 || targetState == AsciiCompactOffset1) {
         encodeOption = DmtxEncodeCompact;
-    else
+    } else {
         encodeOption = DmtxEncodeNormal;
+    }
 
     for (fromState = 0; fromState < SchemeStateCount; fromState++) {
         if (streamsBest[fromState].status != DmtxStatusEncoding ||
@@ -330,10 +333,11 @@ static void AdvanceEdifact(DmtxEncodeStream *streamsNext, DmtxEncodeStream *stre
         StreamAdvanceFromBest(streamsNext, streamsBest, targetState, sizeIdxRequest);
     } else {
         StreamCopy(targetStream, currentStream);
-        if (currentStream->status == DmtxStatusEncoding && currentStream->currentScheme == DmtxSchemeEdifact)
+        if (currentStream->status == DmtxStatusEncoding && currentStream->currentScheme == DmtxSchemeEdifact) {
             EncodeNextChunk(targetStream, DmtxSchemeEdifact, DmtxEncodeNormal, sizeIdxRequest);
-        else
+        } else {
             StreamMarkInvalid(targetStream, DmtxErrorUnknown);
+        }
     }
 }
 

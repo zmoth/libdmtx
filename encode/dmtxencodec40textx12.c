@@ -73,8 +73,9 @@ static void EncodeNextChunkCTX(DmtxEncodeStream *stream, int sizeIdxRequest)
                 /* X12 does not allow partial blocks, resend last 1 or 2 as ASCII */
                 EncodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchExplicit);
                 CHKERR;
-                for (i = 0; i < valueList.length % 3; i++)
+                for (i = 0; i < valueList.length % 3; i++) {
                     StreamInputAdvancePrev(stream);
+                }
                 CHKERR;
 
                 while (i) {
@@ -112,8 +113,9 @@ static void EncodeNextChunkCTX(DmtxEncodeStream *stream, int sizeIdxRequest)
         }
 
         /* Finished on byte boundary -- done with current chunk */
-        if (valueList.length == 0)
+        if (valueList.length == 0) {
             break;
+        }
     }
 
     /*
@@ -203,8 +205,9 @@ static void CompleteIfDoneCTX(DmtxEncodeStream *stream, int sizeIdxRequest)
     int sizeIdx;
     int symbolRemaining;
 
-    if (stream->status == DmtxStatusComplete)
+    if (stream->status == DmtxStatusComplete) {
         return;
+    }
 
     if (!StreamInputHasNext(stream)) {
         sizeIdx = FindSymbolSize(stream->output->length, sizeIdxRequest);
@@ -291,8 +294,9 @@ static void CompletePartialC40Text(DmtxEncodeStream *stream, DmtxByteList *value
 
         /* Test-encode most recently consumed input value to C40/Text/X12 */
         PushCTXValues(&outputTmp, inputValue, stream->currentScheme, &passFail, stream->fnc1);
-        if (valueList->length == 2 && outputTmp.length == 1)
+        if (valueList->length == 2 && outputTmp.length == 1) {
             StreamInputAdvancePrev(stream);
+        }
         CHKERR;
 
         /* Re-use outputTmp to hold ASCII representation of 1-2 input values */
@@ -318,8 +322,9 @@ static void CompletePartialC40Text(DmtxEncodeStream *stream, DmtxByteList *value
             /* Finish in ASCII (c) */
             EncodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchExplicit);
             CHKERR;
-            for (i = 0; i < outputTmp.length; i++)
+            for (i = 0; i < outputTmp.length; i++) {
                 AppendValueAscii(stream, outputTmp.b[i]);
+            }
             CHKERR;
 
             sizeIdx1 = FindSymbolSize(stream->output->length, sizeIdxRequest);
@@ -380,8 +385,9 @@ static void CompletePartialX12(DmtxEncodeStream *stream, DmtxByteList *valueList
         /* Finish in ASCII (XXX) */
         EncodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchExplicit);
         CHKERR;
-        for (i = 0; i < outputTmp.length; i++)
+        for (i = 0; i < outputTmp.length; i++) {
             AppendValueAscii(stream, outputTmp.b[i]);
+        }
         CHKERR;
 
         sizeIdx = FindSymbolSize(stream->output->length, sizeIdxRequest);
@@ -429,8 +435,9 @@ static DmtxBoolean PartialX12ChunkRemains(DmtxEncodeStream *stream)
         }
 
         /* Not a final partial chunk */
-        if (valueList.length >= 3)
+        if (valueList.length >= 3) {
             return DmtxFalse;
+        }
     }
 
     return (valueList.length == 0) ? DmtxFalse : DmtxTrue;
@@ -556,10 +563,11 @@ static DmtxBoolean IsCTX(int scheme)
 {
     DmtxBoolean isCTX;
 
-    if (scheme == DmtxSchemeC40 || scheme == DmtxSchemeText || scheme == DmtxSchemeX12)
+    if (scheme == DmtxSchemeC40 || scheme == DmtxSchemeText || scheme == DmtxSchemeX12) {
         isCTX = DmtxTrue;
-    else
+    } else {
         isCTX = DmtxFalse;
+    }
 
     return isCTX;
 }
@@ -573,17 +581,20 @@ static void ShiftValueListBy3(DmtxByteList *list, DmtxPassFail *passFail)
     int i;
 
     /* Shift values */
-    for (i = 0; i < list->length - 3; i++)
+    for (i = 0; i < list->length - 3; i++) {
         list->b[i] = list->b[i + 3];
+    }
 
     /* Shorten list by 3 (or less) */
     for (i = 0; i < 3; i++) {
         dmtxByteListPop(list, passFail);
-        if (*passFail == DmtxFail)
+        if (*passFail == DmtxFail) {
             return;
+        }
 
-        if (list->length == 0)
+        if (list->length == 0) {
             break;
+        }
     }
 
     *passFail = DmtxPass;

@@ -71,8 +71,9 @@ extern int dmtxGetSymbolAttribute(int attribute, int sizeIdx)
     static const int blockMaxCorrectable[] = {2,  3,  5,  6,  7,  9,  10, 12, 14, 18, 21, 24, 28, 34, 21,
                                               28, 18, 24, 28, 34, 28, 34, 31, 31, 3,  5,  7,  9,  12, 14};
 
-    if (sizeIdx < 0 || sizeIdx >= DmtxSymbolSquareCount + DmtxSymbolRectCount)
+    if (sizeIdx < 0 || sizeIdx >= DmtxSymbolSquareCount + DmtxSymbolRectCount) {
         return DmtxUndefined;
+    }
 
     switch (attribute) {
         case DmtxSymAttribSymbolRows:
@@ -123,8 +124,9 @@ extern int dmtxGetBlockDataSize(int sizeIdx, int blockIdx)
     symbolDataWords = dmtxGetSymbolAttribute(DmtxSymAttribSymbolDataWords, sizeIdx);
     interleavedBlocks = dmtxGetSymbolAttribute(DmtxSymAttribInterleavedBlocks, sizeIdx);
 
-    if (symbolDataWords < 1 || interleavedBlocks < 1)
+    if (symbolDataWords < 1 || interleavedBlocks < 1) {
         return DmtxUndefined;
+    }
 
     count = (int)(symbolDataWords / interleavedBlocks);
 
@@ -142,8 +144,9 @@ static int FindSymbolSize(int dataWords, int sizeIdxRequest)
     int sizeIdx;
     int idxBeg, idxEnd;
 
-    if (dataWords <= 0)
+    if (dataWords <= 0) {
         return DmtxUndefined;
+    }
 
     if (sizeIdxRequest == DmtxSymbolSquareAuto || sizeIdxRequest == DmtxSymbolRectAuto) {
         if (sizeIdxRequest == DmtxSymbolSquareAuto) {
@@ -155,18 +158,21 @@ static int FindSymbolSize(int dataWords, int sizeIdxRequest)
         }
 
         for (sizeIdx = idxBeg; sizeIdx < idxEnd; sizeIdx++) {
-            if (dmtxGetSymbolAttribute(DmtxSymAttribSymbolDataWords, sizeIdx) >= dataWords)
+            if (dmtxGetSymbolAttribute(DmtxSymAttribSymbolDataWords, sizeIdx) >= dataWords) {
                 break;
+            }
         }
 
-        if (sizeIdx == idxEnd)
+        if (sizeIdx == idxEnd) {
             return DmtxUndefined;
+        }
     } else {
         sizeIdx = sizeIdxRequest;
     }
 
-    if (dataWords > dmtxGetSymbolAttribute(DmtxSymAttribSymbolDataWords, sizeIdx))
+    if (dataWords > dmtxGetSymbolAttribute(DmtxSymAttribSymbolDataWords, sizeIdx)) {
         return DmtxUndefined;
+    }
 
     return sizeIdx;
 }

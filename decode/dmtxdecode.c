@@ -37,8 +37,9 @@ extern DmtxDecode *dmtxDecodeCreate(DmtxImage *img, int scale)
     int width, height;
 
     dec = (DmtxDecode *)calloc(1, sizeof(DmtxDecode));
-    if (dec == NULL)
+    if (dec == NULL) {
         return NULL;
+    }
 
     width = dmtxImageGetProp(img, DmtxPropWidth) / scale;
     height = dmtxImageGetProp(img, DmtxPropHeight) / scale;
@@ -77,11 +78,13 @@ extern DmtxDecode *dmtxDecodeCreate(DmtxImage *img, int scale)
  */
 extern DmtxPassFail dmtxDecodeDestroy(DmtxDecode **dec)
 {
-    if (dec == NULL || *dec == NULL)
+    if (dec == NULL || *dec == NULL) {
         return DmtxFail;
+    }
 
-    if ((*dec)->cache != NULL)
+    if ((*dec)->cache != NULL) {
         free((*dec)->cache);
+    }
 
     free(*dec);
 
@@ -138,14 +141,17 @@ extern DmtxPassFail dmtxDecodeSetProp(DmtxDecode *dec, int prop, int value)
             break;
     }
 
-    if (dec->squareDevn <= 0.0 || dec->squareDevn >= 1.0)
+    if (dec->squareDevn <= 0.0 || dec->squareDevn >= 1.0) {
         return DmtxFail;
+    }
 
-    if (dec->scanGap < 1)
+    if (dec->scanGap < 1) {
         return DmtxFail;
+    }
 
-    if (dec->edgeThresh < 1 || dec->edgeThresh > 100)
+    if (dec->edgeThresh < 1 || dec->edgeThresh > 100) {
         return DmtxFail;
+    }
 
     /* Reinitialize scangrid in case any inputs changed */
     dec->grid = InitScanGrid(dec);
@@ -216,8 +222,9 @@ extern unsigned char *dmtxDecodeGetCache(DmtxDecode *dec, int x, int y)
     width = dmtxDecodeGetProp(dec, DmtxPropWidth);
     height = dmtxDecodeGetProp(dec, DmtxPropHeight);
 
-    if (x < 0 || x >= width || y < 0 || y >= height)
+    if (x < 0 || x >= width || y < 0 || y >= height) {
         return NULL;
+    }
 
     return &(dec->cache[y * width + x]);
 }
@@ -299,8 +306,9 @@ static void CacheFillQuad(DmtxDecode *dec, DmtxPixelLoc p0, DmtxPixelLoc p1, Dmt
     assert(scanlineMin); /* XXX handle this better */
     assert(scanlineMax); /* XXX handle this better */
 
-    for (i = 0; i < sizeY; i++)
+    for (i = 0; i < sizeY; i++) {
         scanlineMin[i] = dec->xMax;
+    }
 
     for (i = 0; i < 4; i++) {
         while (lines[i].loc.X != lines[i].loc1.X || lines[i].loc.Y != lines[i].loc1.Y) {
@@ -315,8 +323,9 @@ static void CacheFillQuad(DmtxDecode *dec, DmtxPixelLoc p0, DmtxPixelLoc p1, Dmt
         idx = posY - minY;
         for (posX = scanlineMin[idx]; posX < scanlineMax[idx] && posX < dec->xMax; posX++) {
             cache = dmtxDecodeGetCache(dec, posX, posY);
-            if (cache != NULL)
+            if (cache != NULL) {
                 *cache |= 0x80;
+            }
         }
     }
 
@@ -339,8 +348,9 @@ extern DmtxMessage *dmtxDecodeMatrixRegion(DmtxDecode *dec, DmtxRegion *reg, int
     DmtxPixelLoc pxTopLeft, pxTopRight, pxBottomLeft, pxBottomRight;
 
     msg = dmtxMessageCreate(reg->sizeIdx, DmtxFormatMatrix);
-    if (msg == NULL)
+    if (msg == NULL) {
         return NULL;
+    }
 
     if (PopulateArrayFromMatrix(dec, reg, msg) != DmtxPass) {
         dmtxMessageDestroy(&msg);
@@ -506,19 +516,22 @@ extern unsigned char *dmtxDecodeCreateDiagnostic(DmtxDecode *dec, int *totalByte
     style = 1; /* this doesn't mean anything yet */
 
     /* Count width digits */
-    for (widthDigits = 0, i = width; i > 0; i /= 10)
+    for (widthDigits = 0, i = width; i > 0; i /= 10) {
         widthDigits++;
+    }
 
     /* Count height digits */
-    for (heightDigits = 0, i = height; i > 0; i /= 10)
+    for (heightDigits = 0, i = height; i > 0; i /= 10) {
         heightDigits++;
+    }
 
     *headerBytes = widthDigits + heightDigits + 9;
     *totalBytes = *headerBytes + width * height * 3;
 
     pnm = (unsigned char *)malloc(*totalBytes);
-    if (pnm == NULL)
+    if (pnm == NULL) {
         return NULL;
+    }
 
 #if defined(_MSC_VER) && (_MSC_VER < 1700)
     count = sprintf_s((char *)pnm, *headerBytes + 1, "P6\n%d %d\n255\n", width, height);
@@ -546,14 +559,16 @@ extern unsigned char *dmtxDecodeCreateDiagnostic(DmtxDecode *dec, int *totalByte
             } else {
                 shade = (*cache & 0x80) ? 0.0 : 0.7;
                 for (i = 0; i < 3; i++) {
-                    if (i < channelCount)
+                    if (i < channelCount) {
                         dmtxDecodeGetPixelValue(dec, col, row, i, &rgb[i]);
-                    else
+                    } else {
                         dmtxDecodeGetPixelValue(dec, col, row, 0, &rgb[i]);
+                    }
 
                     rgb[i] += (int)(shade * (double)(255 - rgb[i]) + 0.5);
-                    if (rgb[i] > 255)
+                    if (rgb[i] > 255) {
                         rgb[i] = 255;
+                    }
                 }
             }
             *(output++) = (unsigned char)rgb[0];
@@ -738,7 +753,7 @@ static DmtxPassFail PopulateArrayFromMatrix(DmtxDecode *dec, DmtxRegion *reg, Dm
             xOrigin = xRegionCount * (mapWidth + 2) + 1;
             // fprintf(stdout, "libdmtx::PopulateArrayFromMatrix::xOrigin: %d\n", xOrigin);
 
-            memset(tally, 0x00, 24 * 24 * sizeof(int));
+            memset(tally, 0x00, sizeof(int) * 24 * 24);
             TallyModuleJumps(dec, reg, tally, xOrigin, yOrigin, mapWidth, mapHeight, DmtxDirUp);
             TallyModuleJumps(dec, reg, tally, xOrigin, yOrigin, mapWidth, mapHeight, DmtxDirLeft);
             TallyModuleJumps(dec, reg, tally, xOrigin, yOrigin, mapWidth, mapHeight, DmtxDirDown);

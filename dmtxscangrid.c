@@ -49,9 +49,11 @@ static DmtxScanGrid InitScanGrid(DmtxDecode *dec)
 
     assert(maxExtent > 1);
 
-    for (extent = 1; extent < maxExtent; extent = ((extent + 1) * 2) - 1)
-        if (extent <= smallestFeature)
+    for (extent = 1; extent < maxExtent; extent = ((extent + 1) * 2) - 1) {
+        if (extent <= smallestFeature) {
             grid.minExtent = extent;
+        }
+    }
 
     grid.maxExtent = extent;
 
@@ -157,8 +159,9 @@ static int GetGridCoordinates(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
 
     *locPtr = loc;
 
-    if (loc.X < grid->xMin || loc.X > grid->xMax || loc.Y < grid->yMin || loc.Y > grid->yMax)
+    if (loc.X < grid->xMin || loc.X > grid->xMax || loc.Y < grid->yMin || loc.Y > grid->yMax) {
         return DmtxRangeBad;
+    }
 
     return DmtxRangeGood;
 }

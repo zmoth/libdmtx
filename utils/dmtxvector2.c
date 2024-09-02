@@ -108,8 +108,9 @@ extern double dmtxVector2Norm(DmtxVector2 *v)
 
     mag = dmtxVector2Mag(v);
 
-    if (mag <= DmtxAlmostZero)
+    if (mag <= DmtxAlmostZero) {
         return -1.0; /* XXX this doesn't look clean */
+    }
 
     dmtxVector2ScaleBy(v, 1 / mag);
 
@@ -176,8 +177,9 @@ extern DmtxPassFail dmtxRay2Intersect(DmtxVector2 *point, const DmtxRay2 *p0, co
     DmtxVector2 w;
 
     denom = dmtxVector2Cross(&(p1->v), &(p0->v));
-    if (fabs(denom) <= DmtxAlmostZero)
+    if (fabs(denom) <= DmtxAlmostZero) {
         return DmtxFail;
+    }
 
     dmtxVector2Sub(&w, &(p1->p), &(p0->p));
     numer = dmtxVector2Cross(&(p1->v), &w);

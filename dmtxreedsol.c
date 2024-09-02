@@ -125,8 +125,9 @@ static DmtxPassFail RsEncode(DmtxMessage *message, int sizeIdx)
 
         /* Copy to output message */
         eccPtr = ecc.b + blockErrorWords;
-        for (i = symbolDataWords + blockIdx; i < symbolTotalWords; i += blockStride)
+        for (i = symbolDataWords + blockIdx; i < symbolTotalWords; i += blockStride) {
             message->code[i] = *(--eccPtr);
+        }
 
         assert(ecc.b == eccPtr);
     }
@@ -207,13 +208,15 @@ static DmtxPassFail RsDecode(unsigned char *code, int sizeIdx, int fix)
         if (error) {
             /* Find error locator polynomial (elp) */
             repairable = RsFindErrorLocatorPoly(&elp, &syn, blockErrorWords, blockMaxCorrectable);
-            if (!repairable)
+            if (!repairable) {
                 return DmtxFail;
+            }
 
             /* Find error positions (loc) */
             repairable = RsFindErrorLocations(&loc, &elp);
-            if (!repairable)
+            if (!repairable) {
                 return DmtxFail;
+            }
 
             /* Find error values and repair */
             RsRepairErrors(&rec, &loc, &elp, &syn);
@@ -269,8 +272,9 @@ static DmtxPassFail RsGenPoly(DmtxByteList *gen, int errorWordCount)
     for (i = 0; i < gen->length; i++) {
         for (j = i; j >= 0; j--) {
             gen->b[j] = GfMultAntilog(gen->b[j], i + 1);
-            if (j > 0)
+            if (j > 0) {
                 gen->b[j] = GfAdd(gen->b[j], gen->b[j - 1]);
+            }
         }
     }
 
@@ -307,12 +311,14 @@ static DmtxBoolean RsComputeSyndromes(DmtxByteList *syn, const DmtxByteList *rec
 
     for (i = 1; i < syn->length; i++) {
         /* Calculate syndrome at i */
-        for (j = 0; j < rec->length; j++) /* alternatively: j < blockTotalWords */
+        for (j = 0; j < rec->length; j++) { /* alternatively: j < blockTotalWords */
             syn->b[i] = GfAdd(syn->b[i], GfMultAntilog(rec->b[j], i * j));
+        }
 
         /* Non-zero syndrome indicates presence of error(s) */
-        if (syn->b[i] != 0)
+        if (syn->b[i] != 0) {
             error = DmtxTrue;
+        }
     }
 
     return error;
@@ -373,31 +379,37 @@ static DmtxBoolean RsFindErrorLocatorPoly(DmtxByteList *elpOut, const DmtxByteLi
             CHKPASS;
         } else {
             /* Find earlier iteration (m) that provides maximal (m - lambda) */
-            for (m = 0, mCmp = 1; mCmp < i; mCmp++)
-                if (dis.b[mCmp] != 0 && (mCmp - elp[mCmp].length) >= (m - elp[m].length))
+            for (m = 0, mCmp = 1; mCmp < i; mCmp++) {
+                if (dis.b[mCmp] != 0 && (mCmp - elp[mCmp].length) >= (m - elp[m].length)) {
                     m = mCmp;
+                }
+            }
 
             /* Calculate error location polynomial elp[i] (set 1st term) */
-            for (lambda = elp[m].length - 1, j = 0; j <= lambda; j++)
+            for (lambda = elp[m].length - 1, j = 0; j <= lambda; j++) {
                 elp[iNext].b[j + i - m] =
                     (elp[i - 1].b[j] == 0)
                         ? 0
                         : antilog301[(NN - log301[dis.b[m]] + log301[dis.b[i]] + log301[elp[m].b[j]]) % NN];
+            }
 
             /* Calculate error location polynomial elp[i] (add 2nd term) */
-            for (lambda = elp[i].length - 1, j = 0; j <= lambda; j++)
+            for (lambda = elp[i].length - 1, j = 0; j <= lambda; j++) {
                 elp[iNext].b[j] = GfAdd(elp[iNext].b[j], elp[i].b[j]);
+            }
 
             elp[iNext].length = max(elp[i].length, elp[m].length + i - m);
         }
 
         lambda = elp[iNext].length - 1;
-        if (i == errorWordCount || i >= lambda + maxCorrectable)
+        if (i == errorWordCount || i >= lambda + maxCorrectable) {
             break;
+        }
 
         /* Calculate discrepancy dis.b[i] */
-        for (disTmp = syn->b[iNext], j = 1; j <= lambda; j++)
+        for (disTmp = syn->b[iNext], j = 1; j <= lambda; j++) {
             disTmp = GfAdd(disTmp, GfMult(syn->b[iNext - j], elp[iNext].b[j]));
+        }
 
         assert(dis.length == iNext);
         dmtxByteListPush(&dis, disTmp, &passFail);
@@ -488,8 +500,9 @@ static DmtxPassFail RsRepairErrors(DmtxByteList *rec, const DmtxByteList *loc, c
     dmtxByteListPush(&z, 1, &passFail);
     CHKPASS;
     for (i = 1; i <= lambda; i++) {
-        for (zVal = GfAdd(syn->b[i], elp->b[i]), j = 1; j < i; j++)
+        for (zVal = GfAdd(syn->b[i], elp->b[i]), j = 1; j < i; j++) {
             zVal = GfAdd(zVal, GfMult(elp->b[i - j], syn->b[j]));
+        }
         dmtxByteListPush(&z, zVal, &passFail);
         CHKPASS;
     }
@@ -498,16 +511,19 @@ static DmtxPassFail RsRepairErrors(DmtxByteList *rec, const DmtxByteList *loc, c
         /* Calculate numerator of error term */
         root = NN - loc->b[i];
 
-        for (err = 1, j = 1; j <= lambda; j++)
+        for (err = 1, j = 1; j <= lambda; j++) {
             err = GfAdd(err, GfMultAntilog(z.b[j], j * root));
+        }
 
-        if (err == 0)
+        if (err == 0) {
             continue;
+        }
 
         /* Calculate denominator of error term */
         for (q = 0, j = 0; j < lambda; j++) {
-            if (j != i)
+            if (j != i) {
                 q += log301[1 ^ antilog301[(loc->b[j] + root) % NN]];
+            }
         }
         q %= NN;
 

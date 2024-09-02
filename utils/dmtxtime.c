@@ -89,8 +89,9 @@ extern DmtxTime dmtxTimeNow(void)
     DmtxTime tNow;
 
     s = time(NULL);
-    if (errno != 0)
+    if (errno != 0) {
         ; /* XXX handle error better here */
+    }
 
     tNow.sec = s;
     tNow.usec = 0;
@@ -108,13 +109,14 @@ extern DmtxTime dmtxTimeNow(void)
  */
 extern DmtxTime dmtxTimeAdd(DmtxTime t, long msec)
 {
-    int usec;
+    long usec;
 
     usec = msec * 1000;
 
     /* Ensure that time difference will register on local system */
-    if (usec > 0 && usec < DMTX_TIME_PREC_USEC)
+    if (usec > 0 && usec < DMTX_TIME_PREC_USEC) {
         usec = DMTX_TIME_PREC_USEC;
+    }
 
     /* Add time */
     t.sec += usec / DMTX_USEC_PER_SEC;

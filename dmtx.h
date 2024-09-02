@@ -39,7 +39,7 @@ extern "C"
 
 #define DmtxVersion "0.7.5"
 
-#define DmtxUndefined -1
+#define DmtxUndefined (-1)
 
 #define DmtxPassFail unsigned int
 #define DmtxPass 1
@@ -563,8 +563,8 @@ extern "C"
     extern DmtxPassFail dmtxEncodeDestroy(DmtxEncode **enc);
     extern DmtxPassFail dmtxEncodeSetProp(DmtxEncode *enc, int prop, int value);
     extern int dmtxEncodeGetProp(DmtxEncode *enc, int prop);
-    extern DmtxPassFail dmtxEncodeDataMatrix(DmtxEncode *enc, int n, unsigned char *s);
-    extern DmtxPassFail dmtxEncodeDataMosaic(DmtxEncode *enc, int n, unsigned char *s);
+    extern DmtxPassFail dmtxEncodeDataMatrix(DmtxEncode *enc, int inputSize, unsigned char *inputString);
+    extern DmtxPassFail dmtxEncodeDataMosaic(DmtxEncode *enc, int inputSize, unsigned char *inputString);
 
     /* dmtxdecode.c */
     extern DmtxDecode *dmtxDecodeCreate(DmtxImage *img, int scale);
@@ -638,7 +638,7 @@ extern "C"
     extern void dmtxMatrix3Print(DmtxMatrix3 m);
 
     /* dmtxsymbol.c */
-    extern int dmtxSymbolModuleStatus(DmtxMessage *mapping, int sizeIdx, int row, int col);
+    extern int dmtxSymbolModuleStatus(DmtxMessage *message, int sizeIdx, int symbolRow, int symbolCol);
     extern int dmtxGetSymbolAttribute(int attribute, int sizeIdx);
     extern int dmtxGetBlockDataSize(int sizeIdx, int blockIdx);
     extern int getSizeIdxFromSymbolDimension(int rows, int cols);
