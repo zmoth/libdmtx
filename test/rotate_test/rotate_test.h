@@ -13,31 +13,32 @@
 #ifndef __SCANDEMO_H__
 #define __SCANDEMO_H__
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <SDL.h>
+#include <SDL_opengl.h>
 #include <assert.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_opengl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "../../dmtx.h"
-#include "image.h"
-#include "display.h"
 #include "callback.h"
+#include "display.h"
+#include "image.h"
 
-#define max(X,Y) (X > Y) ? X : Y
-#define min(X,Y) (X < Y) ? X : Y
+extern GLfloat view_rotx;
+extern GLfloat view_roty;
+extern GLfloat view_rotz;
+extern GLfloat angle;
 
-extern GLfloat       view_rotx;
-extern GLfloat       view_roty;
-extern GLfloat       view_rotz;
-extern GLfloat       angle;
+extern GLuint barcodeTexture;
+extern GLint barcodeList;
 
-extern GLuint        barcodeTexture;
-extern GLint         barcodeList;
+extern SDL_Window *window;
+extern SDL_Surface *screen;
 
-extern DmtxImage     *gImage;
+extern DmtxImage *gImage;
+extern SDL_Surface *texturePxl;
 extern unsigned char *capturePxl;
-extern unsigned char *texturePxl;
 extern unsigned char *passOnePxl;
 extern unsigned char *passTwoPxl;
 
