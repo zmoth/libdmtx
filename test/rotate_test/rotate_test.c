@@ -12,6 +12,8 @@
 
 #include "rotate_test.h"
 
+#include "image.h"
+
 GLfloat view_rotx = 0.0, view_roty = 0.0, view_rotz = 0.0;
 GLfloat angle = 0.0;
 

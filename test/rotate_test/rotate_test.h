@@ -21,9 +21,7 @@
 #include <string.h>
 
 #include "../../dmtx.h"
-#include "callback.h"
 #include "display.h"
-#include "image.h"
 
 extern GLfloat view_rotx;
 extern GLfloat view_roty;

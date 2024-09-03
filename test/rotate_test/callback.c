@@ -31,7 +31,7 @@ void BuildMatrixCallback2(DmtxRegion *region)
 {
     int i, j;
     int offset;
-    float scale = 1.0 / 200.0;
+    float scale = 1.0F / 200.0F;
     DmtxVector2 point;
     DmtxMatrix3 m0, m1, mInv;
     int rgb[3];
@@ -70,12 +70,12 @@ void BuildMatrixCallback2(DmtxRegion *region)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    glColor3f(0.0, 1.0, 0.0);
+    glColor3f(0.0F, 1.0F, 0.0F);
     glBegin(GL_QUADS);
-    glVertex2f(60.0, 60.0);
-    glVertex2f(260.0, 60.0);
-    glVertex2f(260.0, 260.0);
-    glVertex2f(60.0, 260.0);
+    glVertex2f(60.0F, 60.0F);
+    glVertex2f(260.0F, 60.0F);
+    glVertex2f(260.0F, 260.0F);
+    glVertex2f(60.0F, 260.0F);
     glEnd();
 }
 
@@ -87,7 +87,7 @@ void BuildMatrixCallback3(DmtxMatrix3 mChainInv)
 {
     int i, j;
     int offset;
-    float scale = 1.0 / 100.0;
+    float scale = 1.0F / 100.0F;
     DmtxVector2 point;
     DmtxMatrix3 m0, m1, mInv;
     int rgb[3];
@@ -126,12 +126,12 @@ void BuildMatrixCallback3(DmtxMatrix3 mChainInv)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    glColor3f(0.0, 1.0, 0.0);
+    glColor3f(0.0F, 1.0F, 0.0F);
     glBegin(GL_QUADS);
-    glVertex2f(60.0, 60.0);
-    glVertex2f(160.0, 60.0);
-    glVertex2f(160.0, 160.0);
-    glVertex2f(60.0, 160.0);
+    glVertex2f(60.0F, 60.0F);
+    glVertex2f(160.0F, 60.0F);
+    glVertex2f(160.0F, 160.0F);
+    glVertex2f(60.0F, 160.0F);
     /**
        glVertex2f( 60.0,  60.0);
        glVertex2f(260.0,  60.0);
@@ -149,7 +149,7 @@ void BuildMatrixCallback4(DmtxMatrix3 mChainInv)
 {
     int i, j;
     int offset;
-    float scale = 1.0f / 200.0f;
+    float scale = 1.0F / 200.0F;
     DmtxVector2 point;
     DmtxMatrix3 m0, m1, mInv;
     int rgb[3];
@@ -188,12 +188,12 @@ void BuildMatrixCallback4(DmtxMatrix3 mChainInv)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    glColor3f(0.0, 1.0, 0.0);
+    glColor3f(0.0F, 1.0F, 0.0F);
     glBegin(GL_QUADS);
-    glVertex2f(60.0, 60.0);
-    glVertex2f(260.0, 60.0);
-    glVertex2f(260.0, 260.0);
-    glVertex2f(60.0, 260.0);
+    glVertex2f(60.0F, 60.0F);
+    glVertex2f(260.0F, 60.0F);
+    glVertex2f(260.0F, 260.0F);
+    glVertex2f(60.0F, 260.0F);
     glEnd();
 }
 
@@ -251,7 +251,7 @@ void PlotPointCallback(DmtxPixelLoc loc, int colorInt, int paneNbr, int dispType
                 break;
         }
 
-        plotPoint(image, point.Y, point.X, color);
+        plotPoint(image, (float)point.Y, (float)point.X, color);
         /*    plotPoint(image, point.Y + 1, point.X - 1, color);
               plotPoint(image, point.Y + 1, point.X + 1, color);
               plotPoint(image, point.Y - 1, point.X - 1, color);
@@ -268,35 +268,35 @@ void PlotPointCallback(DmtxPixelLoc loc, int colorInt, int paneNbr, int dispType
 
         switch (colorInt) {
             case 1:
-                glColor3f(1.0, 0.0, 0.0);
+                glColor3f(1.0F, 0.0F, 0.0F);
                 break;
             case 2:
-                glColor3f(0.0, 1.0, 0.0);
+                glColor3f(0.0F, 1.0F, 0.0F);
                 break;
             case 3:
-                glColor3f(0.0, 0.0, 1.0);
+                glColor3f(0.0F, 0.0F, 1.0F);
                 break;
             case 4:
-                glColor3f(1.0, 1.0, 0.0);
+                glColor3f(1.0F, 1.0F, 0.0F);
                 break;
             default:
-                glColor3f(1.0, 1.0, 1.0);
+                glColor3f(1.0F, 1.0F, 1.0F);
                 break;
         }
 
         if (dispType == DMTX_DISPLAY_SQUARE) {
             glBegin(GL_QUADS);
-            glVertex2f(point.X - 3, point.Y - 3);
-            glVertex2f(point.X + 3, point.Y - 3);
-            glVertex2f(point.X + 3, point.Y + 3);
-            glVertex2f(point.X - 3, point.Y + 3);
+            glVertex2f((float)point.X - 3, (float)point.Y - 3);
+            glVertex2f((float)point.X + 3, (float)point.Y - 3);
+            glVertex2f((float)point.X + 3, (float)point.Y + 3);
+            glVertex2f((float)point.X - 3, (float)point.Y + 3);
             glEnd();
         } else if (dispType == DMTX_DISPLAY_POINT) {
             int x = (int)(point.X + 0.5);
             int y = (int)(point.Y + 0.5);
 
             glBegin(GL_POINTS);
-            glVertex2f(x, y);
+            glVertex2f((float)x, (float)y);
             glEnd();
         }
     }
@@ -308,7 +308,7 @@ void PlotPointCallback(DmtxPixelLoc loc, int colorInt, int paneNbr, int dispType
  */
 void XfrmPlotPointCallback(DmtxVector2 point, DmtxMatrix3 xfrm, int paneNbr, int dispType)
 {
-    float scale = 100.0;
+    float scale = 100.0F;
     DmtxMatrix3 m, m0, m1;
 
     if (xfrm != NULL) {
@@ -355,16 +355,20 @@ void PlotModuleCallback(DmtxDecode *info, DmtxRegion *region, int row, int col, 
        dmtxPointAlongRay3(&color, &(region->gradient.ray), t); */
 
     if (color == 1) {
-        glColor3f(0.0, 0.0, 0.0);
+        glColor3f(0.0F, 0.0F, 0.0F);
     } else {
-        glColor3f(1.0, 1.0, 1.0);
+        glColor3f(1.0F, 1.0F, 1.0F);
     }
 
     glBegin(GL_QUADS);
-    glVertex2f(modSize * (col + 0.5) + padSize - halfModsize, modSize * (row + 0.5) + padSize - halfModsize);
-    glVertex2f(modSize * (col + 0.5) + padSize + halfModsize, modSize * (row + 0.5) + padSize - halfModsize);
-    glVertex2f(modSize * (col + 0.5) + padSize + halfModsize, modSize * (row + 0.5) + padSize + halfModsize);
-    glVertex2f(modSize * (col + 0.5) + padSize - halfModsize, modSize * (row + 0.5) + padSize + halfModsize);
+    glVertex2f((float)modSize * (col + 0.5) + padSize - halfModsize,
+               (float)modSize * (row + 0.5) + padSize - halfModsize);
+    glVertex2f((float)modSize * (col + 0.5) + padSize + halfModsize,
+               (float)modSize * (row + 0.5) + padSize - halfModsize);
+    glVertex2f((float)modSize * (col + 0.5) + padSize + halfModsize,
+               (float)modSize * (row + 0.5) + padSize + halfModsize);
+    glVertex2f((float)modSize * (col + 0.5) + padSize - halfModsize,
+               (float)modSize * (row + 0.5) + padSize + halfModsize);
     glEnd();
 }
 

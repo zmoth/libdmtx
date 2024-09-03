@@ -2,8 +2,8 @@ project(rotate_test)
 
 message(STATUS "[example] 项目名称 ${PROJECT_NAME}")
 
-file(GLOB_RECURSE SRCS *.c)
-file(GLOB_RECURSE INCS *.h)
+file(GLOB SRCS *.c)
+file(GLOB INCS *.h)
 
 find_package(SDL2 REQUIRED)
 

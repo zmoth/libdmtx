@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "dmtx.h"
+#include "image.h"
 #include "rotate_test.h"
 
 SDL_Window *window;
@@ -52,7 +52,7 @@ SDL_Surface *initDisplay(void)
         exit(1);
     }
 
-    glClearColor(0.0f, 0.0f, 0.3f, 1.0f);
+    glClearColor(0.0F, 0.0F, 0.3F, 1.0F);
 
     return screen;
 }
@@ -63,16 +63,16 @@ SDL_Surface *initDisplay(void)
  */
 void DrawBarCode(void)
 {
-    glColor3f(0.95f, 0.95f, 0.95f);
+    glColor3f(0.95F, 0.95F, 0.95F);
     glBegin(GL_QUADS);
     glTexCoord2d(0.0, 0.0);
-    glVertex3f(-2.0, -2.0, 0.0);
+    glVertex3f(-2.0F, -2.0F, 0.0F);
     glTexCoord2d(1.0, 0.0);
-    glVertex3f(2.0, -2.0, 0.0);
+    glVertex3f(2.0F, -2.0F, 0.0F);
     glTexCoord2d(1.0, 1.0);
-    glVertex3f(2.0, 2.0, 0.0);
+    glVertex3f(2.0F, 2.0F, 0.0F);
     glTexCoord2d(0.0, 1.0);
-    glVertex3f(-2.0, 2.0, 0.0);
+    glVertex3f(-2.0F, 2.0F, 0.0F);
     glEnd();
 }
 
@@ -121,16 +121,16 @@ void DrawGeneratedImage(SDL_Surface *screen)
     glFrustum(-1.0, 1.0, -1.0, 1.0, 5.0, 50.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslatef(0.0, 0.0, -10.0);
+    glTranslatef(0.0F, 0.0F, -10.0F);
     glPolygonMode(GL_FRONT, GL_FILL);
     glPolygonMode(GL_BACK, GL_LINE);
     glEnable(GL_TEXTURE_2D);
 
     glPushMatrix();
-    glRotatef(view_rotx, 1.0, 0.0, 0.0);
-    glRotatef(view_roty, 0.0, 1.0, 0.0);
-    glRotatef(view_rotz, 0.0, 0.0, 1.0);
-    glRotatef(angle, 0.0, 0.0, 1.0);
+    glRotatef(view_rotx, 1.0F, 0.0F, 0.0F);
+    glRotatef(view_roty, 0.0F, 1.0F, 0.0F);
+    glRotatef(view_rotz, 0.0F, 0.0F, 1.0F);
+    glRotatef(angle, 0.0F, 0.0F, 1.0F);
     glCallList(barcodeList);
     glPopMatrix();
 }
@@ -200,7 +200,7 @@ void DrawPane6(SDL_Surface *screen, unsigned char *pxl)
 void DrawPaneBorder(GLint x, GLint y, GLint h, GLint w)
 {
     glDisable(GL_TEXTURE_2D);
-    glColor3f(0.6f, 0.6f, 1.0f);
+    glColor3f(0.6F, 0.6F, 1.0F);
     glPolygonMode(GL_FRONT, GL_LINE);
     glViewport(x, y, w, w);
     glMatrixMode(GL_PROJECTION);
@@ -237,8 +237,8 @@ int HandleEvent(SDL_Event *event, SDL_Surface *screen)
             break;
 
         case SDL_MOUSEMOTION:
-            view_rotx = ((event->motion.y - 160) / 2.0f);
-            view_roty = ((event->motion.x - 160) / 2.0f);
+            view_rotx = ((float)event->motion.y - 160.0F) / 2.0F;
+            view_roty = ((float)event->motion.x - 160.0F) / 2.0F;
             break;
 
         case SDL_KEYDOWN:

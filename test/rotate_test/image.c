@@ -15,14 +15,23 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <assert.h>
-// #include <png.h>
-#include <gl/GLU.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _WIN32
+#    include <gl/GL.h>
+#    include <gl/GLU.h>
+#else
+#    include <OpenGL/gl.h>
+#    include <OpenGL/glu.h>
+#endif
 
 #include "dmtx.h"
 #include "rotate_test.h"
+
+#ifndef max
+#    define max(X, Y) (((X) > (Y)) ? (X) : (Y))
+#endif
 
 SDL_Surface *flipSurfaceVertically(SDL_Surface *inputSurface)
 {
@@ -95,12 +104,20 @@ SDL_Surface *loadTextureImage()
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
-    /* Read barcode image */
+/* Read barcode image */
+#ifdef _WIN32
     int err = gluBuild2DMipmaps(GL_TEXTURE_2D, bmp->format->BytesPerPixel, bmp->w, bmp->h, getFormat(bmp),
                                 GL_UNSIGNED_BYTE, bmp->pixels);
     if (err) {
         fprintf(stdout, gluErrorStringWIN(err));
     }
+#else
+    int err = gluBuild2DMipmaps(GL_TEXTURE_2D, bmp->format->BytesPerPixel, bmp->w, bmp->h, getFormat(bmp),
+                                GL_UNSIGNED_BYTE, bmp->pixels);
+    if (err) {
+        fprintf(stdout, gluErrorString(err));
+    }
+#endif
 
     /* Create the barcode list */
     barcodeList = glGenLists(1);
@@ -156,25 +173,30 @@ void plotPoint(DmtxImage *img, float rowFloat, float colFloat, int targetColor)
     offset[2] = (row + 1) * img->width + col;
     offset[3] = (row + 1) * img->width + (col + 1);
 
-    color[0] = clampRGB(255.0f * ((1.0f - xFloat) * (1.0f - yFloat)));
-    color[1] = clampRGB(255.0f * (xFloat * (1.0f - yFloat)));
-    color[2] = clampRGB(255.0f * ((1.0f - xFloat) * yFloat));
-    color[3] = clampRGB(255.0f * (xFloat * yFloat));
+    color[0] = clampRGB(255.0F * ((1.0F - xFloat) * (1.0F - yFloat)));
+    color[1] = clampRGB(255.0F * (xFloat * (1.0F - yFloat)));
+    color[2] = clampRGB(255.0F * ((1.0F - xFloat) * yFloat));
+    color[3] = clampRGB(255.0F * (xFloat * yFloat));
 
     for (i = 0; i < 4; i++) {
-        if ((i == 1 || i == 3) && col + 1 > 319)
+        if ((i == 1 || i == 3) && col + 1 > 319) {
             continue;
-        else if ((i == 2 || i == 3) && row + 1 > 319)
+        }
+        if ((i == 2 || i == 3) && row + 1 > 319) {
             continue;
+        }
 
-        if (targetColor & (ColorWhite | ColorRed | ColorYellow))
+        if (targetColor & (ColorWhite | ColorRed | ColorYellow)) {
             img->pxl[offset[i] * 3 + 0] = max(img->pxl[offset[i] * 3 + 0], color[i]);
+        }
 
-        if (targetColor & (ColorWhite | ColorGreen | ColorYellow))
+        if (targetColor & (ColorWhite | ColorGreen | ColorYellow)) {
             img->pxl[offset[i] * 3 + 1] = max(img->pxl[offset[i] * 3 + 1], color[i]);
+        }
 
-        if (targetColor & (ColorWhite | ColorBlue))
+        if (targetColor & (ColorWhite | ColorBlue)) {
             img->pxl[offset[i] * 3 + 2] = max(img->pxl[offset[i] * 3 + 2], color[i]);
+        }
     }
 }
 
