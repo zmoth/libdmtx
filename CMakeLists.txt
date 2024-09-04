@@ -51,6 +51,35 @@ target_include_directories(
 
 install(TARGETS ${PROJECT_NAME} LIBRARY ARCHIVE RUNTIME PUBLIC_HEADER)
 
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file(
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake"
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+
+export(TARGETS ${PROJECT_NAME}
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config.cmake")
+
+install(
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake"
+  DESTINATION cmake
+)
+
+install(
+  FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
+  DESTINATION "./"
+)
+
+install(
+  FILES "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
+  DESTINATION "./"
+)
+
+# 打包
+include(cmake/package.cmake)
+
 # Add tests if DMTX is the main project
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   include(CTest)
