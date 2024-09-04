@@ -45,7 +45,7 @@ static DmtxScanGrid InitScanGrid(DmtxDecode *dec)
     /* Values that get set once */
     xExtent = grid.xMax - grid.xMin;
     yExtent = grid.yMax - grid.yMin;
-    maxExtent = (xExtent > yExtent) ? xExtent : yExtent;
+    maxExtent = max(xExtent, yExtent);
 
     assert(maxExtent > 1);
 
