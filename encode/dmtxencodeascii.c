@@ -32,17 +32,17 @@
  * \param stream
  * \param option [Expanded|Compact|Normal]
  */
-static void EncodeNextChunkAscii(DmtxEncodeStream *stream, int option)
+static void encodeNextChunkAscii(DmtxEncodeStream *stream, int option)
 {
     DmtxByte v0, v1;
     DmtxBoolean compactDigits;
 
-    if (StreamInputHasNext(stream)) {
-        v0 = StreamInputAdvanceNext(stream);
+    if (streamInputHasNext(stream)) {
+        v0 = streamInputAdvanceNext(stream);
         CHKERR;
 
-        if ((option == DmtxEncodeCompact || option == DmtxEncodeNormal) && StreamInputHasNext(stream)) {
-            v1 = StreamInputPeekNext(stream);
+        if ((option == DmtxEncodeCompact || option == DmtxEncodeNormal) && streamInputHasNext(stream)) {
+            v1 = streamInputPeekNext(stream);
             CHKERR;
 
             /* Check for FNC1 character */
@@ -60,28 +60,28 @@ static void EncodeNextChunkAscii(DmtxEncodeStream *stream, int option)
 
         if (compactDigits == DmtxTrue) {
             /* Two adjacent digit chars: Make peek progress official and encode */
-            StreamInputAdvanceNext(stream);
+            streamInputAdvanceNext(stream);
             CHKERR;
-            AppendValueAscii(stream, 10 * (v0 - '0') + (v1 - '0') + 130);
+            appendValueAscii(stream, 10 * (v0 - '0') + (v1 - '0') + 130);
             CHKERR;
         } else if (option == DmtxEncodeCompact) {
             /* Can't compact non-digits */
-            StreamMarkInvalid(stream, DmtxErrorCantCompactNonDigits);
+            streamMarkInvalid(stream, DmtxErrorCantCompactNonDigits);
         } else {
             /* Encode single ASCII value */
             if (stream->fnc1 != DmtxUndefined && (int)v0 == stream->fnc1) {
                 /* FNC1 */
-                AppendValueAscii(stream, DmtxValueFNC1);
+                appendValueAscii(stream, DmtxValueFNC1);
                 CHKERR;
             } else if (v0 < 128) {
                 /* Regular ASCII */
-                AppendValueAscii(stream, v0 + 1);
+                appendValueAscii(stream, v0 + 1);
                 CHKERR;
             } else {
                 /* Extended ASCII */
-                AppendValueAscii(stream, DmtxValueAsciiUpperShift);
+                appendValueAscii(stream, DmtxValueAsciiUpperShift);
                 CHKERR;
-                AppendValueAscii(stream, v0 - 127);
+                appendValueAscii(stream, v0 - 127);
                 CHKERR;
             }
         }
@@ -89,14 +89,14 @@ static void EncodeNextChunkAscii(DmtxEncodeStream *stream, int option)
 }
 
 /**
- * this code is separated from EncodeNextChunkAscii() because it needs to be
+ * this code is separated from encodeNextChunkAscii() because it needs to be
  * called directly elsewhere
  */
-static void AppendValueAscii(DmtxEncodeStream *stream, DmtxByte value)
+static void appendValueAscii(DmtxEncodeStream *stream, DmtxByte value)
 {
     CHKSCHEME(DmtxSchemeAscii);
 
-    StreamOutputChainAppend(stream, value);
+    streamOutputChainAppend(stream, value);
     CHKERR;
     stream->outputChainValueCount++;
 }
@@ -105,7 +105,7 @@ static void AppendValueAscii(DmtxEncodeStream *stream, DmtxByte value)
  *
  *
  */
-static void CompleteIfDoneAscii(DmtxEncodeStream *stream, int sizeIdxRequest)
+static void completeIfDoneAscii(DmtxEncodeStream *stream, int sizeIdxRequest)
 {
     int sizeIdx;
 
@@ -113,12 +113,12 @@ static void CompleteIfDoneAscii(DmtxEncodeStream *stream, int sizeIdxRequest)
         return;
     }
 
-    if (!StreamInputHasNext(stream)) {
-        sizeIdx = FindSymbolSize(stream->output->length, sizeIdxRequest);
+    if (!streamInputHasNext(stream)) {
+        sizeIdx = findSymbolSize(stream->output->length, sizeIdxRequest);
         CHKSIZE;
-        PadRemainingInAscii(stream, sizeIdx);
+        padRemainingInAscii(stream, sizeIdx);
         CHKERR;
-        StreamMarkComplete(stream, sizeIdx);
+        streamMarkComplete(stream, sizeIdx);
     }
 }
 
@@ -126,7 +126,7 @@ static void CompleteIfDoneAscii(DmtxEncodeStream *stream, int sizeIdxRequest)
  * Can we just receive a length to pad here? I don't like receiving
  * sizeIdxRequest (or sizeIdx) this late in the game
  */
-static void PadRemainingInAscii(DmtxEncodeStream *stream, int sizeIdx)
+static void padRemainingInAscii(DmtxEncodeStream *stream, int sizeIdx)
 {
     int symbolRemaining;
     DmtxByte padValue;
@@ -134,20 +134,20 @@ static void PadRemainingInAscii(DmtxEncodeStream *stream, int sizeIdx)
     CHKSCHEME(DmtxSchemeAscii);
     CHKSIZE;
 
-    symbolRemaining = GetRemainingSymbolCapacity(stream->output->length, sizeIdx);
+    symbolRemaining = getRemainingSymbolCapacity(stream->output->length, sizeIdx);
 
     /* First pad character is not randomized */
     if (symbolRemaining > 0) {
         padValue = DmtxValueAsciiPad;
-        StreamOutputChainAppend(stream, padValue);
+        streamOutputChainAppend(stream, padValue);
         CHKERR;
         symbolRemaining--;
     }
 
     /* All remaining pad characters are randomized based on character position */
     while (symbolRemaining > 0) {
-        padValue = Randomize253State(DmtxValueAsciiPad, stream->output->length + 1);
-        StreamOutputChainAppend(stream, padValue);
+        padValue = randomize253State(DmtxValueAsciiPad, stream->output->length + 1);
+        streamOutputChainAppend(stream, padValue);
         CHKERR;
         symbolRemaining--;
     }
@@ -156,7 +156,7 @@ static void PadRemainingInAscii(DmtxEncodeStream *stream, int sizeIdx)
 /**
  * consider receiving instantiated DmtxByteList instead of the output components
  */
-static DmtxByteList EncodeTmpRemainingInAscii(DmtxEncodeStream *stream, DmtxByte *storage, int capacity,
+static DmtxByteList encodeTmpRemainingInAscii(DmtxEncodeStream *stream, DmtxByte *storage, int capacity,
                                               DmtxPassFail *passFail)
 {
     DmtxEncodeStream streamAscii;
@@ -173,8 +173,8 @@ static DmtxByteList EncodeTmpRemainingInAscii(DmtxEncodeStream *stream, DmtxByte
     streamAscii.output = &output;
 
     while (dmtxByteListHasCapacity(streamAscii.output)) {
-        if (StreamInputHasNext(&streamAscii)) {
-            EncodeNextChunkAscii(&streamAscii, DmtxEncodeNormal); /* No CHKERR */
+        if (streamInputHasNext(&streamAscii)) {
+            encodeNextChunkAscii(&streamAscii, DmtxEncodeNormal); /* No CHKERR */
         } else {
             break;
         }
@@ -201,7 +201,7 @@ static DmtxByteList EncodeTmpRemainingInAscii(DmtxEncodeStream *stream, DmtxByte
  * \param  codewordPosition
  * \return Randomized value
  */
-static DmtxByte Randomize253State(DmtxByte cwValue, int cwPosition)
+static DmtxByte randomize253State(DmtxByte cwValue, int cwPosition)
 {
     int pseudoRandom, tmp;
 

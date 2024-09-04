@@ -77,7 +77,7 @@ int dmtxSymbolModuleStatus(DmtxMessage *message, int sizeIdx, int symbolRow, int
  *
  * @return 已读取的编码字数量
  */
-static int ModulePlacementEcc200(unsigned char *modules, unsigned char *codewords, int sizeIdx, int moduleOnColor)
+static int modulePlacementEcc200(unsigned char *modules, unsigned char *codewords, int sizeIdx, int moduleOnColor)
 {
     int row, col, chr;
     int mappingRows, mappingCols;
@@ -95,19 +95,19 @@ static int ModulePlacementEcc200(unsigned char *modules, unsigned char *codeword
     do {
         /* 检查并处理四个特殊角落的码字排布模式 */
         if ((row == mappingRows) && (col == 0)) {
-            PatternShapeSpecial1(modules, mappingRows, mappingCols, &(codewords[chr++]), moduleOnColor);
+            patternShapeSpecial1(modules, mappingRows, mappingCols, &(codewords[chr++]), moduleOnColor);
         } else if ((row == mappingRows - 2) && (col == 0) && (mappingCols % 4 != 0)) {
-            PatternShapeSpecial2(modules, mappingRows, mappingCols, &(codewords[chr++]), moduleOnColor);
+            patternShapeSpecial2(modules, mappingRows, mappingCols, &(codewords[chr++]), moduleOnColor);
         } else if ((row == mappingRows - 2) && (col == 0) && (mappingCols % 8 == 4)) {
-            PatternShapeSpecial3(modules, mappingRows, mappingCols, &(codewords[chr++]), moduleOnColor);
+            patternShapeSpecial3(modules, mappingRows, mappingCols, &(codewords[chr++]), moduleOnColor);
         } else if ((row == mappingRows + 4) && (col == 2) && (mappingCols % 8 == 0)) {
-            PatternShapeSpecial4(modules, mappingRows, mappingCols, &(codewords[chr++]), moduleOnColor);
+            patternShapeSpecial4(modules, mappingRows, mappingCols, &(codewords[chr++]), moduleOnColor);
         }
 
         /* 以对角线方式斜向上扫描并插入字符 */
         do {
             if ((row < mappingRows) && (col >= 0) && !(modules[row * mappingCols + col] & DmtxModuleVisited)) {
-                PatternShapeStandard(modules, mappingRows, mappingCols, row, col, &(codewords[chr++]), moduleOnColor);
+                patternShapeStandard(modules, mappingRows, mappingCols, row, col, &(codewords[chr++]), moduleOnColor);
             }
             row -= 2;
             col += 2;
@@ -118,7 +118,7 @@ static int ModulePlacementEcc200(unsigned char *modules, unsigned char *codeword
         /* 同样以对角线方式向下扫描并插入字符 */
         do {
             if ((row >= 0) && (col < mappingCols) && !(modules[row * mappingCols + col] & DmtxModuleVisited)) {
-                PatternShapeStandard(modules, mappingRows, mappingCols, row, col, &(codewords[chr++]), moduleOnColor);
+                patternShapeStandard(modules, mappingRows, mappingCols, row, col, &(codewords[chr++]), moduleOnColor);
             }
             row += 2;
             col -= 2;
@@ -155,17 +155,17 @@ static int ModulePlacementEcc200(unsigned char *modules, unsigned char *codeword
  * @param codeword 码字
  * @param moduleOnColor 表示模块开启颜色的整数值
  */
-static void PatternShapeStandard(unsigned char *modules, int mappingRows, int mappingCols, int row, int col,
+static void patternShapeStandard(unsigned char *modules, int mappingRows, int mappingCols, int row, int col,
                                  unsigned char *codeword, int moduleOnColor)
 {
-    PlaceModule(modules, mappingRows, mappingCols, row - 2, col - 2, codeword, DmtxMaskBit1, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, row - 2, col - 1, codeword, DmtxMaskBit2, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, row - 1, col - 2, codeword, DmtxMaskBit3, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, row - 1, col - 1, codeword, DmtxMaskBit4, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, row - 1, col, codeword, DmtxMaskBit5, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, row, col - 2, codeword, DmtxMaskBit6, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, row, col - 1, codeword, DmtxMaskBit7, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, row, col, codeword, DmtxMaskBit8, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, row - 2, col - 2, codeword, DmtxMaskBit1, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, row - 2, col - 1, codeword, DmtxMaskBit2, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, row - 1, col - 2, codeword, DmtxMaskBit3, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, row - 1, col - 1, codeword, DmtxMaskBit4, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, row - 1, col, codeword, DmtxMaskBit5, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, row, col - 2, codeword, DmtxMaskBit6, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, row, col - 1, codeword, DmtxMaskBit7, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, row, col, codeword, DmtxMaskBit8, moduleOnColor);
 }
 
 /**
@@ -189,17 +189,17 @@ static void PatternShapeStandard(unsigned char *modules, int mappingRows, int ma
  * @param  codeword
  * @param  moduleOnColor
  */
-static void PatternShapeSpecial1(unsigned char *modules, int mappingRows, int mappingCols, unsigned char *codeword,
+static void patternShapeSpecial1(unsigned char *modules, int mappingRows, int mappingCols, unsigned char *codeword,
                                  int moduleOnColor)
 {
-    PlaceModule(modules, mappingRows, mappingCols, mappingRows - 1, 0, codeword, DmtxMaskBit1, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, mappingRows - 1, 1, codeword, DmtxMaskBit2, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, mappingRows - 1, 2, codeword, DmtxMaskBit3, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 0, mappingCols - 2, codeword, DmtxMaskBit4, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 0, mappingCols - 1, codeword, DmtxMaskBit5, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 1, mappingCols - 1, codeword, DmtxMaskBit6, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 2, mappingCols - 1, codeword, DmtxMaskBit7, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 3, mappingCols - 1, codeword, DmtxMaskBit8, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, mappingRows - 1, 0, codeword, DmtxMaskBit1, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, mappingRows - 1, 1, codeword, DmtxMaskBit2, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, mappingRows - 1, 2, codeword, DmtxMaskBit3, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 0, mappingCols - 2, codeword, DmtxMaskBit4, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 0, mappingCols - 1, codeword, DmtxMaskBit5, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 1, mappingCols - 1, codeword, DmtxMaskBit6, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 2, mappingCols - 1, codeword, DmtxMaskBit7, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 3, mappingCols - 1, codeword, DmtxMaskBit8, moduleOnColor);
 }
 
 /**
@@ -224,17 +224,17 @@ static void PatternShapeSpecial1(unsigned char *modules, int mappingRows, int ma
  * @param  codeword
  * @param  moduleOnColor
  */
-static void PatternShapeSpecial2(unsigned char *modules, int mappingRows, int mappingCols, unsigned char *codeword,
+static void patternShapeSpecial2(unsigned char *modules, int mappingRows, int mappingCols, unsigned char *codeword,
                                  int moduleOnColor)
 {
-    PlaceModule(modules, mappingRows, mappingCols, mappingRows - 3, 0, codeword, DmtxMaskBit1, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, mappingRows - 2, 0, codeword, DmtxMaskBit2, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, mappingRows - 1, 0, codeword, DmtxMaskBit3, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 0, mappingCols - 4, codeword, DmtxMaskBit4, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 0, mappingCols - 3, codeword, DmtxMaskBit5, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 0, mappingCols - 2, codeword, DmtxMaskBit6, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 0, mappingCols - 1, codeword, DmtxMaskBit7, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 1, mappingCols - 1, codeword, DmtxMaskBit8, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, mappingRows - 3, 0, codeword, DmtxMaskBit1, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, mappingRows - 2, 0, codeword, DmtxMaskBit2, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, mappingRows - 1, 0, codeword, DmtxMaskBit3, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 0, mappingCols - 4, codeword, DmtxMaskBit4, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 0, mappingCols - 3, codeword, DmtxMaskBit5, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 0, mappingCols - 2, codeword, DmtxMaskBit6, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 0, mappingCols - 1, codeword, DmtxMaskBit7, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 1, mappingCols - 1, codeword, DmtxMaskBit8, moduleOnColor);
 }
 
 /**
@@ -260,17 +260,17 @@ static void PatternShapeSpecial2(unsigned char *modules, int mappingRows, int ma
  * @param  codeword
  * @param  moduleOnColor
  */
-static void PatternShapeSpecial3(unsigned char *modules, int mappingRows, int mappingCols, unsigned char *codeword,
+static void patternShapeSpecial3(unsigned char *modules, int mappingRows, int mappingCols, unsigned char *codeword,
                                  int moduleOnColor)
 {
-    PlaceModule(modules, mappingRows, mappingCols, mappingRows - 3, 0, codeword, DmtxMaskBit1, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, mappingRows - 2, 0, codeword, DmtxMaskBit2, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, mappingRows - 1, 0, codeword, DmtxMaskBit3, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 0, mappingCols - 2, codeword, DmtxMaskBit4, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 0, mappingCols - 1, codeword, DmtxMaskBit5, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 1, mappingCols - 1, codeword, DmtxMaskBit6, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 2, mappingCols - 1, codeword, DmtxMaskBit7, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 3, mappingCols - 1, codeword, DmtxMaskBit8, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, mappingRows - 3, 0, codeword, DmtxMaskBit1, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, mappingRows - 2, 0, codeword, DmtxMaskBit2, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, mappingRows - 1, 0, codeword, DmtxMaskBit3, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 0, mappingCols - 2, codeword, DmtxMaskBit4, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 0, mappingCols - 1, codeword, DmtxMaskBit5, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 1, mappingCols - 1, codeword, DmtxMaskBit6, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 2, mappingCols - 1, codeword, DmtxMaskBit7, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 3, mappingCols - 1, codeword, DmtxMaskBit8, moduleOnColor);
 }
 
 /**
@@ -298,18 +298,18 @@ static void PatternShapeSpecial3(unsigned char *modules, int mappingRows, int ma
  * @param  codeword
  * @param  moduleOnColor
  */
-static void PatternShapeSpecial4(unsigned char *modules, int mappingRows, int mappingCols, unsigned char *codeword,
+static void patternShapeSpecial4(unsigned char *modules, int mappingRows, int mappingCols, unsigned char *codeword,
                                  int moduleOnColor)
 {
-    PlaceModule(modules, mappingRows, mappingCols, mappingRows - 1, 0, codeword, DmtxMaskBit1, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, mappingRows - 1, mappingCols - 1, codeword, DmtxMaskBit2,
+    placeModule(modules, mappingRows, mappingCols, mappingRows - 1, 0, codeword, DmtxMaskBit1, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, mappingRows - 1, mappingCols - 1, codeword, DmtxMaskBit2,
                 moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 0, mappingCols - 3, codeword, DmtxMaskBit3, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 0, mappingCols - 2, codeword, DmtxMaskBit4, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 0, mappingCols - 1, codeword, DmtxMaskBit5, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 1, mappingCols - 3, codeword, DmtxMaskBit6, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 1, mappingCols - 2, codeword, DmtxMaskBit7, moduleOnColor);
-    PlaceModule(modules, mappingRows, mappingCols, 1, mappingCols - 1, codeword, DmtxMaskBit8, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 0, mappingCols - 3, codeword, DmtxMaskBit3, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 0, mappingCols - 2, codeword, DmtxMaskBit4, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 0, mappingCols - 1, codeword, DmtxMaskBit5, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 1, mappingCols - 3, codeword, DmtxMaskBit6, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 1, mappingCols - 2, codeword, DmtxMaskBit7, moduleOnColor);
+    placeModule(modules, mappingRows, mappingCols, 1, mappingCols - 1, codeword, DmtxMaskBit8, moduleOnColor);
 }
 
 /**
@@ -327,7 +327,7 @@ static void PatternShapeSpecial4(unsigned char *modules, int mappingRows, int ma
  * @param mask 用于位操作的掩码，帮助区分编码字中的特定位
  * @param moduleOnColor 指定放置模块的颜色属性标记
  */
-static void PlaceModule(unsigned char *modules, int mappingRows, int mappingCols, int row, int col,
+static void placeModule(unsigned char *modules, int mappingRows, int mappingCols, int row, int col,
                         unsigned char *codeword, int mask, int moduleOnColor)
 {
     if (row < 0) {

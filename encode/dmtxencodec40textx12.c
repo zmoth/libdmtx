@@ -31,7 +31,7 @@
 #define CHKSIZE                                          \
     {                                                    \
         if (sizeIdx == DmtxUndefined) {                  \
-            StreamMarkInvalid(stream, DmtxErrorUnknown); \
+            streamMarkInvalid(stream, DmtxErrorUnknown); \
             return;                                      \
         }                                                \
     }
@@ -40,7 +40,7 @@
 #define CHKPASS                                        \
     {                                                  \
         if (passFail == DmtxFail) {                    \
-            StreamMarkFatal(stream, DmtxErrorUnknown); \
+            streamMarkFatal(stream, DmtxErrorUnknown); \
             return;                                    \
         }                                              \
     }
@@ -56,7 +56,7 @@
  *
  *
  */
-static void EncodeNextChunkCTX(DmtxEncodeStream *stream, int sizeIdxRequest)
+static void encodeNextChunkCTX(DmtxEncodeStream *stream, int sizeIdxRequest)
 {
     int i;
     DmtxPassFail passFail;
@@ -64,51 +64,51 @@ static void EncodeNextChunkCTX(DmtxEncodeStream *stream, int sizeIdxRequest)
     DmtxByte valueListStorage[6];
     DmtxByteList valueList = dmtxByteListBuild(valueListStorage, sizeof(valueListStorage));
 
-    while (StreamInputHasNext(stream)) {
+    while (streamInputHasNext(stream)) {
         if (stream->currentScheme == DmtxSchemeX12) {
             /* Check for FNC1 character */
-            inputValue = StreamInputPeekNext(stream);
+            inputValue = streamInputPeekNext(stream);
             CHKERR;
             if (stream->fnc1 != DmtxUndefined && (int)inputValue == stream->fnc1) {
                 /* X12 does not allow partial blocks, resend last 1 or 2 as ASCII */
-                EncodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchExplicit);
+                encodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchExplicit);
                 CHKERR;
                 for (i = 0; i < valueList.length % 3; i++) {
-                    StreamInputAdvancePrev(stream);
+                    streamInputAdvancePrev(stream);
                 }
                 CHKERR;
 
                 while (i) {
-                    inputValue = StreamInputAdvanceNext(stream);
+                    inputValue = streamInputAdvanceNext(stream);
                     CHKERR;
-                    AppendValueAscii(stream, inputValue + 1);
+                    appendValueAscii(stream, inputValue + 1);
                     CHKERR;
                     i--;
                 }
 
-                StreamInputAdvanceNext(stream);
+                streamInputAdvanceNext(stream);
                 CHKERR;
-                AppendValueAscii(stream, DmtxValueFNC1);
+                appendValueAscii(stream, DmtxValueFNC1);
                 CHKERR;
                 return;
             }
         }
-        inputValue = StreamInputAdvanceNext(stream);
+        inputValue = streamInputAdvanceNext(stream);
         CHKERR;
 
         /* Expand next input value into up to 4 CTX values and add to valueList */
-        PushCTXValues(&valueList, inputValue, stream->currentScheme, &passFail, stream->fnc1);
+        pushCTXValues(&valueList, inputValue, stream->currentScheme, &passFail, stream->fnc1);
         if (passFail == DmtxFail) {
-            /* XXX Perhaps PushCTXValues should return this error code */
-            StreamMarkInvalid(stream, DmtxErrorUnsupportedCharacter);
+            /* XXX Perhaps pushCTXValues should return this error code */
+            streamMarkInvalid(stream, DmtxErrorUnsupportedCharacter);
             return;
         }
 
         /* If there at least 3 CTX values available encode them to output */
         while (valueList.length >= 3) {
-            AppendValuesCTX(stream, &valueList);
+            appendValuesCTX(stream, &valueList);
             CHKERR;
-            ShiftValueListBy3(&valueList, &passFail);
+            shiftValueListBy3(&valueList, &passFail);
             CHKPASS;
         }
 
@@ -123,12 +123,12 @@ static void EncodeNextChunkCTX(DmtxEncodeStream *stream, int sizeIdxRequest)
      * C40/Text/X12 values remain, finish encoding the symbol according to the
      * established end-of-symbol conditions.
      */
-    if (!StreamInputHasNext(stream) && valueList.length > 0) {
+    if (!streamInputHasNext(stream) && valueList.length > 0) {
         if (stream->currentScheme == DmtxSchemeX12) {
-            CompletePartialX12(stream, &valueList, sizeIdxRequest);
+            completePartialX12(stream, &valueList, sizeIdxRequest);
             CHKERR;
         } else {
-            CompletePartialC40Text(stream, &valueList, sizeIdxRequest);
+            completePartialC40Text(stream, &valueList, sizeIdxRequest);
             CHKERR;
         }
     }
@@ -138,18 +138,18 @@ static void EncodeNextChunkCTX(DmtxEncodeStream *stream, int sizeIdxRequest)
  *
  *
  */
-static void AppendValuesCTX(DmtxEncodeStream *stream, DmtxByteList *valueList)
+static void appendValuesCTX(DmtxEncodeStream *stream, DmtxByteList *valueList)
 {
     int pairValue;
     DmtxByte cw0, cw1;
 
-    if (!IsCTX(stream->currentScheme)) {
-        StreamMarkFatal(stream, DmtxErrorUnexpectedScheme);
+    if (!isCTX(stream->currentScheme)) {
+        streamMarkFatal(stream, DmtxErrorUnexpectedScheme);
         return;
     }
 
     if (valueList->length < 3) {
-        StreamMarkFatal(stream, DmtxErrorIncompleteValueList);
+        streamMarkFatal(stream, DmtxErrorIncompleteValueList);
         return;
     }
 
@@ -159,9 +159,9 @@ static void AppendValuesCTX(DmtxEncodeStream *stream, DmtxByteList *valueList)
     cw1 = pairValue % 256;
 
     /* Append 2 codewords */
-    StreamOutputChainAppend(stream, cw0);
+    streamOutputChainAppend(stream, cw0);
     CHKERR;
-    StreamOutputChainAppend(stream, cw1);
+    streamOutputChainAppend(stream, cw1);
     CHKERR;
 
     /* Update count for 3 encoded values */
@@ -172,20 +172,20 @@ static void AppendValuesCTX(DmtxEncodeStream *stream, DmtxByteList *valueList)
  *
  *
  */
-static void AppendUnlatchCTX(DmtxEncodeStream *stream)
+static void appendUnlatchCTX(DmtxEncodeStream *stream)
 {
-    if (!IsCTX(stream->currentScheme)) {
-        StreamMarkFatal(stream, DmtxErrorUnexpectedScheme);
+    if (!isCTX(stream->currentScheme)) {
+        streamMarkFatal(stream, DmtxErrorUnexpectedScheme);
         return;
     }
 
     /* Verify we are on byte boundary */
     if (stream->outputChainValueCount % 3 != 0) {
-        StreamMarkInvalid(stream, DmtxErrorNotOnByteBoundary);
+        streamMarkInvalid(stream, DmtxErrorNotOnByteBoundary);
         return;
     }
 
-    StreamOutputChainAppend(stream, DmtxValueCTXUnlatch);
+    streamOutputChainAppend(stream, DmtxValueCTXUnlatch);
     CHKERR;
 
     stream->outputChainValueCount++;
@@ -200,7 +200,7 @@ static void AppendUnlatchCTX(DmtxEncodeStream *stream)
  *    (a)     3       2  Special case
  *            -       -  UNLATCH [PAD]
  */
-static void CompleteIfDoneCTX(DmtxEncodeStream *stream, int sizeIdxRequest)
+static void completeIfDoneCTX(DmtxEncodeStream *stream, int sizeIdxRequest)
 {
     int sizeIdx;
     int symbolRemaining;
@@ -209,18 +209,18 @@ static void CompleteIfDoneCTX(DmtxEncodeStream *stream, int sizeIdxRequest)
         return;
     }
 
-    if (!StreamInputHasNext(stream)) {
-        sizeIdx = FindSymbolSize(stream->output->length, sizeIdxRequest);
+    if (!streamInputHasNext(stream)) {
+        sizeIdx = findSymbolSize(stream->output->length, sizeIdxRequest);
         CHKSIZE;
-        symbolRemaining = GetRemainingSymbolCapacity(stream->output->length, sizeIdx);
+        symbolRemaining = getRemainingSymbolCapacity(stream->output->length, sizeIdx);
 
         if (symbolRemaining > 0) {
-            EncodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchExplicit);
+            encodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchExplicit);
             CHKERR;
-            PadRemainingInAscii(stream, sizeIdx);
+            padRemainingInAscii(stream, sizeIdx);
         }
 
-        StreamMarkComplete(stream, sizeIdx);
+        streamMarkComplete(stream, sizeIdx);
     }
 }
 
@@ -249,7 +249,7 @@ static void CompleteIfDoneCTX(DmtxEncodeStream *stream, int sizeIdxRequest)
  *    (c)  ASCII 1       2  UNLATCH ASCII
  *               -       -  UNLATCH (finish ASCII)
  */
-static void CompletePartialC40Text(DmtxEncodeStream *stream, DmtxByteList *valueList, int sizeIdxRequest)
+static void completePartialC40Text(DmtxEncodeStream *stream, DmtxByteList *valueList, int sizeIdxRequest)
 {
     int i;
     int sizeIdx1, sizeIdx2;
@@ -260,26 +260,26 @@ static void CompletePartialC40Text(DmtxEncodeStream *stream, DmtxByteList *value
     DmtxByteList outputTmp = dmtxByteListBuild(outputTmpStorage, sizeof(outputTmpStorage));
 
     if (stream->currentScheme != DmtxSchemeC40 && stream->currentScheme != DmtxSchemeText) {
-        StreamMarkFatal(stream, DmtxErrorUnexpectedScheme);
+        streamMarkFatal(stream, DmtxErrorUnexpectedScheme);
         return;
     }
 
     /* Should have exactly one or two input values left */
     DmtxAssert(valueList->length == 1 || valueList->length == 2);
 
-    sizeIdx1 = FindSymbolSize(stream->output->length + 1, sizeIdxRequest);
-    sizeIdx2 = FindSymbolSize(stream->output->length + 2, sizeIdxRequest);
+    sizeIdx1 = findSymbolSize(stream->output->length + 1, sizeIdxRequest);
+    sizeIdx2 = findSymbolSize(stream->output->length + 2, sizeIdxRequest);
 
-    symbolRemaining1 = GetRemainingSymbolCapacity(stream->output->length, sizeIdx1);
-    symbolRemaining2 = GetRemainingSymbolCapacity(stream->output->length, sizeIdx2);
+    symbolRemaining1 = getRemainingSymbolCapacity(stream->output->length, sizeIdx1);
+    symbolRemaining2 = getRemainingSymbolCapacity(stream->output->length, sizeIdx2);
 
     if (valueList->length == 2 && symbolRemaining2 == 2) {
         /* End of symbol condition (b) -- Use Shift1 to pad final list value */
         dmtxByteListPush(valueList, DmtxValueCTXShift1, &passFail);
         CHKPASS;
-        AppendValuesCTX(stream, valueList);
+        appendValuesCTX(stream, valueList);
         CHKERR;
-        StreamMarkComplete(stream, sizeIdx2);
+        streamMarkComplete(stream, sizeIdx2);
     } else {
         /*
          * Rollback progress of previously consumed input value(s) since ASCII
@@ -287,52 +287,52 @@ static void CompletePartialC40Text(DmtxEncodeStream *stream, DmtxByteList *value
          * valueList holds 2 data words (i.e., not shifts or upper shifts).
          */
 
-        StreamInputAdvancePrev(stream);
+        streamInputAdvancePrev(stream);
         CHKERR;
-        inputValue = StreamInputPeekNext(stream);
+        inputValue = streamInputPeekNext(stream);
         CHKERR;
 
         /* Test-encode most recently consumed input value to C40/Text/X12 */
-        PushCTXValues(&outputTmp, inputValue, stream->currentScheme, &passFail, stream->fnc1);
+        pushCTXValues(&outputTmp, inputValue, stream->currentScheme, &passFail, stream->fnc1);
         if (valueList->length == 2 && outputTmp.length == 1) {
-            StreamInputAdvancePrev(stream);
+            streamInputAdvancePrev(stream);
         }
         CHKERR;
 
         /* Re-use outputTmp to hold ASCII representation of 1-2 input values */
         /* XXX Refactor how the DmtxByteList is passed back here */
-        outputTmp = EncodeTmpRemainingInAscii(stream, outputTmpStorage, sizeof(outputTmpStorage), &passFail);
+        outputTmp = encodeTmpRemainingInAscii(stream, outputTmpStorage, sizeof(outputTmpStorage), &passFail);
 
         if (passFail == DmtxFail) {
-            StreamMarkFatal(stream, DmtxErrorUnknown);
+            streamMarkFatal(stream, DmtxErrorUnknown);
             return;
         }
 
         if (outputTmp.length == 1 && symbolRemaining1 == 1) {
             /* End of symbol condition (d) */
-            EncodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchImplicit);
+            encodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchImplicit);
             CHKERR;
-            AppendValueAscii(stream, outputTmp.b[0]);
+            appendValueAscii(stream, outputTmp.b[0]);
             CHKERR;
 
             /* Register progress since encoding happened outside normal path */
             stream->inputNext = stream->input->length;
-            StreamMarkComplete(stream, sizeIdx1);
+            streamMarkComplete(stream, sizeIdx1);
         } else {
             /* Finish in ASCII (c) */
-            EncodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchExplicit);
+            encodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchExplicit);
             CHKERR;
             for (i = 0; i < outputTmp.length; i++) {
-                AppendValueAscii(stream, outputTmp.b[i]);
+                appendValueAscii(stream, outputTmp.b[i]);
             }
             CHKERR;
 
-            sizeIdx1 = FindSymbolSize(stream->output->length, sizeIdxRequest);
-            PadRemainingInAscii(stream, sizeIdx1);
+            sizeIdx1 = findSymbolSize(stream->output->length, sizeIdxRequest);
+            padRemainingInAscii(stream, sizeIdx1);
 
             /* Register progress since encoding happened outside normal path */
             stream->inputNext = stream->input->length;
-            StreamMarkComplete(stream, sizeIdx1);
+            streamMarkComplete(stream, sizeIdx1);
         }
     }
 }
@@ -342,7 +342,7 @@ static void CompletePartialC40Text(DmtxEncodeStream *stream, DmtxByteList *value
  * an implied unlatch if there is exactly one ascii codeword and one symbol
  * codeword remaining. Otherwise use explicit unlatch.
  */
-static void CompletePartialX12(DmtxEncodeStream *stream, DmtxByteList *valueList, int sizeIdxRequest)
+static void completePartialX12(DmtxEncodeStream *stream, DmtxByteList *valueList, int sizeIdxRequest)
 {
     int i;
     int sizeIdx;
@@ -352,7 +352,7 @@ static void CompletePartialX12(DmtxEncodeStream *stream, DmtxByteList *valueList
     DmtxByteList outputTmp;
 
     if (stream->currentScheme != DmtxSchemeX12) {
-        StreamMarkFatal(stream, DmtxErrorUnexpectedScheme);
+        streamMarkFatal(stream, DmtxErrorUnexpectedScheme);
         return;
     }
 
@@ -361,48 +361,48 @@ static void CompletePartialX12(DmtxEncodeStream *stream, DmtxByteList *valueList
 
     /* Roll back input progress */
     for (i = 0; i < valueList->length; i++) {
-        StreamInputAdvancePrev(stream);
+        streamInputAdvancePrev(stream);
         CHKERR;
     }
 
     /* Encode up to 2 codewords to a temporary stream */
-    outputTmp = EncodeTmpRemainingInAscii(stream, outputTmpStorage, sizeof(outputTmpStorage), &passFail);
+    outputTmp = encodeTmpRemainingInAscii(stream, outputTmpStorage, sizeof(outputTmpStorage), &passFail);
 
-    sizeIdx = FindSymbolSize(stream->output->length + 1, sizeIdxRequest);
-    symbolRemaining = GetRemainingSymbolCapacity(stream->output->length, sizeIdx);
+    sizeIdx = findSymbolSize(stream->output->length + 1, sizeIdxRequest);
+    symbolRemaining = getRemainingSymbolCapacity(stream->output->length, sizeIdx);
 
     if (outputTmp.length == 1 && symbolRemaining == 1) {
         /* End of symbol condition (XXX) */
-        EncodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchImplicit);
+        encodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchImplicit);
         CHKERR;
-        AppendValueAscii(stream, outputTmp.b[0]);
+        appendValueAscii(stream, outputTmp.b[0]);
         CHKERR;
 
         /* Register progress since encoding happened outside normal path */
         stream->inputNext = stream->input->length;
-        StreamMarkComplete(stream, sizeIdx);
+        streamMarkComplete(stream, sizeIdx);
     } else {
         /* Finish in ASCII (XXX) */
-        EncodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchExplicit);
+        encodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchExplicit);
         CHKERR;
         for (i = 0; i < outputTmp.length; i++) {
-            AppendValueAscii(stream, outputTmp.b[i]);
+            appendValueAscii(stream, outputTmp.b[i]);
         }
         CHKERR;
 
-        sizeIdx = FindSymbolSize(stream->output->length, sizeIdxRequest);
-        PadRemainingInAscii(stream, sizeIdx);
+        sizeIdx = findSymbolSize(stream->output->length, sizeIdxRequest);
+        padRemainingInAscii(stream, sizeIdx);
 
         /* Register progress since encoding happened outside normal path */
         stream->inputNext = stream->input->length;
-        StreamMarkComplete(stream, sizeIdx);
+        streamMarkComplete(stream, sizeIdx);
     }
 }
 
 /**
  * Return DmtxTrue 1 or 2 X12 values remain, otherwise DmtxFalse
  */
-static DmtxBoolean PartialX12ChunkRemains(DmtxEncodeStream *stream)
+static DmtxBoolean partialX12ChunkRemains(DmtxEncodeStream *stream)
 {
     DmtxEncodeStream streamTmp;
     DmtxByte inputValue;
@@ -420,17 +420,17 @@ static DmtxBoolean PartialX12ChunkRemains(DmtxEncodeStream *stream)
     streamTmp.status = DmtxStatusEncoding;
     streamTmp.output = NULL;
 
-    while (StreamInputHasNext(&streamTmp)) {
-        inputValue = StreamInputAdvanceNext(&streamTmp);
+    while (streamInputHasNext(&streamTmp)) {
+        inputValue = streamInputAdvanceNext(&streamTmp);
         if (stream->status != DmtxStatusEncoding) {
-            StreamMarkInvalid(stream, DmtxErrorUnknown);
+            streamMarkInvalid(stream, DmtxErrorUnknown);
             return DmtxFalse;
         }
 
         /* Expand next input value into up to 4 CTX values and add to valueList */
-        PushCTXValues(&valueList, inputValue, streamTmp.currentScheme, &passFail, stream->fnc1);
+        pushCTXValues(&valueList, inputValue, streamTmp.currentScheme, &passFail, stream->fnc1);
         if (passFail == DmtxFail) {
-            StreamMarkInvalid(stream, DmtxErrorUnknown);
+            streamMarkInvalid(stream, DmtxErrorUnknown);
             return DmtxFalse;
         }
 
@@ -447,7 +447,7 @@ static DmtxBoolean PartialX12ChunkRemains(DmtxEncodeStream *stream)
  *
  *
  */
-static void PushCTXValues(DmtxByteList *valueList, DmtxByte inputValue, int targetScheme, DmtxPassFail *passFail,
+static void pushCTXValues(DmtxByteList *valueList, DmtxByte inputValue, int targetScheme, DmtxPassFail *passFail,
                           int fnc1)
 {
     DmtxAssert(valueList->length <= 2);
@@ -559,7 +559,7 @@ static void PushCTXValues(DmtxByteList *valueList, DmtxByte inputValue, int targ
  *
  *
  */
-static DmtxBoolean IsCTX(int scheme)
+static DmtxBoolean isCTX(int scheme)
 {
     DmtxBoolean isCTX;
 
@@ -576,7 +576,7 @@ static DmtxBoolean IsCTX(int scheme)
  *
  *
  */
-static void ShiftValueListBy3(DmtxByteList *list, DmtxPassFail *passFail)
+static void shiftValueListBy3(DmtxByteList *list, DmtxPassFail *passFail)
 {
     int i;
 

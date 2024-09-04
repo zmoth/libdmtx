@@ -180,16 +180,16 @@ extern DmtxPassFail dmtxEncodeDataMatrix(DmtxEncode *enc, int inputSize, unsigne
 
     input.length = inputSize;
 
-    /* Future: stream = StreamInit() ... */
-    /* Future: EncodeDataCodewords(&stream) ... */
+    /* Future: stream = streamInit() ... */
+    /* Future: encodeDataCodewords(&stream) ... */
 
     /* Encode input string into data codewords */
-    sizeIdx = EncodeDataCodewords(&input, &output, enc->sizeIdxRequest, enc->scheme, enc->fnc1);
+    sizeIdx = encodeDataCodewords(&input, &output, enc->sizeIdxRequest, enc->scheme, enc->fnc1);
     if (sizeIdx == DmtxUndefined || output.length <= 0) {
         return DmtxFail;
     }
 
-    /* EncodeDataCodewords() should have updated any auto sizeIdx to a real one */
+    /* encodeDataCodewords() should have updated any auto sizeIdx to a real one */
     DmtxAssert(sizeIdx != DmtxSymbolSquareAuto && sizeIdx != DmtxSymbolRectAuto);
 
     /* XXX we can remove a lot of this redundant data */
@@ -205,14 +205,14 @@ extern DmtxPassFail dmtxEncodeDataMatrix(DmtxEncode *enc, int inputSize, unsigne
     memcpy(enc->message->code, output.b, output.length);
 
     /* Generate error correction codewords */
-    RsEncode(enc->message, enc->region.sizeIdx);
+    rsEncode(enc->message, enc->region.sizeIdx);
 
     /* Module placement in region */
-    ModulePlacementEcc200(enc->message->array, enc->message->code, enc->region.sizeIdx, DmtxModuleOnRGB);
+    modulePlacementEcc200(enc->message->array, enc->message->code, enc->region.sizeIdx, DmtxModuleOnRGB);
 
     width = 2 * enc->marginSize + (enc->region.symbolCols * enc->moduleSize);
     height = 2 * enc->marginSize + (enc->region.symbolRows * enc->moduleSize);
-    bitsPerPixel = GetBitsPerPixel(enc->pixelPacking);
+    bitsPerPixel = getBitsPerPixel(enc->pixelPacking);
     if (bitsPerPixel == DmtxUndefined) {
         return DmtxFail;
     }
@@ -235,7 +235,7 @@ extern DmtxPassFail dmtxEncodeDataMatrix(DmtxEncode *enc, int inputSize, unsigne
     dmtxImageSetProp(enc->image, DmtxPropRowPadBytes, enc->rowPadBytes);
 
     /* Insert finder and aligment pattern modules */
-    PrintPattern(enc);
+    printPattern(enc);
 
     return DmtxPass;
 }
@@ -278,7 +278,7 @@ extern DmtxPassFail dmtxEncodeDataMosaic(DmtxEncode *enc, int inputSize, unsigne
     inputStringB = inputStringG + inputSizeG;
 
     /* Use 1/3 (floor) of dataWordCount establish first symbol size attempt */
-    sizeIdxFirst = FindSymbolSize(tmpInputSize, enc->sizeIdxRequest);
+    sizeIdxFirst = findSymbolSize(tmpInputSize, enc->sizeIdxRequest);
     if (sizeIdxFirst == DmtxUndefined) {
         return DmtxFail;
     }
@@ -352,7 +352,7 @@ extern DmtxPassFail dmtxEncodeDataMosaic(DmtxEncode *enc, int inputSize, unsigne
     mappingCols = dmtxGetSymbolAttribute(DmtxSymAttribMappingMatrixCols, sizeIdxAttempt);
     memset(enc->message->array, 0x00, sizeof(unsigned char) * enc->region.mappingRows * enc->region.mappingCols);
 
-    ModulePlacementEcc200(enc->message->array, encR->message->code, sizeIdxAttempt, DmtxModuleOnRed);
+    modulePlacementEcc200(enc->message->array, encR->message->code, sizeIdxAttempt, DmtxModuleOnRed);
 
     /* Reset DmtxModuleAssigned and DMX_MODULE_VISITED bits */
     for (row = 0; row < mappingRows; row++) {
@@ -361,7 +361,7 @@ extern DmtxPassFail dmtxEncodeDataMosaic(DmtxEncode *enc, int inputSize, unsigne
         }
     }
 
-    ModulePlacementEcc200(enc->message->array, encG->message->code, sizeIdxAttempt, DmtxModuleOnGreen);
+    modulePlacementEcc200(enc->message->array, encG->message->code, sizeIdxAttempt, DmtxModuleOnGreen);
 
     /* Reset DmtxModuleAssigned and DMX_MODULE_VISITED bits */
     for (row = 0; row < mappingRows; row++) {
@@ -370,14 +370,14 @@ extern DmtxPassFail dmtxEncodeDataMosaic(DmtxEncode *enc, int inputSize, unsigne
         }
     }
 
-    ModulePlacementEcc200(enc->message->array, encB->message->code, sizeIdxAttempt, DmtxModuleOnBlue);
+    modulePlacementEcc200(enc->message->array, encB->message->code, sizeIdxAttempt, DmtxModuleOnBlue);
 
     /* Destroy encR, encG, and encB */
     dmtxEncodeDestroy(&encR);
     dmtxEncodeDestroy(&encG);
     dmtxEncodeDestroy(&encB);
 
-    PrintPattern(enc);
+    printPattern(enc);
 
     return DmtxPass;
 }
@@ -394,7 +394,7 @@ extern DmtxPassFail dmtxEncodeDataMosaic(DmtxEncode *enc, int inputSize, unsigne
  * Future: pass DmtxEncode to this function with an error reason field, which
  *         goes to EncodeSingle... too
  */
-static int EncodeDataCodewords(DmtxByteList *input, DmtxByteList *output, int sizeIdxRequest, DmtxScheme scheme,
+static int encodeDataCodewords(DmtxByteList *input, DmtxByteList *output, int sizeIdxRequest, DmtxScheme scheme,
                                int fnc1)
 {
     int sizeIdx;
@@ -402,13 +402,13 @@ static int EncodeDataCodewords(DmtxByteList *input, DmtxByteList *output, int si
     /* Encode input string into data codewords */
     switch (scheme) {
         case DmtxSchemeAutoBest:
-            sizeIdx = EncodeOptimizeBest(input, output, sizeIdxRequest, fnc1);
+            sizeIdx = encodeOptimizeBest(input, output, sizeIdxRequest, fnc1);
             break;
         case DmtxSchemeAutoFast:
             sizeIdx = DmtxUndefined; /* EncodeAutoFast(input, output, sizeIdxRequest, passFail); */
             break;
         default:
-            sizeIdx = EncodeSingleScheme(input, output, sizeIdxRequest, scheme, fnc1);
+            sizeIdx = encodeSingleScheme(input, output, sizeIdxRequest, scheme, fnc1);
             break;
     }
 
@@ -420,7 +420,7 @@ static int EncodeDataCodewords(DmtxByteList *input, DmtxByteList *output, int si
  * \param  enc
  * \return void
  */
-static void PrintPattern(DmtxEncode *enc)
+static void printPattern(DmtxEncode *enc)
 {
     int i, j;
     int symbolRow, symbolCol;

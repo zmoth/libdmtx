@@ -25,7 +25,7 @@
  * \param  dec
  * \return Initialized grid
  */
-static DmtxScanGrid InitScanGrid(DmtxDecode *dec)
+static DmtxScanGrid initScanGrid(DmtxDecode *dec)
 {
     int scale, smallestFeature;
     int xExtent, yExtent, maxExtent;
@@ -64,7 +64,7 @@ static DmtxScanGrid InitScanGrid(DmtxDecode *dec)
     grid.total = 1;
     grid.extent = grid.maxExtent;
 
-    SetDerivedFields(&grid);
+    setDerivedFields(&grid);
 
     return grid;
 }
@@ -76,12 +76,12 @@ static DmtxScanGrid InitScanGrid(DmtxDecode *dec)
  * \param  grid
  * \return void
  */
-static int PopGridLocation(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
+static int popGridLocation(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
 {
     int locStatus;
 
     do {
-        locStatus = GetGridCoordinates(grid, locPtr);
+        locStatus = getGridCoordinates(grid, locPtr);
 
         /* Always leave grid pointing at next available location */
         grid->pixelCount++;
@@ -97,7 +97,7 @@ static int PopGridLocation(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
  * \param  grid
  * \return Pixel location
  */
-static int GetGridCoordinates(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
+static int getGridCoordinates(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
 {
     int count, half, quarter;
     DmtxPixelLoc loc;
@@ -121,7 +121,7 @@ static int GetGridCoordinates(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
     if (grid->yCenter > grid->maxExtent) {
         grid->total *= 4;
         grid->extent /= 2;
-        SetDerivedFields(grid);
+        setDerivedFields(grid);
     }
 
     if (grid->extent == 0 || grid->extent < grid->minExtent) {
@@ -171,7 +171,7 @@ static int GetGridCoordinates(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
  * \param  grid
  * \return void
  */
-static void SetDerivedFields(DmtxScanGrid *grid)
+static void setDerivedFields(DmtxScanGrid *grid)
 {
     grid->jumpSize = grid->extent + 1;
     grid->pixelTotal = 2 * grid->extent - 1;

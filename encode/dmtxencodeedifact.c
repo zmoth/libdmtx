@@ -21,34 +21,34 @@
  *
  *
  */
-static void EncodeNextChunkEdifact(DmtxEncodeStream *stream)
+static void encodeNextChunkEdifact(DmtxEncodeStream *stream)
 {
     DmtxByte value;
 
-    if (StreamInputHasNext(stream)) {
+    if (streamInputHasNext(stream)) {
         /* Check for FNC1 character, which needs to be sent in ASCII */
-        value = StreamInputPeekNext(stream);
+        value = streamInputPeekNext(stream);
         CHKERR;
 
         if ((value < 32 || value > 94)) {
-            StreamMarkInvalid(stream, DmtxChannelUnsupportedChar);
+            streamMarkInvalid(stream, DmtxChannelUnsupportedChar);
             return;
         }
 
         if (stream->fnc1 != DmtxUndefined && (int)value == stream->fnc1) {
-            EncodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchExplicit);
+            encodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchExplicit);
             CHKERR;
 
-            StreamInputAdvanceNext(stream);
+            streamInputAdvanceNext(stream);
             CHKERR;
-            AppendValueAscii(stream, DmtxValueFNC1);
+            appendValueAscii(stream, DmtxValueFNC1);
             CHKERR;
             return;
         }
 
-        value = StreamInputAdvanceNext(stream);
+        value = streamInputAdvanceNext(stream);
         CHKERR;
-        AppendValueEdifact(stream, value);
+        appendValueEdifact(stream, value);
         CHKERR;
     }
 }
@@ -57,7 +57,7 @@ static void EncodeNextChunkEdifact(DmtxEncodeStream *stream)
  *
  *
  */
-static void AppendValueEdifact(DmtxEncodeStream *stream, DmtxByte value)
+static void appendValueEdifact(DmtxEncodeStream *stream, DmtxByte value)
 {
     DmtxByte edifactValue, previousOutput;
 
@@ -69,7 +69,7 @@ static void AppendValueEdifact(DmtxEncodeStream *stream, DmtxByte value)
      *  TODO: and so on
      */
     if (value < 31 || value > 94) {
-        StreamMarkInvalid(stream, DmtxChannelUnsupportedChar);
+        streamMarkInvalid(stream, DmtxChannelUnsupportedChar);
         return;
     }
 
@@ -77,29 +77,29 @@ static void AppendValueEdifact(DmtxEncodeStream *stream, DmtxByte value)
 
     switch (stream->outputChainValueCount % 4) {
         case 0:
-            StreamOutputChainAppend(stream, edifactValue);
+            streamOutputChainAppend(stream, edifactValue);
             CHKERR;
             break;
         case 1:
-            previousOutput = StreamOutputChainRemoveLast(stream);
+            previousOutput = streamOutputChainRemoveLast(stream);
             CHKERR;
-            StreamOutputChainAppend(stream, previousOutput | (edifactValue >> 6));
+            streamOutputChainAppend(stream, previousOutput | (edifactValue >> 6));
             CHKERR;
-            StreamOutputChainAppend(stream, edifactValue << 2);
+            streamOutputChainAppend(stream, edifactValue << 2);
             CHKERR;
             break;
         case 2:
-            previousOutput = StreamOutputChainRemoveLast(stream);
+            previousOutput = streamOutputChainRemoveLast(stream);
             CHKERR;
-            StreamOutputChainAppend(stream, previousOutput | (edifactValue >> 4));
+            streamOutputChainAppend(stream, previousOutput | (edifactValue >> 4));
             CHKERR;
-            StreamOutputChainAppend(stream, edifactValue << 4);
+            streamOutputChainAppend(stream, edifactValue << 4);
             CHKERR;
             break;
         case 3:
-            previousOutput = StreamOutputChainRemoveLast(stream);
+            previousOutput = streamOutputChainRemoveLast(stream);
             CHKERR;
-            StreamOutputChainAppend(stream, previousOutput | (edifactValue >> 2));
+            streamOutputChainAppend(stream, previousOutput | (edifactValue >> 2));
             CHKERR;
             break;
     }
@@ -123,7 +123,7 @@ static void AppendValueEdifact(DmtxEncodeStream *stream, DmtxByte value)
  *
  * If not matching any of the above, continue without doing anything.
  */
-static void CompleteIfDoneEdifact(DmtxEncodeStream *stream, int sizeIdxRequest)
+static void completeIfDoneEdifact(DmtxEncodeStream *stream, int sizeIdxRequest)
 {
     int i;
     int sizeIdx;
@@ -147,28 +147,28 @@ static void CompleteIfDoneEdifact(DmtxEncodeStream *stream, int sizeIdxRequest)
 
     if (cleanBoundary == DmtxTrue) {
         /* Encode up to 3 codewords to a temporary stream */
-        outputTmp = EncodeTmpRemainingInAscii(stream, outputTmpStorage, sizeof(outputTmpStorage), &passFail);
+        outputTmp = encodeTmpRemainingInAscii(stream, outputTmpStorage, sizeof(outputTmpStorage), &passFail);
 
         if (passFail == DmtxFail) {
-            StreamMarkFatal(stream, DmtxErrorUnknown);
+            streamMarkFatal(stream, DmtxErrorUnknown);
             return;
         }
 
         if (outputTmp.length < 3) {
             /* Find minimum symbol size for projected length */
-            sizeIdx = FindSymbolSize(stream->output->length + outputTmp.length, sizeIdxRequest);
+            sizeIdx = findSymbolSize(stream->output->length + outputTmp.length, sizeIdxRequest);
             CHKSIZE;
 
             /* Find remaining capacity over current length */
-            symbolRemaining = GetRemainingSymbolCapacity(stream->output->length, sizeIdx);
+            symbolRemaining = getRemainingSymbolCapacity(stream->output->length, sizeIdx);
             CHKERR;
 
             if (symbolRemaining < 3 && outputTmp.length <= symbolRemaining) {
-                EncodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchImplicit);
+                encodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchImplicit);
                 CHKERR;
 
                 for (i = 0; i < outputTmp.length; i++) {
-                    AppendValueAscii(stream, outputTmp.b[i]);
+                    appendValueAscii(stream, outputTmp.b[i]);
                     CHKERR;
                 }
 
@@ -176,30 +176,30 @@ static void CompleteIfDoneEdifact(DmtxEncodeStream *stream, int sizeIdxRequest)
                 stream->inputNext = stream->input->length;
 
                 /* Pad remaining if necessary */
-                PadRemainingInAscii(stream, sizeIdx);
+                padRemainingInAscii(stream, sizeIdx);
                 CHKERR;
-                StreamMarkComplete(stream, sizeIdx);
+                streamMarkComplete(stream, sizeIdx);
                 return;
             }
         }
     }
 
-    if (!StreamInputHasNext(stream)) {
-        sizeIdx = FindSymbolSize(stream->output->length, sizeIdxRequest);
+    if (!streamInputHasNext(stream)) {
+        sizeIdx = findSymbolSize(stream->output->length, sizeIdxRequest);
         CHKSIZE;
-        symbolRemaining = GetRemainingSymbolCapacity(stream->output->length, sizeIdx);
+        symbolRemaining = getRemainingSymbolCapacity(stream->output->length, sizeIdx);
         CHKERR;
 
         /* Explicit unlatch required unless on clean boundary and full symbol */
         if (cleanBoundary == DmtxFalse || symbolRemaining > 0) {
-            EncodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchExplicit);
+            encodeChangeScheme(stream, DmtxSchemeAscii, DmtxUnlatchExplicit);
             CHKERR;
-            sizeIdx = FindSymbolSize(stream->output->length, sizeIdxRequest);
+            sizeIdx = findSymbolSize(stream->output->length, sizeIdxRequest);
             CHKSIZE;
-            PadRemainingInAscii(stream, sizeIdx);
+            padRemainingInAscii(stream, sizeIdx);
             CHKERR;
         }
 
-        StreamMarkComplete(stream, sizeIdx);
+        streamMarkComplete(stream, sizeIdx);
     }
 }

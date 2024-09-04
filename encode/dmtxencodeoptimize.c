@@ -77,7 +77,7 @@ static void DumpStreams(DmtxEncodeStream *streamBest)
  *
  *
  */
-static int EncodeOptimizeBest(DmtxByteList *input, DmtxByteList *output, int sizeIdxRequest, int fnc1)
+static int encodeOptimizeBest(DmtxByteList *input, DmtxByteList *output, int sizeIdxRequest, int fnc1)
 {
     enum SchemeState state;
     int inputNext, c40ValueCount, textValueCount, x12ValueCount;
@@ -97,8 +97,8 @@ static int EncodeOptimizeBest(DmtxByteList *input, DmtxByteList *output, int siz
     for (state = 0; state < SchemeStateCount; state++) {
         outputsBest[state] = dmtxByteListBuild(outputsBestStorage[state], sizeof(outputsBestStorage[state]));
         outputsTemp[state] = dmtxByteListBuild(outputsTempStorage[state], sizeof(outputsTempStorage[state]));
-        streamsBest[state] = StreamInit(input, &(outputsBest[state]));
-        streamsTemp[state] = StreamInit(input, &(outputsTemp[state]));
+        streamsBest[state] = streamInit(input, &(outputsBest[state]));
+        streamsTemp[state] = streamInit(input, &(outputsTemp[state]));
         streamsBest[state].fnc1 = fnc1;
         streamsTemp[state].fnc1 = fnc1;
     }
@@ -106,47 +106,47 @@ static int EncodeOptimizeBest(DmtxByteList *input, DmtxByteList *output, int siz
     c40ValueCount = textValueCount = x12ValueCount = 0;
 
     for (inputNext = 0; inputNext < input->length; inputNext++) {
-        StreamAdvanceFromBest(streamsTemp, streamsBest, AsciiFull, sizeIdxRequest);
+        streamAdvanceFromBest(streamsTemp, streamsBest, AsciiFull, sizeIdxRequest);
 
-        AdvanceAsciiCompact(streamsTemp, streamsBest, AsciiCompactOffset0, inputNext, sizeIdxRequest);
-        AdvanceAsciiCompact(streamsTemp, streamsBest, AsciiCompactOffset1, inputNext, sizeIdxRequest);
+        advanceAsciiCompact(streamsTemp, streamsBest, AsciiCompactOffset0, inputNext, sizeIdxRequest);
+        advanceAsciiCompact(streamsTemp, streamsBest, AsciiCompactOffset1, inputNext, sizeIdxRequest);
 
-        AdvanceCTX(streamsTemp, streamsBest, C40Offset0, inputNext, c40ValueCount, sizeIdxRequest);
-        AdvanceCTX(streamsTemp, streamsBest, C40Offset1, inputNext, c40ValueCount, sizeIdxRequest);
-        AdvanceCTX(streamsTemp, streamsBest, C40Offset2, inputNext, c40ValueCount, sizeIdxRequest);
+        advanceCTX(streamsTemp, streamsBest, C40Offset0, inputNext, c40ValueCount, sizeIdxRequest);
+        advanceCTX(streamsTemp, streamsBest, C40Offset1, inputNext, c40ValueCount, sizeIdxRequest);
+        advanceCTX(streamsTemp, streamsBest, C40Offset2, inputNext, c40ValueCount, sizeIdxRequest);
 
-        AdvanceCTX(streamsTemp, streamsBest, TextOffset0, inputNext, textValueCount, sizeIdxRequest);
-        AdvanceCTX(streamsTemp, streamsBest, TextOffset1, inputNext, textValueCount, sizeIdxRequest);
-        AdvanceCTX(streamsTemp, streamsBest, TextOffset2, inputNext, textValueCount, sizeIdxRequest);
+        advanceCTX(streamsTemp, streamsBest, TextOffset0, inputNext, textValueCount, sizeIdxRequest);
+        advanceCTX(streamsTemp, streamsBest, TextOffset1, inputNext, textValueCount, sizeIdxRequest);
+        advanceCTX(streamsTemp, streamsBest, TextOffset2, inputNext, textValueCount, sizeIdxRequest);
 
-        AdvanceCTX(streamsTemp, streamsBest, X12Offset0, inputNext, x12ValueCount, sizeIdxRequest);
-        AdvanceCTX(streamsTemp, streamsBest, X12Offset1, inputNext, x12ValueCount, sizeIdxRequest);
-        AdvanceCTX(streamsTemp, streamsBest, X12Offset2, inputNext, x12ValueCount, sizeIdxRequest);
+        advanceCTX(streamsTemp, streamsBest, X12Offset0, inputNext, x12ValueCount, sizeIdxRequest);
+        advanceCTX(streamsTemp, streamsBest, X12Offset1, inputNext, x12ValueCount, sizeIdxRequest);
+        advanceCTX(streamsTemp, streamsBest, X12Offset2, inputNext, x12ValueCount, sizeIdxRequest);
 
-        AdvanceEdifact(streamsTemp, streamsBest, EdifactOffset0, inputNext, sizeIdxRequest);
-        AdvanceEdifact(streamsTemp, streamsBest, EdifactOffset1, inputNext, sizeIdxRequest);
-        AdvanceEdifact(streamsTemp, streamsBest, EdifactOffset2, inputNext, sizeIdxRequest);
-        AdvanceEdifact(streamsTemp, streamsBest, EdifactOffset3, inputNext, sizeIdxRequest);
+        advanceEdifact(streamsTemp, streamsBest, EdifactOffset0, inputNext, sizeIdxRequest);
+        advanceEdifact(streamsTemp, streamsBest, EdifactOffset1, inputNext, sizeIdxRequest);
+        advanceEdifact(streamsTemp, streamsBest, EdifactOffset2, inputNext, sizeIdxRequest);
+        advanceEdifact(streamsTemp, streamsBest, EdifactOffset3, inputNext, sizeIdxRequest);
 
-        StreamAdvanceFromBest(streamsTemp, streamsBest, Base256, sizeIdxRequest);
+        streamAdvanceFromBest(streamsTemp, streamsBest, Base256, sizeIdxRequest);
 
         /* Overwrite best streams with new results */
         for (state = 0; state < SchemeStateCount; state++) {
             if (streamsBest[state].status != DmtxStatusComplete) {
-                StreamCopy(&(streamsBest[state]), &(streamsTemp[state]));
+                streamCopy(&(streamsBest[state]), &(streamsTemp[state]));
             }
         }
 
         dmtxByteListClear(&ctxTemp);
-        PushCTXValues(&ctxTemp, input->b[inputNext], DmtxSchemeC40, &passFail, fnc1);
+        pushCTXValues(&ctxTemp, input->b[inputNext], DmtxSchemeC40, &passFail, fnc1);
         c40ValueCount += ((passFail == DmtxPass) ? ctxTemp.length : 1);
 
         dmtxByteListClear(&ctxTemp);
-        PushCTXValues(&ctxTemp, input->b[inputNext], DmtxSchemeText, &passFail, fnc1);
+        pushCTXValues(&ctxTemp, input->b[inputNext], DmtxSchemeText, &passFail, fnc1);
         textValueCount += ((passFail == DmtxPass) ? ctxTemp.length : 1);
 
         dmtxByteListClear(&ctxTemp);
-        PushCTXValues(&ctxTemp, input->b[inputNext], DmtxSchemeX12, &passFail, fnc1);
+        pushCTXValues(&ctxTemp, input->b[inputNext], DmtxSchemeX12, &passFail, fnc1);
         x12ValueCount += ((passFail == DmtxPass) ? ctxTemp.length : 1);
 
 #if DUMPSTREAMS
@@ -180,7 +180,7 @@ static int EncodeOptimizeBest(DmtxByteList *input, DmtxByteList *output, int siz
  * start on same input and encodes same number of inputs. Only difference
  * is the number of latches/unlatches that are also encoded
  */
-static void StreamAdvanceFromBest(DmtxEncodeStream *streamsNext, DmtxEncodeStream *streamsBest, int targetState,
+static void streamAdvanceFromBest(DmtxEncodeStream *streamsNext, DmtxEncodeStream *streamsBest, int targetState,
                                   int sizeIdxRequest)
 {
     enum SchemeState fromState;
@@ -191,8 +191,8 @@ static void StreamAdvanceFromBest(DmtxEncodeStream *streamsNext, DmtxEncodeStrea
     DmtxEncodeStream streamTemp;
     DmtxEncodeStream *targetStream = &(streamsNext[targetState]);
 
-    streamTemp.output = &outputTemp; /* Set directly instead of calling StreamInit() */
-    targetScheme = GetScheme(targetState);
+    streamTemp.output = &outputTemp; /* Set directly instead of calling streamInit() */
+    targetScheme = getScheme(targetState);
 
     if (targetState == AsciiFull) {
         encodeOption = DmtxEncodeFull;
@@ -204,16 +204,16 @@ static void StreamAdvanceFromBest(DmtxEncodeStream *streamsNext, DmtxEncodeStrea
 
     for (fromState = 0; fromState < SchemeStateCount; fromState++) {
         if (streamsBest[fromState].status != DmtxStatusEncoding ||
-            ValidStateSwitch(fromState, targetState) == DmtxFalse) {
+            validStateSwitch(fromState, targetState) == DmtxFalse) {
             continue;
         }
 
-        StreamCopy(&streamTemp, &(streamsBest[fromState]));
-        EncodeNextChunk(&streamTemp, targetScheme, encodeOption, sizeIdxRequest);
+        streamCopy(&streamTemp, &(streamsBest[fromState]));
+        encodeNextChunk(&streamTemp, targetScheme, encodeOption, sizeIdxRequest);
 
         if (fromState == 0 ||
             (streamTemp.status != DmtxStatusInvalid && streamTemp.output->length < targetStream->output->length)) {
-            StreamCopy(targetStream, &streamTemp);
+            streamCopy(targetStream, &streamTemp);
         }
     }
 }
@@ -221,7 +221,7 @@ static void StreamAdvanceFromBest(DmtxEncodeStream *streamsNext, DmtxEncodeStrea
 /**
  *
  */
-static void AdvanceAsciiCompact(DmtxEncodeStream *streamsNext, DmtxEncodeStream *streamsBest, int targetState,
+static void advanceAsciiCompact(DmtxEncodeStream *streamsNext, DmtxEncodeStream *streamsBest, int targetState,
                                 int inputNext, int sizeIdxRequest)
 {
     DmtxEncodeStream *currentStream = &(streamsBest[targetState]);
@@ -238,24 +238,24 @@ static void AdvanceAsciiCompact(DmtxEncodeStream *streamsNext, DmtxEncodeStream 
             break;
 
         default:
-            StreamMarkFatal(targetStream, DmtxErrorIllegalParameterValue);
+            streamMarkFatal(targetStream, DmtxErrorIllegalParameterValue);
             return;
     }
 
     if (inputNext < currentStream->inputNext) {
-        StreamCopy(targetStream, currentStream);
+        streamCopy(targetStream, currentStream);
     } else if (isStartState == DmtxTrue) {
-        StreamAdvanceFromBest(streamsNext, streamsBest, targetState, sizeIdxRequest);
+        streamAdvanceFromBest(streamsNext, streamsBest, targetState, sizeIdxRequest);
     } else {
-        StreamCopy(targetStream, currentStream);
-        StreamMarkInvalid(targetStream, DmtxErrorUnknown);
+        streamCopy(targetStream, currentStream);
+        streamMarkInvalid(targetStream, DmtxErrorUnknown);
     }
 }
 
 /**
  *
  */
-static void AdvanceCTX(DmtxEncodeStream *streamsNext, DmtxEncodeStream *streamsBest, int targetState, int inputNext,
+static void advanceCTX(DmtxEncodeStream *streamsNext, DmtxEncodeStream *streamsBest, int targetState, int inputNext,
                        int ctxValueCount, int sizeIdxRequest)
 {
     DmtxEncodeStream *currentStream = &(streamsBest[targetState]);
@@ -283,24 +283,24 @@ static void AdvanceCTX(DmtxEncodeStream *streamsNext, DmtxEncodeStream *streamsB
             break;
 
         default:
-            StreamMarkFatal(targetStream, DmtxErrorIllegalParameterValue);
+            streamMarkFatal(targetStream, DmtxErrorIllegalParameterValue);
             return;
     }
 
     if (inputNext < currentStream->inputNext) {
-        StreamCopy(targetStream, currentStream);
+        streamCopy(targetStream, currentStream);
     } else if (isStartState == DmtxTrue) {
-        StreamAdvanceFromBest(streamsNext, streamsBest, targetState, sizeIdxRequest);
+        streamAdvanceFromBest(streamsNext, streamsBest, targetState, sizeIdxRequest);
     } else {
-        StreamCopy(targetStream, currentStream);
-        StreamMarkInvalid(targetStream, DmtxErrorUnknown);
+        streamCopy(targetStream, currentStream);
+        streamMarkInvalid(targetStream, DmtxErrorUnknown);
     }
 }
 
 /**
  *
  */
-static void AdvanceEdifact(DmtxEncodeStream *streamsNext, DmtxEncodeStream *streamsBest, int targetState, int inputNext,
+static void advanceEdifact(DmtxEncodeStream *streamsNext, DmtxEncodeStream *streamsBest, int targetState, int inputNext,
                            int sizeIdxRequest)
 {
     DmtxEncodeStream *currentStream = &(streamsBest[targetState]);
@@ -325,18 +325,18 @@ static void AdvanceEdifact(DmtxEncodeStream *streamsNext, DmtxEncodeStream *stre
             break;
 
         default:
-            StreamMarkFatal(targetStream, DmtxErrorIllegalParameterValue);
+            streamMarkFatal(targetStream, DmtxErrorIllegalParameterValue);
             return;
     }
 
     if (isStartState == DmtxTrue) {
-        StreamAdvanceFromBest(streamsNext, streamsBest, targetState, sizeIdxRequest);
+        streamAdvanceFromBest(streamsNext, streamsBest, targetState, sizeIdxRequest);
     } else {
-        StreamCopy(targetStream, currentStream);
+        streamCopy(targetStream, currentStream);
         if (currentStream->status == DmtxStatusEncoding && currentStream->currentScheme == DmtxSchemeEdifact) {
-            EncodeNextChunk(targetStream, DmtxSchemeEdifact, DmtxEncodeNormal, sizeIdxRequest);
+            encodeNextChunk(targetStream, DmtxSchemeEdifact, DmtxEncodeNormal, sizeIdxRequest);
         } else {
-            StreamMarkInvalid(targetStream, DmtxErrorUnknown);
+            streamMarkInvalid(targetStream, DmtxErrorUnknown);
         }
     }
 }
@@ -345,7 +345,7 @@ static void AdvanceEdifact(DmtxEncodeStream *streamsNext, DmtxEncodeStream *stre
  *
  *
  */
-static int GetScheme(int state)
+static int getScheme(int state)
 {
     DmtxScheme scheme;
 
@@ -391,11 +391,11 @@ static int GetScheme(int state)
  *
  *
  */
-static DmtxBoolean ValidStateSwitch(int fromState, int targetState)
+static DmtxBoolean validStateSwitch(int fromState, int targetState)
 {
     DmtxBoolean validStateSwitch;
-    DmtxScheme fromScheme = GetScheme(fromState);
-    DmtxScheme toScheme = GetScheme(targetState);
+    DmtxScheme fromScheme = getScheme(fromState);
+    DmtxScheme toScheme = getScheme(targetState);
 
     if (fromScheme == toScheme && fromState != targetState && fromState != AsciiFull && targetState != AsciiFull) {
         validStateSwitch = DmtxFalse;

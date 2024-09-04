@@ -50,7 +50,7 @@ version 0.7.4: (02-Jun-2011)
   x encoder: New encoding implementation
   x encoder: Added Base 256 "encode to end of symbol" single byte header
   x encoder: Check ProcessEndOfSymbolTriplet() for same problem fixed in Edifact
-  x encoder: Clean up PushCTXValues() passFail handling
+  x encoder: Clean up pushCTXValues() passFail handling
   x encoder: Fixed all encoding bugs reported by compare_generated.sh
   x encoder: Fixed encoding bug affecting certain end-of-symbol conditions
   x encoder: Replaced "twothirdsbits" encoder concept (major source of headaches)

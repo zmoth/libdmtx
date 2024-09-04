@@ -139,7 +139,7 @@ extern int dmtxGetBlockDataSize(int sizeIdx, int blockIdx)
  * \param  sizeIdxRequest
  * \return Symbol size index (or DmtxUndefined if none)
  */
-static int FindSymbolSize(int dataWords, int sizeIdxRequest)
+static int findSymbolSize(int dataWords, int sizeIdxRequest)
 {
     int sizeIdx;
     int idxBeg, idxEnd;

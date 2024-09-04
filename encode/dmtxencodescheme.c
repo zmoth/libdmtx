@@ -56,15 +56,15 @@
  *     the next boundary are set to zero.
  *
  * Each scheme implements 3 equivalent functions:
- *   * EncodeNextChunk[Scheme]
+ *   * encodeNextChunk[Scheme]
  *   * AppendValue[Scheme]
  *   * CompleteIfDone[Scheme]
  *
- * The function EncodeNextChunk() (no Scheme in the name) knows which scheme-
+ * The function encodeNextChunk() (no Scheme in the name) knows which scheme-
  * specific implementations to call based on the stream's current encodation
  * scheme.
  *
- * It's important that EncodeNextChunk[Scheme] not call CompleteIfDone[Scheme]
+ * It's important that encodeNextChunk[Scheme] not call CompleteIfDone[Scheme]
  * directly because some parts of the logic might want to encode a stream
  * without allowing the padding and other extra logic that can occur when an
  * end-of-symbol condition is triggered.
@@ -74,7 +74,7 @@
 #define CHKSCHEME(s)                                            \
     {                                                           \
         if (stream->currentScheme != (s)) {                     \
-            StreamMarkFatal(stream, DmtxErrorUnexpectedScheme); \
+            streamMarkFatal(stream, DmtxErrorUnexpectedScheme); \
             return;                                             \
         }                                                       \
     }
@@ -87,11 +87,11 @@
         }                                           \
     }
 
-/* CHKSIZE should follows typical calls to FindSymbolSize()  */
+/* CHKSIZE should follows typical calls to findSymbolSize()  */
 #define CHKSIZE                                          \
     {                                                    \
         if (sizeIdx == DmtxUndefined) {                  \
-            StreamMarkInvalid(stream, DmtxErrorUnknown); \
+            streamMarkInvalid(stream, DmtxErrorUnknown); \
             return;                                      \
         }                                                \
     }
@@ -100,27 +100,27 @@
  *
  *
  */
-static int EncodeSingleScheme(DmtxByteList *input, DmtxByteList *output, int sizeIdxRequest, DmtxScheme scheme,
+static int encodeSingleScheme(DmtxByteList *input, DmtxByteList *output, int sizeIdxRequest, DmtxScheme scheme,
                               int fnc1)
 {
     DmtxEncodeStream stream;
 
-    stream = StreamInit(input, output);
+    stream = streamInit(input, output);
     stream.fnc1 = fnc1;
 
     /* 1st FNC1 special case, encode before scheme switch */
     if (fnc1 != DmtxUndefined && (int)(input->b[0]) == fnc1) {
-        StreamInputAdvanceNext(&stream);
-        AppendValueAscii(&stream, DmtxValueFNC1);
+        streamInputAdvanceNext(&stream);
+        appendValueAscii(&stream, DmtxValueFNC1);
     }
 
     /* Continue encoding until complete */
     while (stream.status == DmtxStatusEncoding) {
-        EncodeNextChunk(&stream, scheme, DmtxEncodeNormal, sizeIdxRequest);
+        encodeNextChunk(&stream, scheme, DmtxEncodeNormal, sizeIdxRequest);
     }
 
     /* Verify encoding completed and all inputs were consumed */
-    if (stream.status != DmtxStatusComplete || StreamInputHasNext(&stream)) {
+    if (stream.status != DmtxStatusComplete || streamInputHasNext(&stream)) {
         return DmtxUndefined;
     }
 
@@ -134,57 +134,57 @@ static int EncodeSingleScheme(DmtxByteList *input, DmtxByteList *output, int siz
  * Each of these functions will encode the next symbol input word, and in some
  * cases this requires additional input words to be encoded as well.
  */
-static void EncodeNextChunk(DmtxEncodeStream *stream, int scheme, int option, int sizeIdxRequest)
+static void encodeNextChunk(DmtxEncodeStream *stream, int scheme, int option, int sizeIdxRequest)
 {
     /* Special case: Prevent X12 from entering state with no way to unlatch */
     if (stream->currentScheme != DmtxSchemeX12 && scheme == DmtxSchemeX12) {
-        if (PartialX12ChunkRemains(stream)) {
+        if (partialX12ChunkRemains(stream)) {
             scheme = DmtxSchemeAscii;
         }
     }
 
     /* Change to target scheme if necessary */
     if (stream->currentScheme != scheme) {
-        EncodeChangeScheme(stream, scheme, DmtxUnlatchExplicit);
+        encodeChangeScheme(stream, scheme, DmtxUnlatchExplicit);
         CHKERR;
         CHKSCHEME(scheme);
     }
 
     /* Special case: Edifact may be done before writing first word */
     if (scheme == DmtxSchemeEdifact) {
-        CompleteIfDoneEdifact(stream, sizeIdxRequest);
+        completeIfDoneEdifact(stream, sizeIdxRequest);
     }
     CHKERR;
 
     switch (stream->currentScheme) {
         case DmtxSchemeAscii:
-            EncodeNextChunkAscii(stream, option);
+            encodeNextChunkAscii(stream, option);
             CHKERR;
-            CompleteIfDoneAscii(stream, sizeIdxRequest);
+            completeIfDoneAscii(stream, sizeIdxRequest);
             CHKERR;
             break;
         case DmtxSchemeC40:
         case DmtxSchemeText:
         case DmtxSchemeX12:
-            EncodeNextChunkCTX(stream, sizeIdxRequest);
+            encodeNextChunkCTX(stream, sizeIdxRequest);
             CHKERR;
-            CompleteIfDoneCTX(stream, sizeIdxRequest);
+            completeIfDoneCTX(stream, sizeIdxRequest);
             CHKERR;
             break;
         case DmtxSchemeEdifact:
-            EncodeNextChunkEdifact(stream);
+            encodeNextChunkEdifact(stream);
             CHKERR;
-            CompleteIfDoneEdifact(stream, sizeIdxRequest);
+            completeIfDoneEdifact(stream, sizeIdxRequest);
             CHKERR;
             break;
         case DmtxSchemeBase256:
-            EncodeNextChunkBase256(stream);
+            encodeNextChunkBase256(stream);
             CHKERR;
-            CompleteIfDoneBase256(stream, sizeIdxRequest);
+            completeIfDoneBase256(stream, sizeIdxRequest);
             CHKERR;
             break;
         default:
-            StreamMarkFatal(stream, DmtxErrorUnknown);
+            streamMarkFatal(stream, DmtxErrorUnknown);
             break;
     }
 }
@@ -193,7 +193,7 @@ static void EncodeNextChunk(DmtxEncodeStream *stream, int scheme, int option, in
  *
  *
  */
-static void EncodeChangeScheme(DmtxEncodeStream *stream, DmtxScheme targetScheme, int unlatchType)
+static void encodeChangeScheme(DmtxEncodeStream *stream, DmtxScheme targetScheme, int unlatchType)
 {
     /* Nothing to do */
     if (stream->currentScheme == targetScheme) {
@@ -206,13 +206,13 @@ static void EncodeChangeScheme(DmtxEncodeStream *stream, DmtxScheme targetScheme
         case DmtxSchemeText:
         case DmtxSchemeX12:
             if (unlatchType == DmtxUnlatchExplicit) {
-                AppendUnlatchCTX(stream);
+                appendUnlatchCTX(stream);
                 CHKERR;
             }
             break;
         case DmtxSchemeEdifact:
             if (unlatchType == DmtxUnlatchExplicit) {
-                AppendValueEdifact(stream, DmtxValueEdifactUnlatch);
+                appendValueEdifact(stream, DmtxValueEdifactUnlatch);
                 CHKERR;
             }
             break;
@@ -226,23 +226,23 @@ static void EncodeChangeScheme(DmtxEncodeStream *stream, DmtxScheme targetScheme
     /* Anything other than ASCII (the default) requires a latch */
     switch (targetScheme) {
         case DmtxSchemeC40:
-            AppendValueAscii(stream, DmtxValueC40Latch);
+            appendValueAscii(stream, DmtxValueC40Latch);
             CHKERR;
             break;
         case DmtxSchemeText:
-            AppendValueAscii(stream, DmtxValueTextLatch);
+            appendValueAscii(stream, DmtxValueTextLatch);
             CHKERR;
             break;
         case DmtxSchemeX12:
-            AppendValueAscii(stream, DmtxValueX12Latch);
+            appendValueAscii(stream, DmtxValueX12Latch);
             CHKERR;
             break;
         case DmtxSchemeEdifact:
-            AppendValueAscii(stream, DmtxValueEdifactLatch);
+            appendValueAscii(stream, DmtxValueEdifactLatch);
             CHKERR;
             break;
         case DmtxSchemeBase256:
-            AppendValueAscii(stream, DmtxValueBase256Latch);
+            appendValueAscii(stream, DmtxValueBase256Latch);
             CHKERR;
             break;
         default:
@@ -258,7 +258,7 @@ static void EncodeChangeScheme(DmtxEncodeStream *stream, DmtxScheme targetScheme
 
     /* Insert header byte if just latched to Base256 */
     if (targetScheme == DmtxSchemeBase256) {
-        UpdateBase256ChainHeader(stream, DmtxUndefined);
+        updateBase256ChainHeader(stream, DmtxUndefined);
         CHKERR;
     }
 }
@@ -267,7 +267,7 @@ static void EncodeChangeScheme(DmtxEncodeStream *stream, DmtxScheme targetScheme
  *
  *
  */
-static int GetRemainingSymbolCapacity(int outputLength, int sizeIdx)
+static int getRemainingSymbolCapacity(int outputLength, int sizeIdx)
 {
     int capacity;
     int remaining;

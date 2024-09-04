@@ -76,7 +76,7 @@ extern DmtxRegion *dmtxRegionFindNext(DmtxDecode *dec, DmtxTime *timeout)
 
     /* Continue until we find a region or run out of chances */
     for (;;) {
-        locStatus = PopGridLocation(&(dec->grid), &loc);
+        locStatus = popGridLocation(&(dec->grid), &loc);
         if (locStatus == DmtxRangeEnd) {
             break;
         }
@@ -122,7 +122,7 @@ extern DmtxRegion *dmtxRegionScanPixel(DmtxDecode *dec, int x, int y)
     }
 
     /* Test for presence of any reasonable edge at this location */
-    flowBegin = MatrixRegionSeekEdge(dec, loc);
+    flowBegin = matrixRegionSeekEdge(dec, loc);
     if (flowBegin.mag < (int)(dec->edgeThresh * 7.65 + 0.5)) {
         return NULL;
     }
@@ -130,7 +130,7 @@ extern DmtxRegion *dmtxRegionScanPixel(DmtxDecode *dec, int x, int y)
     memset(&reg, 0x00, sizeof(DmtxRegion));
 
     /* Determine barcode orientation */
-    if (MatrixRegionOrientation(dec, &reg, flowBegin) == DmtxFail) {
+    if (matrixRegionOrientation(dec, &reg, flowBegin) == DmtxFail) {
         return NULL;
     }
     if (dmtxRegionUpdateXfrms(dec, &reg) == DmtxFail) {
@@ -138,7 +138,7 @@ extern DmtxRegion *dmtxRegionScanPixel(DmtxDecode *dec, int x, int y)
     }
 
     /* Define top edge */
-    if (MatrixRegionAlignCalibEdge(dec, &reg, DmtxEdgeTop) == DmtxFail) {
+    if (matrixRegionAlignCalibEdge(dec, &reg, DmtxEdgeTop) == DmtxFail) {
         return NULL;
     }
     if (dmtxRegionUpdateXfrms(dec, &reg) == DmtxFail) {
@@ -146,7 +146,7 @@ extern DmtxRegion *dmtxRegionScanPixel(DmtxDecode *dec, int x, int y)
     }
 
     /* Define right edge */
-    if (MatrixRegionAlignCalibEdge(dec, &reg, DmtxEdgeRight) == DmtxFail) {
+    if (matrixRegionAlignCalibEdge(dec, &reg, DmtxEdgeRight) == DmtxFail) {
         return NULL;
     }
     if (dmtxRegionUpdateXfrms(dec, &reg) == DmtxFail) {
@@ -156,7 +156,7 @@ extern DmtxRegion *dmtxRegionScanPixel(DmtxDecode *dec, int x, int y)
     CALLBACK_MATRIX(&reg);
 
     /* Calculate the best fitting symbol size */
-    if (MatrixRegionFindSize(dec, &reg) == DmtxFail) {
+    if (matrixRegionFindSize(dec, &reg) == DmtxFail) {
         return NULL;
     }
 
@@ -168,7 +168,7 @@ extern DmtxRegion *dmtxRegionScanPixel(DmtxDecode *dec, int x, int y)
  *
  *
  */
-static DmtxPointFlow MatrixRegionSeekEdge(DmtxDecode *dec, DmtxPixelLoc loc)
+static DmtxPointFlow matrixRegionSeekEdge(DmtxDecode *dec, DmtxPixelLoc loc)
 {
     int i;
     int strongIdx;
@@ -182,7 +182,7 @@ static DmtxPointFlow MatrixRegionSeekEdge(DmtxDecode *dec, DmtxPixelLoc loc)
     /* Find whether red, green, or blue shows the strongest edge */
     strongIdx = 0;
     for (i = 0; i < channelCount; i++) {
-        flowPlane[i] = GetPointFlow(dec, i, loc, dmtxNeighborNone);
+        flowPlane[i] = getPointFlow(dec, i, loc, dmtxNeighborNone);
         if (i > 0 && flowPlane[i].mag > flowPlane[strongIdx].mag) {
             strongIdx = i;
         }
@@ -194,11 +194,11 @@ static DmtxPointFlow MatrixRegionSeekEdge(DmtxDecode *dec, DmtxPixelLoc loc)
 
     flow = flowPlane[strongIdx];
 
-    flowPos = FindStrongestNeighbor(dec, flow, +1);
-    flowNeg = FindStrongestNeighbor(dec, flow, -1);
+    flowPos = findStrongestNeighbor(dec, flow, +1);
+    flowNeg = findStrongestNeighbor(dec, flow, -1);
     if (flowPos.mag != 0 && flowNeg.mag != 0) {
-        flowPosBack = FindStrongestNeighbor(dec, flowPos, -1);
-        flowNegBack = FindStrongestNeighbor(dec, flowNeg, +1);
+        flowPosBack = findStrongestNeighbor(dec, flowPos, -1);
+        flowNegBack = findStrongestNeighbor(dec, flowNeg, +1);
         if (flowPos.arrive == (flowPosBack.arrive + 4) % 8 && flowNeg.arrive == (flowNegBack.arrive + 4) % 8) {
             flow.arrive = dmtxNeighborNone;
             CALLBACK_POINT_PLOT(flow.loc, 1, 1, 1);
@@ -213,7 +213,7 @@ static DmtxPointFlow MatrixRegionSeekEdge(DmtxDecode *dec, DmtxPixelLoc loc)
  *
  *
  */
-static DmtxPassFail MatrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, DmtxPointFlow begin)
+static DmtxPassFail matrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, DmtxPointFlow begin)
 {
     int cross;
     int minArea;
@@ -246,9 +246,9 @@ static DmtxPassFail MatrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, Dm
     }
 
     /* Follow to end in both directions */
-    err = TrailBlazeContinuous(dec, reg, begin, maxDiagonal);
+    err = trailBlazeContinuous(dec, reg, begin, maxDiagonal);
     if (err == DmtxFail || reg->stepsTotal < 40) {
-        TrailClear(dec, reg, 0x40);
+        trailClear(dec, reg, 0x40);
         return DmtxFail;
     }
 
@@ -263,36 +263,36 @@ static DmtxPassFail MatrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, Dm
         }
 
         if ((reg->boundMax.X - reg->boundMin.X) * (reg->boundMax.Y - reg->boundMin.Y) < minArea) {
-            TrailClear(dec, reg, 0x40);
+            trailClear(dec, reg, 0x40);
             return DmtxFail;
         }
     }
 
-    line1x = FindBestSolidLine(dec, reg, 0, 0, +1, DmtxUndefined);
+    line1x = findBestSolidLine(dec, reg, 0, 0, +1, DmtxUndefined);
     if (line1x.mag < 5) {
-        TrailClear(dec, reg, 0x40);
+        trailClear(dec, reg, 0x40);
         return DmtxFail;
     }
 
-    err = FindTravelLimits(dec, reg, &line1x);
+    err = findTravelLimits(dec, reg, &line1x);
     if (line1x.distSq < 100 || line1x.devn * 10 >= sqrt((double)line1x.distSq)) {
-        TrailClear(dec, reg, 0x40);
+        trailClear(dec, reg, 0x40);
         return DmtxFail;
     }
     DmtxAssert(line1x.stepPos >= line1x.stepNeg);
 
-    fTmp = FollowSeek(dec, reg, line1x.stepPos + 5);
-    line2p = FindBestSolidLine(dec, reg, fTmp.step, line1x.stepNeg, +1, line1x.angle);
+    fTmp = followSeek(dec, reg, line1x.stepPos + 5);
+    line2p = findBestSolidLine(dec, reg, fTmp.step, line1x.stepNeg, +1, line1x.angle);
 
-    fTmp = FollowSeek(dec, reg, line1x.stepNeg - 5);
-    line2n = FindBestSolidLine(dec, reg, fTmp.step, line1x.stepPos, -1, line1x.angle);
+    fTmp = followSeek(dec, reg, line1x.stepNeg - 5);
+    line2n = findBestSolidLine(dec, reg, fTmp.step, line1x.stepPos, -1, line1x.angle);
     if (max(line2p.mag, line2n.mag) < 5) {
         return DmtxFail;
     }
 
     if (line2p.mag > line2n.mag) {
         line2x = line2p;
-        err = FindTravelLimits(dec, reg, &line2x);
+        err = findTravelLimits(dec, reg, &line2x);
         if (line2x.distSq < 100 || line2x.devn * 10 >= sqrt((double)line2x.distSq)) {
             return DmtxFail;
         }
@@ -328,7 +328,7 @@ static DmtxPassFail MatrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, Dm
         }
     } else {
         line2x = line2n;
-        err = FindTravelLimits(dec, reg, &line2x);
+        err = findTravelLimits(dec, reg, &line2x);
         if (line2x.distSq < 100 || line2x.devn / sqrt((double)line2x.distSq) >= 0.1) {
             return DmtxFail;
         }
@@ -376,7 +376,7 @@ static DmtxPassFail MatrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, Dm
  *
  *
  */
-static long DistanceSquared(DmtxPixelLoc a, DmtxPixelLoc b)
+static long distanceSquared(DmtxPixelLoc a, DmtxPixelLoc b)
 {
     long xDelta, yDelta;
 
@@ -433,10 +433,10 @@ extern DmtxPassFail dmtxRegionUpdateCorners(DmtxDecode *dec, DmtxRegion *reg, Dm
         return DmtxFail;
     }
 
-    if (RightAngleTrueness(p00, p10, p11, M_PI_2) <= dec->squareDevn) {
+    if (rightAngleTrueness(p00, p10, p11, M_PI_2) <= dec->squareDevn) {
         return DmtxFail;
     }
-    if (RightAngleTrueness(p10, p11, p01, M_PI_2) <= dec->squareDevn) {
+    if (rightAngleTrueness(p10, p11, p01, M_PI_2) <= dec->squareDevn) {
         return DmtxFail;
     }
 
@@ -589,7 +589,7 @@ extern DmtxPassFail dmtxRegionUpdateXfrms(DmtxDecode *dec, DmtxRegion *reg)
  *
  *
  */
-static double RightAngleTrueness(DmtxVector2 c0, DmtxVector2 c1, DmtxVector2 c2, double angle)
+static double rightAngleTrueness(DmtxVector2 c0, DmtxVector2 c1, DmtxVector2 c2, double angle)
 {
     DmtxVector2 vA, vB;
     DmtxMatrix3 m;
@@ -612,7 +612,7 @@ static double RightAngleTrueness(DmtxVector2 c0, DmtxVector2 c1, DmtxVector2 c2,
  * \param  sizeIdx
  * \return Averaged module color
  */
-static int ReadModuleColor(DmtxDecode *dec, DmtxRegion *reg, int symbolRow, int symbolCol, int sizeIdx, int colorPlane)
+static int readModuleColor(DmtxDecode *dec, DmtxRegion *reg, int symbolRow, int symbolCol, int sizeIdx, int colorPlane)
 {
     int i;
     int symbolRows, symbolCols;
@@ -646,7 +646,7 @@ static int ReadModuleColor(DmtxDecode *dec, DmtxRegion *reg, int symbolRow, int 
  * \param  reg
  * \return DmtxPass | DmtxFail
  */
-static DmtxPassFail MatrixRegionFindSize(DmtxDecode *dec, DmtxRegion *reg)
+static DmtxPassFail matrixRegionFindSize(DmtxDecode *dec, DmtxRegion *reg)
 {
     int row, col;
     int sizeIdxBeg, sizeIdxEnd;
@@ -687,7 +687,7 @@ static DmtxPassFail MatrixRegionFindSize(DmtxDecode *dec, DmtxRegion *reg)
         /* Sum module colors along horizontal calibration bar */
         row = symbolRows - 1;
         for (col = 0; col < symbolCols; col++) {
-            color = ReadModuleColor(dec, reg, row, col, sizeIdx, reg->flowBegin.plane);
+            color = readModuleColor(dec, reg, row, col, sizeIdx, reg->flowBegin.plane);
             if ((col & 0x01) != 0x00) {
                 colorOffAvg += color;
             } else {
@@ -698,7 +698,7 @@ static DmtxPassFail MatrixRegionFindSize(DmtxDecode *dec, DmtxRegion *reg)
         /* Sum module colors along vertical calibration bar */
         col = symbolCols - 1;
         for (row = 0; row < symbolRows; row++) {
-            color = ReadModuleColor(dec, reg, row, col, sizeIdx, reg->flowBegin.plane);
+            color = readModuleColor(dec, reg, row, col, sizeIdx, reg->flowBegin.plane);
             if ((row & 0x01) != 0x00) {
                 colorOffAvg += color;
             } else {
@@ -737,48 +737,48 @@ static DmtxPassFail MatrixRegionFindSize(DmtxDecode *dec, DmtxRegion *reg)
     reg->mappingCols = dmtxGetSymbolAttribute(DmtxSymAttribMappingMatrixCols, reg->sizeIdx);
 
     /* Tally jumps on horizontal calibration bar to verify sizeIdx */
-    jumpCount = CountJumpTally(dec, reg, 0, reg->symbolRows - 1, DmtxDirRight);
+    jumpCount = countJumpTally(dec, reg, 0, reg->symbolRows - 1, DmtxDirRight);
     errors = abs(1 + jumpCount - reg->symbolCols);
     if (jumpCount < 0 || errors > 2) {
         return DmtxFail;
     }
 
     /* Tally jumps on vertical calibration bar to verify sizeIdx */
-    jumpCount = CountJumpTally(dec, reg, reg->symbolCols - 1, 0, DmtxDirUp);
+    jumpCount = countJumpTally(dec, reg, reg->symbolCols - 1, 0, DmtxDirUp);
     errors = abs(1 + jumpCount - reg->symbolRows);
     if (jumpCount < 0 || errors > 2) {
         return DmtxFail;
     }
 
     /* Tally jumps on horizontal finder bar to verify sizeIdx */
-    errors = CountJumpTally(dec, reg, 0, 0, DmtxDirRight);
+    errors = countJumpTally(dec, reg, 0, 0, DmtxDirRight);
     if (jumpCount < 0 || errors > 2) {
         return DmtxFail;
     }
 
     /* Tally jumps on vertical finder bar to verify sizeIdx */
-    errors = CountJumpTally(dec, reg, 0, 0, DmtxDirUp);
+    errors = countJumpTally(dec, reg, 0, 0, DmtxDirUp);
     if (errors < 0 || errors > 2) {
         return DmtxFail;
     }
 
     /* Tally jumps on surrounding whitespace, else fail */
-    errors = CountJumpTally(dec, reg, 0, -1, DmtxDirRight);
+    errors = countJumpTally(dec, reg, 0, -1, DmtxDirRight);
     if (errors < 0 || errors > 2) {
         return DmtxFail;
     }
 
-    errors = CountJumpTally(dec, reg, -1, 0, DmtxDirUp);
+    errors = countJumpTally(dec, reg, -1, 0, DmtxDirUp);
     if (errors < 0 || errors > 2) {
         return DmtxFail;
     }
 
-    errors = CountJumpTally(dec, reg, 0, reg->symbolRows, DmtxDirRight);
+    errors = countJumpTally(dec, reg, 0, reg->symbolRows, DmtxDirRight);
     if (errors < 0 || errors > 2) {
         return DmtxFail;
     }
 
-    errors = CountJumpTally(dec, reg, reg->symbolCols, 0, DmtxDirUp);
+    errors = countJumpTally(dec, reg, reg->symbolCols, 0, DmtxDirUp);
     if (errors < 0 || errors > 2) {
         return DmtxFail;
     }
@@ -795,7 +795,7 @@ static DmtxPassFail MatrixRegionFindSize(DmtxDecode *dec, DmtxRegion *reg)
  * \param  dir
  * \return Jump count
  */
-static int CountJumpTally(DmtxDecode *dec, DmtxRegion *reg, int xStart, int yStart, DmtxDirection dir)
+static int countJumpTally(DmtxDecode *dec, DmtxRegion *reg, int xStart, int yStart, DmtxDirection dir)
 {
     int x, xInc = 0;
     int y, yInc = 0;
@@ -821,14 +821,14 @@ static int CountJumpTally(DmtxDecode *dec, DmtxRegion *reg, int xStart, int ySta
 
     darkOnLight = (int)(reg->offColor > reg->onColor);
     jumpThreshold = abs((int)(0.4 * (reg->onColor - reg->offColor) + 0.5));
-    color = ReadModuleColor(dec, reg, yStart, xStart, reg->sizeIdx, reg->flowBegin.plane);
+    color = readModuleColor(dec, reg, yStart, xStart, reg->sizeIdx, reg->flowBegin.plane);
     tModule = (darkOnLight) ? reg->offColor - color : color - reg->offColor;
 
     for (x = xStart + xInc, y = yStart + yInc;
          (dir == DmtxDirRight && x < reg->symbolCols) || (dir == DmtxDirUp && y < reg->symbolRows);
          x += xInc, y += yInc) {
         tPrev = tModule;
-        color = ReadModuleColor(dec, reg, y, x, reg->sizeIdx, reg->flowBegin.plane);
+        color = readModuleColor(dec, reg, y, x, reg->sizeIdx, reg->flowBegin.plane);
         tModule = (darkOnLight) ? reg->offColor - color : color - reg->offColor;
 
         if (state == DmtxModuleOff) {
@@ -851,7 +851,7 @@ static int CountJumpTally(DmtxDecode *dec, DmtxRegion *reg, int xStart, int ySta
  *
  *
  */
-static DmtxPointFlow GetPointFlow(DmtxDecode *dec, int colorPlane, DmtxPixelLoc loc, int arrive)
+static DmtxPointFlow getPointFlow(DmtxDecode *dec, int colorPlane, DmtxPixelLoc loc, int arrive)
 {
     static const int coefficient[] = {0, 1, 2, 1, 0, -1, -2, -1};
     unsigned int err;
@@ -919,7 +919,7 @@ static DmtxPointFlow GetPointFlow(DmtxDecode *dec, int colorPlane, DmtxPixelLoc 
  *
  *
  */
-static DmtxPointFlow FindStrongestNeighbor(DmtxDecode *dec, DmtxPointFlow center, int sign)
+static DmtxPointFlow findStrongestNeighbor(DmtxDecode *dec, DmtxPointFlow center, int sign)
 {
     int i;
     int strongIdx;
@@ -957,7 +957,7 @@ static DmtxPointFlow FindStrongestNeighbor(DmtxDecode *dec, DmtxPointFlow center
             continue;
         }
 
-        flow[i] = GetPointFlow(dec, center.plane, loc, i);
+        flow[i] = getPointFlow(dec, center.plane, loc, i);
 
         if (strongIdx == DmtxUndefined || flow[i].mag > flow[strongIdx].mag ||
             (flow[i].mag == flow[strongIdx].mag && ((i & 0x01) != 0))) {
@@ -972,7 +972,7 @@ static DmtxPointFlow FindStrongestNeighbor(DmtxDecode *dec, DmtxPointFlow center
  *
  *
  */
-static DmtxFollow FollowSeek(DmtxDecode *dec, DmtxRegion *reg, int seek)
+static DmtxFollow followSeek(DmtxDecode *dec, DmtxRegion *reg, int seek)
 {
     int i;
     int sign;
@@ -986,7 +986,7 @@ static DmtxFollow FollowSeek(DmtxDecode *dec, DmtxRegion *reg, int seek)
 
     sign = (seek > 0) ? +1 : -1;
     for (i = 0; i != seek; i += sign) {
-        follow = FollowStep(dec, reg, follow, sign);
+        follow = followStep(dec, reg, follow, sign);
         DmtxAssert(follow.ptr != NULL);
         DmtxAssert(abs(follow.step) <= reg->stepsTotal);
     }
@@ -998,7 +998,7 @@ static DmtxFollow FollowSeek(DmtxDecode *dec, DmtxRegion *reg, int seek)
  *
  *
  */
-static DmtxFollow FollowSeekLoc(DmtxDecode *dec, DmtxPixelLoc loc)
+static DmtxFollow followSeekLoc(DmtxDecode *dec, DmtxPixelLoc loc)
 {
     DmtxFollow follow;
 
@@ -1015,7 +1015,7 @@ static DmtxFollow FollowSeekLoc(DmtxDecode *dec, DmtxPixelLoc loc)
  *
  *
  */
-static DmtxFollow FollowStep(DmtxDecode *dec, DmtxRegion *reg, DmtxFollow followBeg, int sign)
+static DmtxFollow followStep(DmtxDecode *dec, DmtxRegion *reg, DmtxFollow followBeg, int sign)
 {
     int patternIdx;
     int stepMod;
@@ -1059,7 +1059,7 @@ static DmtxFollow FollowStep(DmtxDecode *dec, DmtxRegion *reg, DmtxFollow follow
  *
  *
  */
-static DmtxFollow FollowStep2(DmtxDecode *dec, DmtxFollow followBeg, int sign)
+static DmtxFollow followStep2(DmtxDecode *dec, DmtxFollow followBeg, int sign)
 {
     int patternIdx;
     DmtxFollow follow;
@@ -1087,7 +1087,7 @@ static DmtxFollow FollowStep2(DmtxDecode *dec, DmtxFollow followBeg, int sign)
  * 0x38 u = 3 bits points upstream 0-7
  * 0x07 d = 3 bits points downstream 0-7
  */
-static DmtxPassFail TrailBlazeContinuous(DmtxDecode *dec, DmtxRegion *reg, DmtxPointFlow flowBegin, int maxDiagonal)
+static DmtxPassFail trailBlazeContinuous(DmtxDecode *dec, DmtxRegion *reg, DmtxPointFlow flowBegin, int maxDiagonal)
 {
     int posAssigns, negAssigns, clears;
     int sign;
@@ -1117,7 +1117,7 @@ static DmtxPassFail TrailBlazeContinuous(DmtxDecode *dec, DmtxRegion *reg, DmtxP
             }
 
             /* Find the strongest eligible neighbor */
-            flowNext = FindStrongestNeighbor(dec, flow, sign);
+            flowNext = findStrongestNeighbor(dec, flow, sign);
             if (flowNext.mag < 50) {
                 break;
             }
@@ -1174,7 +1174,7 @@ static DmtxPassFail TrailBlazeContinuous(DmtxDecode *dec, DmtxRegion *reg, DmtxP
     reg->boundMax = boundMax;
 
     /* Clear "visited" bit from trail */
-    clears = TrailClear(dec, reg, 0x80);
+    clears = trailClear(dec, reg, 0x80);
     DmtxAssert(posAssigns + negAssigns == clears - 1);
 
     /* XXX clean this up ... redundant test above */
@@ -1191,7 +1191,7 @@ static DmtxPassFail TrailBlazeContinuous(DmtxDecode *dec, DmtxRegion *reg, DmtxP
  * ratcheting bresline inward or backward (although back + outward is allowed).
  *
  */
-static int TrailBlazeGapped(DmtxDecode *dec, DmtxRegion *reg, DmtxBresLine line, int streamDir)
+static int trailBlazeGapped(DmtxDecode *dec, DmtxRegion *reg, DmtxBresLine line, int streamDir)
 {
     unsigned char *beforeCache, *afterCache;
     DmtxBoolean onEdge;
@@ -1207,7 +1207,7 @@ static int TrailBlazeGapped(DmtxDecode *dec, DmtxRegion *reg, DmtxBresLine line,
     int xStep, yStep;
 
     loc0 = line.loc;
-    flow = GetPointFlow(dec, reg->flowBegin.plane, loc0, dmtxNeighborNone);
+    flow = getPointFlow(dec, reg->flowBegin.plane, loc0, dmtxNeighborNone);
     distSqMax = (line.xDelta * line.xDelta) + (line.yDelta * line.yDelta);
     steps = 0;
     onEdge = DmtxTrue;
@@ -1221,12 +1221,12 @@ static int TrailBlazeGapped(DmtxDecode *dec, DmtxRegion *reg, DmtxBresLine line,
 
     do {
         if (onEdge == DmtxTrue) {
-            flowNext = FindStrongestNeighbor(dec, flow, streamDir);
+            flowNext = findStrongestNeighbor(dec, flow, streamDir);
             if (flowNext.mag == DmtxUndefined) {
                 break;
             }
 
-            err = BresLineGetStep(line, flowNext.loc, &travel, &outward);
+            err = bresLineGetStep(line, flowNext.loc, &travel, &outward);
             if (err == DmtxFail) {
                 return DmtxFail;
             }
@@ -1234,14 +1234,14 @@ static int TrailBlazeGapped(DmtxDecode *dec, DmtxRegion *reg, DmtxBresLine line,
             if (flowNext.mag < 50 || outward < 0 || (outward == 0 && travel < 0)) {
                 onEdge = DmtxFalse;
             } else {
-                BresLineStep(&line, travel, outward);
+                bresLineStep(&line, travel, outward);
                 flow = flowNext;
             }
         }
 
         if (onEdge == DmtxFalse) {
-            BresLineStep(&line, 1, 0);
-            flow = GetPointFlow(dec, reg->flowBegin.plane, line.loc, dmtxNeighborNone);
+            bresLineStep(&line, 1, 0);
+            flow = getPointFlow(dec, reg->flowBegin.plane, line.loc, dmtxNeighborNone);
             if (flow.mag > 50) {
                 onEdge = DmtxTrue;
             }
@@ -1286,7 +1286,7 @@ static int TrailBlazeGapped(DmtxDecode *dec, DmtxRegion *reg, DmtxBresLine line,
  *
  *
  */
-static int TrailClear(DmtxDecode *dec, DmtxRegion *reg, int clearMask)
+static int trailClear(DmtxDecode *dec, DmtxRegion *reg, int clearMask)
 {
     int clears;
     DmtxFollow follow;
@@ -1295,11 +1295,11 @@ static int TrailClear(DmtxDecode *dec, DmtxRegion *reg, int clearMask)
 
     /* Clear "visited" bit from trail */
     clears = 0;
-    follow = FollowSeek(dec, reg, 0);
+    follow = followSeek(dec, reg, 0);
     while (abs(follow.step) <= reg->stepsTotal) {
         DmtxAssert((int)(*follow.ptr & clearMask) != 0x00);
         *follow.ptr &= (clearMask ^ 0xff);
-        follow = FollowStep(dec, reg, follow, +1);
+        follow = followStep(dec, reg, follow, +1);
         clears++;
     }
 
@@ -1310,7 +1310,7 @@ static int TrailClear(DmtxDecode *dec, DmtxRegion *reg, int clearMask)
  *
  *
  */
-static DmtxBestLine FindBestSolidLine(DmtxDecode *dec, DmtxRegion *reg, int step0, int step1, int streamDir,
+static DmtxBestLine findBestSolidLine(DmtxDecode *dec, DmtxRegion *reg, int step0, int step1, int streamDir,
                                       int houghAvoid)
 {
     int hough[3][DMTX_HOUGH_RES] = {{0}};
@@ -1357,7 +1357,7 @@ static DmtxBestLine FindBestSolidLine(DmtxDecode *dec, DmtxRegion *reg, int step
     }
     DmtxAssert(sign == streamDir);
 
-    follow = FollowSeek(dec, reg, step0);
+    follow = followSeek(dec, reg, step0);
     rHp = follow.loc;
 
     line.stepBeg = line.stepPos = line.stepNeg = step0;
@@ -1413,7 +1413,7 @@ static DmtxBestLine FindBestSolidLine(DmtxDecode *dec, DmtxRegion *reg, int step
 
         CALLBACK_POINT_PLOT(follow.loc, (sign > 1) ? 4 : 3, 1, 2);
 
-        follow = FollowStep(dec, reg, follow, sign);
+        follow = followStep(dec, reg, follow, sign);
     }
 
     line.angle = angleBest;
@@ -1427,7 +1427,7 @@ static DmtxBestLine FindBestSolidLine(DmtxDecode *dec, DmtxRegion *reg, int step
  *
  *
  */
-static DmtxBestLine FindBestSolidLine2(DmtxDecode *dec, DmtxPixelLoc loc0, int tripSteps, int sign, int houghAvoid)
+static DmtxBestLine findBestSolidLine2(DmtxDecode *dec, DmtxPixelLoc loc0, int tripSteps, int sign, int houghAvoid)
 {
     int hough[3][DMTX_HOUGH_RES] = {{0}};
     int houghMin, houghMax;
@@ -1448,7 +1448,7 @@ static DmtxBestLine FindBestSolidLine2(DmtxDecode *dec, DmtxPixelLoc loc0, int t
     angleBest = 0;
     hOffset = hOffsetBest = 0;
 
-    follow = FollowSeekLoc(dec, loc0);
+    follow = followSeekLoc(dec, loc0);
     rHp = line.locBeg = line.locPos = line.locNeg = follow.loc;
     line.stepBeg = line.stepPos = line.stepNeg = 0;
 
@@ -1500,7 +1500,7 @@ static DmtxBestLine FindBestSolidLine2(DmtxDecode *dec, DmtxPixelLoc loc0, int t
 
         CALLBACK_POINT_PLOT(follow.loc, (sign > 1) ? 4 : 3, 1, 2);
 
-        follow = FollowStep2(dec, follow, sign);
+        follow = followStep2(dec, follow, sign);
     }
 
     line.angle = angleBest;
@@ -1514,7 +1514,7 @@ static DmtxBestLine FindBestSolidLine2(DmtxDecode *dec, DmtxPixelLoc loc0, int t
  *
  *
  */
-static DmtxPassFail FindTravelLimits(DmtxDecode *dec, DmtxRegion *reg, DmtxBestLine *line)
+static DmtxPassFail findTravelLimits(DmtxDecode *dec, DmtxRegion *reg, DmtxBestLine *line)
 {
     int i;
     int distSq, distSqMax;
@@ -1528,7 +1528,7 @@ static DmtxPassFail FindTravelLimits(DmtxDecode *dec, DmtxRegion *reg, DmtxBestL
     DmtxPixelLoc loc0, posMax, negMax;
 
     /* line->stepBeg is already known to sit on the best Hough line */
-    followPos = followNeg = FollowSeek(dec, reg, line->stepBeg);
+    followPos = followNeg = followSeek(dec, reg, line->stepBeg);
     loc0 = followPos.loc;
 
     cosAngle = rHvX[line->angle];
@@ -1552,7 +1552,7 @@ static DmtxPassFail FindTravelLimits(DmtxDecode *dec, DmtxRegion *reg, DmtxBestL
             posWander = (cosAngle * yDiff) - (sinAngle * xDiff);
 
             if (posWander >= -3 * 256 && posWander <= 3 * 256) {
-                distSq = (int)DistanceSquared(followPos.loc, negMax);
+                distSq = (int)distanceSquared(followPos.loc, negMax);
                 if (distSq > distSqMax) {
                     posMax = followPos.loc;
                     distSqMax = distSq;
@@ -1576,7 +1576,7 @@ static DmtxPassFail FindTravelLimits(DmtxDecode *dec, DmtxRegion *reg, DmtxBestL
             negWander = (cosAngle * yDiff) - (sinAngle * xDiff);
 
             if (negWander >= -3 * 256 && negWander < 3 * 256) {
-                distSq = (int)DistanceSquared(followNeg.loc, posMax);
+                distSq = (int)distanceSquared(followNeg.loc, posMax);
                 if (distSq > distSqMax) {
                     negMax = followNeg.loc;
                     distSqMax = distSq;
@@ -1596,8 +1596,8 @@ static DmtxPassFail FindTravelLimits(DmtxDecode *dec, DmtxRegion *reg, DmtxBestL
         CALLBACK_POINT_PLOT(followPos.loc, 2, 1, 2);
         CALLBACK_POINT_PLOT(followNeg.loc, 4, 1, 2);
 
-        followPos = FollowStep(dec, reg, followPos, +1);
-        followNeg = FollowStep(dec, reg, followNeg, -1);
+        followPos = followStep(dec, reg, followPos, +1);
+        followNeg = followStep(dec, reg, followNeg, -1);
     }
     line->devn = max(posWanderMaxLock - posWanderMinLock, negWanderMaxLock - negWanderMinLock) / 256;
     line->distSq = distSqMax;
@@ -1612,7 +1612,7 @@ static DmtxPassFail FindTravelLimits(DmtxDecode *dec, DmtxRegion *reg, DmtxBestL
  *
  *
  */
-static DmtxPassFail MatrixRegionAlignCalibEdge(DmtxDecode *dec, DmtxRegion *reg, int edgeLoc)
+static DmtxPassFail matrixRegionAlignCalibEdge(DmtxDecode *dec, DmtxRegion *reg, int edgeLoc)
 {
     int streamDir;
     int steps;
@@ -1645,14 +1645,14 @@ static DmtxPassFail MatrixRegionAlignCalibEdge(DmtxDecode *dec, DmtxRegion *reg,
     if (edgeLoc == DmtxEdgeTop) {
         streamDir = reg->polarity * -1;
         avoidAngle = reg->leftLine.angle;
-        follow = FollowSeekLoc(dec, reg->locT);
+        follow = followSeekLoc(dec, reg->locT);
         pTmp.X = 0.8;
         pTmp.Y = (symbolShape == DmtxSymbolRectAuto) ? 0.2 : 0.6;
     } else {
         DmtxAssert(edgeLoc == DmtxEdgeRight);
         streamDir = reg->polarity;
         avoidAngle = reg->bottomLine.angle;
-        follow = FollowSeekLoc(dec, reg->locR);
+        follow = followSeekLoc(dec, reg->locR);
         pTmp.X = (symbolShape == DmtxSymbolSquareAuto) ? 0.7 : 0.9;
         pTmp.Y = 0.8;
     }
@@ -1662,10 +1662,10 @@ static DmtxPassFail MatrixRegionAlignCalibEdge(DmtxDecode *dec, DmtxRegion *reg,
     loc1.Y = (int)(pTmp.Y + 0.5);
 
     loc0 = follow.loc;
-    line = BresLineInit(loc0, loc1, locOrigin);
-    steps = TrailBlazeGapped(dec, reg, line, streamDir);
+    line = bresLineInit(loc0, loc1, locOrigin);
+    steps = trailBlazeGapped(dec, reg, line, streamDir);
 
-    bestLine = FindBestSolidLine2(dec, loc0, steps, streamDir, avoidAngle);
+    bestLine = findBestSolidLine2(dec, loc0, steps, streamDir, avoidAngle);
     if (bestLine.mag < 5) {
         ;
     }
@@ -1687,7 +1687,7 @@ static DmtxPassFail MatrixRegionAlignCalibEdge(DmtxDecode *dec, DmtxRegion *reg,
  *
  *
  */
-static DmtxBresLine BresLineInit(DmtxPixelLoc loc0, DmtxPixelLoc loc1, DmtxPixelLoc locInside)
+static DmtxBresLine bresLineInit(DmtxPixelLoc loc0, DmtxPixelLoc loc1, DmtxPixelLoc locInside)
 {
     int cp;
     DmtxBresLine line;
@@ -1751,17 +1751,17 @@ static DmtxBresLine BresLineInit(DmtxPixelLoc loc0, DmtxPixelLoc loc1, DmtxPixel
  *
  *
  */
-static DmtxPassFail BresLineGetStep(DmtxBresLine line, DmtxPixelLoc target, int *travel, int *outward)
+static DmtxPassFail bresLineGetStep(DmtxBresLine line, DmtxPixelLoc target, int *travel, int *outward)
 {
     /* Determine necessary step along and outward from Bresenham line */
     if (line.steep != 0) {
         *travel = (line.yStep > 0) ? target.Y - line.loc.Y : line.loc.Y - target.Y;
-        BresLineStep(&line, *travel, 0);
+        bresLineStep(&line, *travel, 0);
         *outward = (line.xOut > 0) ? target.X - line.loc.X : line.loc.X - target.X;
         DmtxAssert(line.yOut == 0);
     } else {
         *travel = (line.xStep > 0) ? target.X - line.loc.X : line.loc.X - target.X;
-        BresLineStep(&line, *travel, 0);
+        bresLineStep(&line, *travel, 0);
         *outward = (line.yOut > 0) ? target.Y - line.loc.Y : line.loc.Y - target.Y;
         DmtxAssert(line.xOut == 0);
     }
@@ -1773,7 +1773,7 @@ static DmtxPassFail BresLineGetStep(DmtxBresLine line, DmtxPixelLoc target, int 
  *
  *
  */
-static DmtxPassFail BresLineStep(DmtxBresLine *line, int travel, int outward)
+static DmtxPassFail bresLineStep(DmtxBresLine *line, int travel, int outward)
 {
     int i;
     DmtxBresLine lineNew;

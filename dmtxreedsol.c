@@ -86,7 +86,7 @@ static DmtxByte antilog301[] = {
         if (passFail == DmtxFail) \
             return DmtxFail;      \
     }
-static DmtxPassFail RsEncode(DmtxMessage *message, int sizeIdx)
+static DmtxPassFail rsEncode(DmtxMessage *message, int sizeIdx)
 {
     int i, j;
     int blockStride, blockIdx;
@@ -105,7 +105,7 @@ static DmtxPassFail RsEncode(DmtxMessage *message, int sizeIdx)
     symbolTotalWords = symbolDataWords + symbolErrorWords;
 
     /* Populate generator polynomial */
-    RsGenPoly(&gen, blockErrorWords);
+    rsGenPoly(&gen, blockErrorWords);
 
     /* For each interleaved block... */
     for (blockIdx = 0; blockIdx < blockStride; blockIdx++) {
@@ -151,7 +151,7 @@ static DmtxPassFail RsEncode(DmtxMessage *message, int sizeIdx)
         if (passFail == DmtxFail) \
             return DmtxFail;      \
     }
-static DmtxPassFail RsDecode(unsigned char *code, int sizeIdx, int fix)
+static DmtxPassFail rsDecode(unsigned char *code, int sizeIdx, int fix)
 {
     int i;
     int blockStride, blockIdx;
@@ -204,24 +204,24 @@ static DmtxPassFail RsDecode(unsigned char *code, int sizeIdx, int fix)
         }
 
         /* Compute syndromes (syn) */
-        error = RsComputeSyndromes(&syn, &rec, blockErrorWords);
+        error = rsComputeSyndromes(&syn, &rec, blockErrorWords);
 
         /* Error(s) detected: Attempt repair */
         if (error) {
             /* Find error locator polynomial (elp) */
-            repairable = RsFindErrorLocatorPoly(&elp, &syn, blockErrorWords, blockMaxCorrectable);
+            repairable = rsFindErrorLocatorPoly(&elp, &syn, blockErrorWords, blockMaxCorrectable);
             if (!repairable) {
                 return DmtxFail;
             }
 
             /* Find error positions (loc) */
-            repairable = RsFindErrorLocations(&loc, &elp);
+            repairable = rsFindErrorLocations(&loc, &elp);
             if (!repairable) {
                 return DmtxFail;
             }
 
             /* Find error values and repair */
-            RsRepairErrors(&rec, &loc, &elp, &syn);
+            rsRepairErrors(&rec, &loc, &elp, &syn);
         }
 
         /*
@@ -261,7 +261,7 @@ static DmtxPassFail RsDecode(unsigned char *code, int sizeIdx, int fix)
         if (passFail == DmtxFail) \
             return DmtxFail;      \
     }
-static DmtxPassFail RsGenPoly(DmtxByteList *gen, int errorWordCount)
+static DmtxPassFail rsGenPoly(DmtxByteList *gen, int errorWordCount)
 {
     int i, j;
     DmtxPassFail passFail;
@@ -301,7 +301,7 @@ static DmtxPassFail RsGenPoly(DmtxByteList *gen, int errorWordCount)
         if (passFail == DmtxFail) \
             return DmtxTrue;      \
     }
-static DmtxBoolean RsComputeSyndromes(DmtxByteList *syn, const DmtxByteList *rec, int blockErrorWords)
+static DmtxBoolean rsComputeSyndromes(DmtxByteList *syn, const DmtxByteList *rec, int blockErrorWords)
 {
     int i, j;
     DmtxPassFail passFail;
@@ -342,7 +342,7 @@ static DmtxBoolean RsComputeSyndromes(DmtxByteList *syn, const DmtxByteList *rec
         if (passFail == DmtxFail) \
             return DmtxFalse;     \
     }
-static DmtxBoolean RsFindErrorLocatorPoly(DmtxByteList *elpOut, const DmtxByteList *syn, int errorWordCount,
+static DmtxBoolean rsFindErrorLocatorPoly(DmtxByteList *elpOut, const DmtxByteList *syn, int errorWordCount,
                                           int maxCorrectable)
 {
     int i, iNext, j;
@@ -440,7 +440,7 @@ static DmtxBoolean RsFindErrorLocatorPoly(DmtxByteList *elpOut, const DmtxByteLi
         if (passFail == DmtxFail) \
             return DmtxFalse;     \
     }
-static DmtxBoolean RsFindErrorLocations(DmtxByteList *loc, const DmtxByteList *elp)
+static DmtxBoolean rsFindErrorLocations(DmtxByteList *loc, const DmtxByteList *elp)
 {
     int i, j;
     int lambda = elp->length - 1;
@@ -488,7 +488,7 @@ static DmtxBoolean RsFindErrorLocations(DmtxByteList *loc, const DmtxByteList *e
         if (passFail == DmtxFail) \
             return DmtxFail;      \
     }
-static DmtxPassFail RsRepairErrors(DmtxByteList *rec, const DmtxByteList *loc, const DmtxByteList *elp,
+static DmtxPassFail rsRepairErrors(DmtxByteList *rec, const DmtxByteList *loc, const DmtxByteList *elp,
                                    const DmtxByteList *syn)
 {
     int i, j, q;

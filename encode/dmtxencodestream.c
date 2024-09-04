@@ -23,7 +23,7 @@
  *
  *
  */
-static DmtxEncodeStream StreamInit(DmtxByteList *input, DmtxByteList *output)
+static DmtxEncodeStream streamInit(DmtxByteList *input, DmtxByteList *output)
 {
     DmtxEncodeStream stream;
 
@@ -45,7 +45,7 @@ static DmtxEncodeStream StreamInit(DmtxByteList *input, DmtxByteList *output)
  *
  *
  */
-static void StreamCopy(DmtxEncodeStream *dst, DmtxEncodeStream *src)
+static void streamCopy(DmtxEncodeStream *dst, DmtxEncodeStream *src)
 {
     DmtxPassFail passFail;
 
@@ -66,7 +66,7 @@ static void StreamCopy(DmtxEncodeStream *dst, DmtxEncodeStream *src)
  *
  *
  */
-static void StreamMarkComplete(DmtxEncodeStream *stream, int sizeIdx)
+static void streamMarkComplete(DmtxEncodeStream *stream, int sizeIdx)
 {
     if (stream->status == DmtxStatusEncoding) {
         stream->sizeIdx = sizeIdx;
@@ -79,7 +79,7 @@ static void StreamMarkComplete(DmtxEncodeStream *stream, int sizeIdx)
  *
  *
  */
-static void StreamMarkInvalid(DmtxEncodeStream *stream, int reasonIdx)
+static void streamMarkInvalid(DmtxEncodeStream *stream, int reasonIdx)
 {
     stream->status = DmtxStatusInvalid;
     stream->reason = dmtxErrorMessage[reasonIdx];
@@ -89,7 +89,7 @@ static void StreamMarkInvalid(DmtxEncodeStream *stream, int reasonIdx)
  *
  *
  */
-static void StreamMarkFatal(DmtxEncodeStream *stream, int reasonIdx)
+static void streamMarkFatal(DmtxEncodeStream *stream, int reasonIdx)
 {
     stream->status = DmtxStatusFatal;
     stream->reason = dmtxErrorMessage[reasonIdx];
@@ -99,7 +99,7 @@ static void StreamMarkFatal(DmtxEncodeStream *stream, int reasonIdx)
  * push on newest/last append
  * used for encoding each output cw
  */
-static void StreamOutputChainAppend(DmtxEncodeStream *stream, DmtxByte value)
+static void streamOutputChainAppend(DmtxEncodeStream *stream, DmtxByte value)
 {
     DmtxPassFail passFail;
 
@@ -108,7 +108,7 @@ static void StreamOutputChainAppend(DmtxEncodeStream *stream, DmtxByte value)
     if (passFail == DmtxPass) {
         stream->outputChainWordCount++;
     } else {
-        StreamMarkFatal(stream, DmtxErrorOutOfBounds);
+        streamMarkFatal(stream, DmtxErrorOutOfBounds);
     }
 }
 
@@ -116,7 +116,7 @@ static void StreamOutputChainAppend(DmtxEncodeStream *stream, DmtxByte value)
  * pop off newest/last
  * used for edifact
  */
-static DmtxByte StreamOutputChainRemoveLast(DmtxEncodeStream *stream)
+static DmtxByte streamOutputChainRemoveLast(DmtxEncodeStream *stream)
 {
     DmtxByte value;
     DmtxPassFail passFail;
@@ -126,7 +126,7 @@ static DmtxByte StreamOutputChainRemoveLast(DmtxEncodeStream *stream)
         stream->outputChainWordCount--;
     } else {
         value = 0;
-        StreamMarkFatal(stream, DmtxErrorEmptyList);
+        streamMarkFatal(stream, DmtxErrorEmptyList);
     }
 
     return value;
@@ -136,10 +136,10 @@ static DmtxByte StreamOutputChainRemoveLast(DmtxEncodeStream *stream)
  * overwrite arbitrary element
  * used for binary length changes
  */
-static void StreamOutputSet(DmtxEncodeStream *stream, int index, DmtxByte value)
+static void streamOutputSet(DmtxEncodeStream *stream, int index, DmtxByte value)
 {
     if (index < 0 || index >= stream->output->length) {
-        StreamMarkFatal(stream, DmtxErrorOutOfBounds);
+        streamMarkFatal(stream, DmtxErrorOutOfBounds);
     } else {
         stream->output->b[index] = value;
     }
@@ -149,7 +149,7 @@ static void StreamOutputSet(DmtxEncodeStream *stream, int index, DmtxByte value)
  *
  *
  */
-static DmtxBoolean StreamInputHasNext(DmtxEncodeStream *stream)
+static DmtxBoolean streamInputHasNext(DmtxEncodeStream *stream)
 {
     return (stream->inputNext < stream->input->length) ? DmtxTrue : DmtxFalse;
 }
@@ -158,14 +158,14 @@ static DmtxBoolean StreamInputHasNext(DmtxEncodeStream *stream)
  * peek at first/oldest
  * used for ascii double digit
  */
-static DmtxByte StreamInputPeekNext(DmtxEncodeStream *stream)
+static DmtxByte streamInputPeekNext(DmtxEncodeStream *stream)
 {
     DmtxByte value = 0;
 
-    if (StreamInputHasNext(stream)) {
+    if (streamInputHasNext(stream)) {
         value = stream->input->b[stream->inputNext];
     } else {
-        StreamMarkFatal(stream, DmtxErrorOutOfBounds);
+        streamMarkFatal(stream, DmtxErrorOutOfBounds);
     }
 
     return value;
@@ -177,11 +177,11 @@ static DmtxByte StreamInputPeekNext(DmtxEncodeStream *stream)
  * \param value Value to populate, can be null (for blind dequeues)
  * \param stream
  */
-static DmtxByte StreamInputAdvanceNext(DmtxEncodeStream *stream)
+static DmtxByte streamInputAdvanceNext(DmtxEncodeStream *stream)
 {
     DmtxByte value;
 
-    value = StreamInputPeekNext(stream);
+    value = streamInputPeekNext(stream);
 
     if (stream->status == DmtxStatusEncoding) {
         stream->inputNext++; /* XXX is this what we really mean here? */
@@ -196,11 +196,11 @@ static DmtxByte StreamInputAdvanceNext(DmtxEncodeStream *stream)
  * \param value Value to populate, can be null (for blind dequeues)
  * \param stream
  */
-static void StreamInputAdvancePrev(DmtxEncodeStream *stream)
+static void streamInputAdvancePrev(DmtxEncodeStream *stream)
 {
     if (stream->inputNext > 0) {
         stream->inputNext--;
     } else {
-        StreamMarkFatal(stream, DmtxErrorOutOfBounds);
+        streamMarkFatal(stream, DmtxErrorOutOfBounds);
     }
 }

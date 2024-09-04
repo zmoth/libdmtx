@@ -19,7 +19,7 @@ version 0.7.4 [June 2011]
   encoder: New encoding implementation
   encoder: Added Base 256 "encode to end of symbol" single byte header
   encoder: Check ProcessEndOfSymbolTriplet() for same problem fixed in Edifact
-  encoder: Clean up PushCTXValues() passFail handling
+  encoder: Clean up pushCTXValues() passFail handling
   encoder: Fixed all encoding bugs reported by compare_generated.sh
   encoder: Fixed encoding bug affecting certain end-of-symbol conditions
   encoder: Replaced "twothirdsbits" encoder concept (major source of headaches)

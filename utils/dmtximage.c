@@ -83,7 +83,7 @@ extern DmtxImage *dmtxImageCreate(unsigned char *pxl, int width, int height, int
     img->width = width;
     img->height = height;
     img->pixelPacking = pack;
-    img->bitsPerPixel = GetBitsPerPixel(pack);
+    img->bitsPerPixel = getBitsPerPixel(pack);
     img->bytesPerPixel = img->bitsPerPixel / 8;
     img->rowPadBytes = 0;
     img->rowSizeBytes = img->width * img->bytesPerPixel + img->rowPadBytes;
@@ -405,7 +405,7 @@ extern DmtxBoolean dmtxImageContainsFloat(DmtxImage *img, double x, double y)
  *
  *
  */
-static int GetBitsPerPixel(int pack)
+static int getBitsPerPixel(int pack)
 {
     switch (pack) {
         case DmtxPack1bppK:
