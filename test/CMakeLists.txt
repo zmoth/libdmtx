@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 add_subdirectory(rotate_test)
+add_subdirectory(multi_test)
 
 enable_testing()
 
