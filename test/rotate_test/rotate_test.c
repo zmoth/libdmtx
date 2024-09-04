@@ -14,6 +14,13 @@
 
 #include "image.h"
 
+// Pane Layout
+//  ———————————
+// | 1 | 2 | 3 |
+// |———————————|
+// | 4 | 5 | 6 |
+//  ———————————
+
 GLfloat view_rotx = 0.0, view_roty = 0.0, view_rotz = 0.0;
 GLfloat angle = 0.0;
 
@@ -40,7 +47,6 @@ int main(int argc, char *argv[])
     int done = 0;
     SDL_Event event;
     SDL_Surface *screen = NULL;
-    unsigned char outputString[1024];
     DmtxDecode *dec = NULL;
     DmtxRegion *reg = NULL;
     DmtxMessage *msg = NULL;
@@ -95,9 +101,7 @@ int main(int argc, char *argv[])
             if (reg != NULL) {
                 msg = dmtxDecodeMatrixRegion(dec, reg, DmtxUndefined);
                 if (msg != NULL) {
-                    fputs("output: \"", stdout);
-                    fwrite(msg->output, sizeof(unsigned char), msg->outputIdx, stdout);
-                    fputs("\"\n", stdout);
+                    SDL_Log("%d: \"%s\" %d\n", dmtxTimeNow().usec, msg->output, msg->outputIdx);
                     dmtxMessageDestroy(&msg);
                 }
                 dmtxRegionDestroy(&reg);
@@ -109,8 +113,8 @@ int main(int argc, char *argv[])
         dmtxImageDestroy(&gImage);
 
         DrawBorders(screen);
-        DrawPane2(screen, passOnePxl);
-        DrawPane4(screen, passTwoPxl);
+        // DrawPane2(screen, passOnePxl);
+        // DrawPane4(screen, passTwoPxl);
 
         SDL_GL_SwapWindow(window);
     }

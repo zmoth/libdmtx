@@ -31,14 +31,14 @@ SDL_Surface *screen;
 SDL_Surface *initDisplay(void)
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        fprintf(stderr, "Video initialization failed: %s\n", SDL_GetError());
+        SDL_Log("Video initialization failed: %s\n", SDL_GetError());
         exit(1);
     }
 
     window = SDL_CreateWindow("GL Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 968, 646,
                               SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     if (window == NULL) {
-        fprintf(stderr, "Window creation failed: %s\n", SDL_GetError());
+        SDL_Log("Window creation failed: %s\n", SDL_GetError());
         SDL_Quit();
         exit(2);
     }
@@ -48,7 +48,7 @@ SDL_Surface *initDisplay(void)
 
     screen = SDL_GetWindowSurface(window);
     if (!screen) {
-        fprintf(stderr, "Couldn't set 968x646 GL video mode: %s\n", SDL_GetError());
+        SDL_Log("Couldn't set 968x646 GL video mode: %s\n", SDL_GetError());
         exit(1);
     }
 
@@ -259,7 +259,7 @@ int HandleEvent(SDL_Event *event, SDL_Surface *screen)
                     texturePxl = loadTextureImage();
                     break;
                 case SDL_BUTTON_LEFT:
-                    fprintf(stdout, "left click\n");
+                    SDL_Log("left click\n");
                     break;
                 default:
                     break;

@@ -78,7 +78,7 @@ SDL_Surface *loadTextureImage()
 
     strcpy(filepath, "images/");
     strcat(filepath, gFilename[gFileIdx]);
-    fprintf(stdout, "Opening %s\n", filepath);
+    SDL_Log("Opening %s\n", filepath);
 
     SDL_Surface *image = SDL_LoadBMP(filepath);
     image = SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_RGB24, 0);
@@ -109,13 +109,13 @@ SDL_Surface *loadTextureImage()
     int err = gluBuild2DMipmaps(GL_TEXTURE_2D, bmp->format->BytesPerPixel, bmp->w, bmp->h, getFormat(bmp),
                                 GL_UNSIGNED_BYTE, bmp->pixels);
     if (err) {
-        fprintf(stdout, gluErrorStringWIN(err));
+        SDL_Log(gluErrorStringWIN(err));
     }
 #else
     int err = gluBuild2DMipmaps(GL_TEXTURE_2D, bmp->format->BytesPerPixel, bmp->w, bmp->h, getFormat(bmp),
                                 GL_UNSIGNED_BYTE, bmp->pixels);
     if (err) {
-        fprintf(stdout, gluErrorString(err));
+        SDL_Log(gluErrorString(err));
     }
 #endif
 
@@ -206,10 +206,11 @@ void plotPoint(DmtxImage *img, float rowFloat, float colFloat, int targetColor)
  */
 int clampRGB(float color)
 {
-    if (color < 0.0)
+    if (color < 0.0) {
         return 0;
-    else if (color > 255.0)
+    } else if (color > 255.0) {
         return 255;
-    else
+    } else {
         return (int)(color + 0.5);
+    }
 }
