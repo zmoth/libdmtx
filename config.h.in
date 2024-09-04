@@ -1,0 +1,32 @@
+///
+/// @brief 该文件在编译时自动生成，请勿进行任何修改。
+///
+/// 此文件由构建系统在编译时自动生成，包含了名称、版本等信息。
+/// 手动更改此文件可能会导致构建失败或其他未定义的行为。
+/// 若需对相关功能进行修改，请更改生成此文件的源数据或配置。
+///
+
+#ifndef __CONFIG_H__
+#define __CONFIG_H__
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+    /* clang-format off */
+#define PACKAGE_NAME "@PROJECT_NAME@"
+#define PACKAGE_VERSION "@PROJECT_VERSION@"
+#define PACKAGE_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
+#define PACKAGE_VERSION_MINOR @PROJECT_VERSION_MINOR@
+#define PACKAGE_VERSION_PATCH @PROJECT_VERSION_PATCH@
+#define PACKAGE_VERSION_TWEAK @PROJECT_VERSION_TWEAK@
+#define PACKAGE_DESCRIPTION "@PROJECT_DESCRIPTION@"
+#define PACKAGE_HOMEPAGE_URL "@PROJECT_HOMEPAGE_URL@"
+    /* clang-format on */
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* __CONFIG_H__ */

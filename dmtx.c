@@ -27,11 +27,8 @@
 #include <string.h>
 #include <sys/types.h>
 
+#include "config.h"
 #include "dmtxstatic.h"
-
-#ifdef HAVE_CONFIG_H
-#    include "config.h"
-#endif
 
 #ifndef CALLBACK_POINT_PLOT
 #    define CALLBACK_POINT_PLOT(a, b, c, d) (void)0
@@ -85,5 +82,5 @@
 
 extern char *dmtxVersion(void)
 {
-    return DmtxVersion;
+    return PACKAGE_VERSION;
 }
