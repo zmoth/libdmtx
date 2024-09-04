@@ -64,8 +64,6 @@ extern "C"
 #define DmtxModuleVisited 0x20
 #define DmtxModuleData 0x40
 
-#define DMTX_CHECK_BOUNDS(l, i) (assert((i) >= 0 && (i) < (l)->length && (l)->length <= (l)->capacity))
-
     typedef enum
     {
         DmtxStatusEncoding, /* Encoding is currently underway */

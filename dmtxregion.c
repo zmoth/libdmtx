@@ -279,7 +279,7 @@ static DmtxPassFail MatrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, Dm
         TrailClear(dec, reg, 0x40);
         return DmtxFail;
     }
-    assert(line1x.stepPos >= line1x.stepNeg);
+    DmtxAssert(line1x.stepPos >= line1x.stepNeg);
 
     fTmp = FollowSeek(dec, reg, line1x.stepPos + 5);
     line2p = FindBestSolidLine(dec, reg, fTmp.step, line1x.stepNeg, +1, line1x.angle);
@@ -503,7 +503,7 @@ extern DmtxPassFail dmtxRegionUpdateXfrms(DmtxDecode *dec, DmtxRegion *reg)
     DmtxRay2 rLeft, rBottom, rTop, rRight;
     DmtxVector2 p00, p10, p11, p01;
 
-    assert(reg->leftKnown != 0 && reg->bottomKnown != 0);
+    DmtxAssert(reg->leftKnown != 0 && reg->bottomKnown != 0);
 
     /* Build ray representing left edge */
     rLeft.p.X = (double)reg->leftLoc.X;
@@ -806,8 +806,8 @@ static int CountJumpTally(DmtxDecode *dec, DmtxRegion *reg, int xStart, int ySta
     int darkOnLight;
     int color;
 
-    assert(xStart == 0 || yStart == 0);
-    assert(dir == DmtxDirRight || dir == DmtxDirUp);
+    DmtxAssert(xStart == 0 || yStart == 0);
+    DmtxAssert(dir == DmtxDirRight || dir == DmtxDirUp);
 
     if (dir == DmtxDirRight) {
         xInc = 1;
@@ -981,14 +981,14 @@ static DmtxFollow FollowSeek(DmtxDecode *dec, DmtxRegion *reg, int seek)
     follow.loc = reg->flowBegin.loc;
     follow.step = 0;
     follow.ptr = dmtxDecodeGetCache(dec, follow.loc.X, follow.loc.Y);
-    assert(follow.ptr != NULL);
+    DmtxAssert(follow.ptr != NULL);
     follow.neighbor = *follow.ptr;
 
     sign = (seek > 0) ? +1 : -1;
     for (i = 0; i != seek; i += sign) {
         follow = FollowStep(dec, reg, follow, sign);
-        assert(follow.ptr != NULL);
-        assert(abs(follow.step) <= reg->stepsTotal);
+        DmtxAssert(follow.ptr != NULL);
+        DmtxAssert(abs(follow.step) <= reg->stepsTotal);
     }
 
     return follow;
@@ -1005,7 +1005,7 @@ static DmtxFollow FollowSeekLoc(DmtxDecode *dec, DmtxPixelLoc loc)
     follow.loc = loc;
     follow.step = 0;
     follow.ptr = dmtxDecodeGetCache(dec, follow.loc.X, follow.loc.Y);
-    assert(follow.ptr != NULL);
+    DmtxAssert(follow.ptr != NULL);
     follow.neighbor = *follow.ptr;
 
     return follow;
@@ -1022,8 +1022,8 @@ static DmtxFollow FollowStep(DmtxDecode *dec, DmtxRegion *reg, DmtxFollow follow
     int factor;
     DmtxFollow follow;
 
-    assert(abs(sign) == 1);
-    assert((int)(followBeg.neighbor & 0x40) != 0x00);
+    DmtxAssert(abs(sign) == 1);
+    DmtxAssert((int)(followBeg.neighbor & 0x40) != 0x00);
 
     factor = reg->stepsTotal + 1;
     if (sign > 0) {
@@ -1049,7 +1049,7 @@ static DmtxFollow FollowStep(DmtxDecode *dec, DmtxRegion *reg, DmtxFollow follow
 
     follow.step = followBeg.step + sign;
     follow.ptr = dmtxDecodeGetCache(dec, follow.loc.X, follow.loc.Y);
-    assert(follow.ptr != NULL);
+    DmtxAssert(follow.ptr != NULL);
     follow.neighbor = *follow.ptr;
 
     return follow;
@@ -1064,8 +1064,8 @@ static DmtxFollow FollowStep2(DmtxDecode *dec, DmtxFollow followBeg, int sign)
     int patternIdx;
     DmtxFollow follow;
 
-    assert(abs(sign) == 1);
-    assert((int)(followBeg.neighbor & 0x40) != 0x00);
+    DmtxAssert(abs(sign) == 1);
+    DmtxAssert((int)(followBeg.neighbor & 0x40) != 0x00);
 
     patternIdx = (sign < 0) ? followBeg.neighbor & 0x07 : ((followBeg.neighbor & 0x38) >> 3);
     follow.loc.X = followBeg.loc.X + dmtxPatternX[patternIdx];
@@ -1073,7 +1073,7 @@ static DmtxFollow FollowStep2(DmtxDecode *dec, DmtxFollow followBeg, int sign)
 
     follow.step = followBeg.step + sign;
     follow.ptr = dmtxDecodeGetCache(dec, follow.loc.X, follow.loc.Y);
-    assert(follow.ptr != NULL);
+    DmtxAssert(follow.ptr != NULL);
     follow.neighbor = *follow.ptr;
 
     return follow;
@@ -1127,7 +1127,7 @@ static DmtxPassFail TrailBlazeContinuous(DmtxDecode *dec, DmtxRegion *reg, DmtxP
             if (cacheNext == NULL) {
                 break;
             }
-            assert(!(*cacheNext & 0x80));
+            DmtxAssert(!(*cacheNext & 0x80));
 
             /* Mark departure from current location. If flowing downstream
              * (sign < 0) then departure vector here is the arrival vector
@@ -1175,7 +1175,7 @@ static DmtxPassFail TrailBlazeContinuous(DmtxDecode *dec, DmtxRegion *reg, DmtxP
 
     /* Clear "visited" bit from trail */
     clears = TrailClear(dec, reg, 0x80);
-    assert(posAssigns + negAssigns == clears - 1);
+    DmtxAssert(posAssigns + negAssigns == clears - 1);
 
     /* XXX clean this up ... redundant test above */
     if (maxDiagonal != DmtxUndefined &&
@@ -1256,9 +1256,9 @@ static int TrailBlazeGapped(DmtxDecode *dec, DmtxRegion *reg, DmtxBresLine line,
         /* Determine step direction using pure magic */
         xStep = afterStep.X - beforeStep.X;
         yStep = afterStep.Y - beforeStep.Y;
-        assert(abs(xStep) <= 1 && abs(yStep) <= 1);
+        DmtxAssert(abs(xStep) <= 1 && abs(yStep) <= 1);
         stepDir = dirMap[3 * yStep + xStep + 4];
-        assert(stepDir != 8);
+        DmtxAssert(stepDir != 8);
 
         if (streamDir < 0) {
             *beforeCache |= (0x40 | stepDir);
@@ -1291,13 +1291,13 @@ static int TrailClear(DmtxDecode *dec, DmtxRegion *reg, int clearMask)
     int clears;
     DmtxFollow follow;
 
-    assert((clearMask | 0xff) == 0xff);
+    DmtxAssert((clearMask | 0xff) == 0xff);
 
     /* Clear "visited" bit from trail */
     clears = 0;
     follow = FollowSeek(dec, reg, 0);
     while (abs(follow.step) <= reg->stepsTotal) {
-        assert((int)(*follow.ptr & clearMask) != 0x00);
+        DmtxAssert((int)(*follow.ptr & clearMask) != 0x00);
         *follow.ptr &= (clearMask ^ 0xff);
         follow = FollowStep(dec, reg, follow, +1);
         clears++;
@@ -1355,7 +1355,7 @@ static DmtxBestLine FindBestSolidLine(DmtxDecode *dec, DmtxRegion *reg, int step
         sign = +1;
         tripSteps = reg->stepsTotal;
     }
-    assert(sign == streamDir);
+    DmtxAssert(sign == streamDir);
 
     follow = FollowSeek(dec, reg, step0);
     rHp = follow.loc;
@@ -1649,7 +1649,7 @@ static DmtxPassFail MatrixRegionAlignCalibEdge(DmtxDecode *dec, DmtxRegion *reg,
         pTmp.X = 0.8;
         pTmp.Y = (symbolShape == DmtxSymbolRectAuto) ? 0.2 : 0.6;
     } else {
-        assert(edgeLoc == DmtxEdgeRight);
+        DmtxAssert(edgeLoc == DmtxEdgeRight);
         streamDir = reg->polarity;
         avoidAngle = reg->bottomLine.angle;
         follow = FollowSeekLoc(dec, reg->locR);
@@ -1758,12 +1758,12 @@ static DmtxPassFail BresLineGetStep(DmtxBresLine line, DmtxPixelLoc target, int 
         *travel = (line.yStep > 0) ? target.Y - line.loc.Y : line.loc.Y - target.Y;
         BresLineStep(&line, *travel, 0);
         *outward = (line.xOut > 0) ? target.X - line.loc.X : line.loc.X - target.X;
-        assert(line.yOut == 0);
+        DmtxAssert(line.yOut == 0);
     } else {
         *travel = (line.xStep > 0) ? target.X - line.loc.X : line.loc.X - target.X;
         BresLineStep(&line, *travel, 0);
         *outward = (line.yOut > 0) ? target.Y - line.loc.Y : line.loc.Y - target.Y;
-        assert(line.xOut == 0);
+        DmtxAssert(line.xOut == 0);
     }
 
     return DmtxPass;
@@ -1780,8 +1780,8 @@ static DmtxPassFail BresLineStep(DmtxBresLine *line, int travel, int outward)
 
     lineNew = *line;
 
-    assert(abs(travel) < 2);
-    assert(abs(outward) >= 0);
+    DmtxAssert(abs(travel) < 2);
+    DmtxAssert(abs(outward) >= 0);
 
     /* Perform forward step */
     if (travel > 0) {
@@ -1847,7 +1847,7 @@ static void WriteDiagnosticImage(DmtxDecode *dec, DmtxRegion *reg, char *imagePa
     DmtxVector2 p;
     DmtxImage *img;
 
-    assert(reg != NULL);
+    DmtxAssert(reg != NULL);
 
     fp = fopen(imagePath, "wb");
     if (fp == NULL) {

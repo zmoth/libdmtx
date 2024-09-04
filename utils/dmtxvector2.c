@@ -144,7 +144,7 @@ extern double dmtxDistanceFromRay2(const DmtxRay2 *r, const DmtxVector2 *q)
     DmtxVector2 vSubTmp;
 
     /* Assumes that v is a unit vector */
-    assert(fabs(1.0 - dmtxVector2Mag(&(r->v))) <= DmtxAlmostZero);
+    DmtxAssert(fabs(1.0 - dmtxVector2Mag(&(r->v))) <= DmtxAlmostZero);
 
     return dmtxVector2Cross(&(r->v), dmtxVector2Sub(&vSubTmp, q, &(r->p)));
 }
@@ -196,7 +196,7 @@ extern DmtxPassFail dmtxPointAlongRay2(DmtxVector2 *point, const DmtxRay2 *r, do
     DmtxVector2 vTmp;
 
     /* Ray should always have unit length of 1 */
-    assert(fabs(1.0 - dmtxVector2Mag(&(r->v))) <= DmtxAlmostZero);
+    DmtxAssert(fabs(1.0 - dmtxVector2Mag(&(r->v))) <= DmtxAlmostZero);
 
     dmtxVector2Scale(&vTmp, &(r->v), t);
     dmtxVector2Add(point, &(r->p), &vTmp);

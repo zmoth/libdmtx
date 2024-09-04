@@ -194,7 +194,7 @@ extern void dmtxMatrix3Shear(DmtxMatrix3 m, double shx, double shy)
  */
 extern void dmtxMatrix3LineSkewTop(DmtxMatrix3 m, double b0, double b1, double sz)
 {
-    assert(b0 >= DmtxAlmostZero);
+    DmtxAssert(b0 >= DmtxAlmostZero);
 
     dmtxMatrix3Identity(m);
     m[0][0] = b1 / b0;
@@ -212,7 +212,7 @@ extern void dmtxMatrix3LineSkewTop(DmtxMatrix3 m, double b0, double b1, double s
  */
 extern void dmtxMatrix3LineSkewTopInv(DmtxMatrix3 m, double b0, double b1, double sz)
 {
-    assert(b1 >= DmtxAlmostZero);
+    DmtxAssert(b1 >= DmtxAlmostZero);
 
     dmtxMatrix3Identity(m);
     m[0][0] = b0 / b1;
@@ -230,7 +230,7 @@ extern void dmtxMatrix3LineSkewTopInv(DmtxMatrix3 m, double b0, double b1, doubl
  */
 extern void dmtxMatrix3LineSkewSide(DmtxMatrix3 m, double b0, double b1, double sz)
 {
-    assert(b0 >= DmtxAlmostZero);
+    DmtxAssert(b0 >= DmtxAlmostZero);
 
     dmtxMatrix3Identity(m);
     m[0][0] = sz / b0;
@@ -248,7 +248,7 @@ extern void dmtxMatrix3LineSkewSide(DmtxMatrix3 m, double b0, double b1, double 
  */
 extern void dmtxMatrix3LineSkewSideInv(DmtxMatrix3 m, double b0, double b1, double sz)
 {
-    assert(b1 >= DmtxAlmostZero);
+    DmtxAssert(b1 >= DmtxAlmostZero);
 
     dmtxMatrix3Identity(m);
     m[0][0] = b0 / sz;

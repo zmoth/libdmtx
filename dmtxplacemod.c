@@ -82,7 +82,7 @@ static int ModulePlacementEcc200(unsigned char *modules, unsigned char *codeword
     int row, col, chr;
     int mappingRows, mappingCols;
 
-    assert(moduleOnColor & (DmtxModuleOnRed | DmtxModuleOnGreen | DmtxModuleOnBlue));
+    DmtxAssert(moduleOnColor & (DmtxModuleOnRed | DmtxModuleOnGreen | DmtxModuleOnBlue));
 
     mappingRows = dmtxGetSymbolAttribute(DmtxSymAttribMappingMatrixRows, sizeIdx);
     mappingCols = dmtxGetSymbolAttribute(DmtxSymAttribMappingMatrixCols, sizeIdx);

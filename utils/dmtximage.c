@@ -260,8 +260,8 @@ extern int dmtxImageGetProp(DmtxImage *img, int prop)
  */
 extern int dmtxImageGetByteOffset(DmtxImage *img, int x, int y)
 {
-    assert(img != NULL);
-    assert(!(img->imageFlip & DmtxFlipX)); /* DmtxFlipX is not an option */
+    DmtxAssert(img != NULL);
+    DmtxAssert(!(img->imageFlip & DmtxFlipX)); /* DmtxFlipX is not an option */
 
     if (dmtxImageContainsInt(img, 0, x, y) == DmtxFalse) {
         return DmtxUndefined;
@@ -286,8 +286,8 @@ extern DmtxPassFail dmtxImageGetPixelValue(DmtxImage *img, int x, int y, int cha
        int mask;
        int bitShift; */
 
-    assert(img != NULL);
-    assert(channel < img->channelCount);
+    DmtxAssert(img != NULL);
+    DmtxAssert(channel < img->channelCount);
 
     offset = dmtxImageGetByteOffset(img, x, y);
     if (offset == DmtxUndefined) {
@@ -296,13 +296,13 @@ extern DmtxPassFail dmtxImageGetPixelValue(DmtxImage *img, int x, int y, int cha
 
     switch (img->bitsPerChannel[channel]) {
         case 1:
-            /*       assert(img->bitsPerPixel == 1);
+            /*       DmtxAssert(img->bitsPerPixel == 1);
                      mask = 0x01 << (7 - offset%8);
                      *value = (img->pxl[offset/8] & mask) ? 255 : 0; */
             break;
         case 5:
             /* XXX might be expensive if we want to scale perfect 0-255 range */
-            /*       assert(img->bitsPerPixel == 16);
+            /*       DmtxAssert(img->bitsPerPixel == 16);
                      pixelPtr = img->pxl + (offset * (img->bitsPerPixel/8));
                      pixelValue = (*pixelPtr << 8) | (*(pixelPtr+1));
                      bitShift = img->bitsPerPixel - 5 - img->channelStart[channel];
@@ -310,8 +310,8 @@ extern DmtxPassFail dmtxImageGetPixelValue(DmtxImage *img, int x, int y, int cha
                      *value = (((pixelValue & mask) >> bitShift) << 3); */
             break;
         case 8:
-            assert(img->channelStart[channel] % 8 == 0);
-            assert(img->bitsPerPixel % 8 == 0);
+            DmtxAssert(img->channelStart[channel] % 8 == 0);
+            DmtxAssert(img->bitsPerPixel % 8 == 0);
             *value = img->pxl[offset + channel];
             break;
     }
@@ -331,8 +331,8 @@ extern DmtxPassFail dmtxImageSetPixelValue(DmtxImage *img, int x, int y, int cha
     /* int mask; */
     /* int bitShift; */
 
-    assert(img != NULL);
-    assert(channel < img->channelCount);
+    DmtxAssert(img != NULL);
+    DmtxAssert(channel < img->channelCount);
 
     offset = dmtxImageGetByteOffset(img, x, y);
     if (offset == DmtxUndefined) {
@@ -341,13 +341,13 @@ extern DmtxPassFail dmtxImageSetPixelValue(DmtxImage *img, int x, int y, int cha
 
     switch (img->bitsPerChannel[channel]) {
         case 1:
-            /*       assert(img->bitsPerPixel == 1);
+            /*       DmtxAssert(img->bitsPerPixel == 1);
                      mask = 0x01 << (7 - offset%8);
                      *value = (img->pxl[offset/8] & mask) ? 255 : 0; */
             break;
         case 5:
             /* XXX might be expensive if we want to scale perfect 0-255 range */
-            /*       assert(img->bitsPerPixel == 16);
+            /*       DmtxAssert(img->bitsPerPixel == 16);
                      pixelPtr = img->pxl + (offset * (img->bitsPerPixel/8));
                      pixelValue = (*pixelPtr << 8) | (*(pixelPtr+1));
                      bitShift = img->bitsPerPixel - 5 - img->channelStart[channel];
@@ -355,8 +355,8 @@ extern DmtxPassFail dmtxImageSetPixelValue(DmtxImage *img, int x, int y, int cha
                      *value = (((pixelValue & mask) >> bitShift) << 3); */
             break;
         case 8:
-            assert(img->channelStart[channel] % 8 == 0);
-            assert(img->bitsPerPixel % 8 == 0);
+            DmtxAssert(img->channelStart[channel] % 8 == 0);
+            DmtxAssert(img->bitsPerPixel % 8 == 0);
             img->pxl[offset + channel] = value;
             break;
     }
@@ -374,7 +374,7 @@ extern DmtxPassFail dmtxImageSetPixelValue(DmtxImage *img, int x, int y, int cha
  */
 extern DmtxBoolean dmtxImageContainsInt(DmtxImage *img, int margin, int x, int y)
 {
-    assert(img != NULL);
+    DmtxAssert(img != NULL);
 
     if (x - margin >= 0 && x + margin < img->width && y - margin >= 0 && y + margin < img->height) {
         return DmtxTrue;
@@ -392,7 +392,7 @@ extern DmtxBoolean dmtxImageContainsInt(DmtxImage *img, int margin, int x, int y
  */
 extern DmtxBoolean dmtxImageContainsFloat(DmtxImage *img, double x, double y)
 {
-    assert(img != NULL);
+    DmtxAssert(img != NULL);
 
     if (x >= 0.0 && x < (double)img->width && y >= 0.0 && y < (double)img->height) {
         return DmtxTrue;

@@ -19,6 +19,7 @@
 #include <stdlib.h>
 
 #include "dmtx.h"
+#include "dmtxstatic.h"
 
 /**
  * \brief  Allocate memory for message
@@ -31,7 +32,7 @@ extern DmtxMessage *dmtxMessageCreate(int sizeIdx, int symbolFormat)
     DmtxMessage *message;
     int mappingRows, mappingCols;
 
-    assert(symbolFormat == DmtxFormatMatrix || symbolFormat == DmtxFormatMosaic);
+    DmtxAssert(symbolFormat == DmtxFormatMatrix || symbolFormat == DmtxFormatMosaic);
 
     mappingRows = dmtxGetSymbolAttribute(DmtxSymAttribMappingMatrixRows, sizeIdx);
     mappingCols = dmtxGetSymbolAttribute(DmtxSymAttribMappingMatrixCols, sizeIdx);

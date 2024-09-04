@@ -32,6 +32,8 @@
 #define NN 255
 #define MAX_ERROR_WORD_COUNT 68
 
+#define DMTX_CHECK_BOUNDS(l, i) DmtxAssert((i) >= 0 && (i) < (l)->length && (l)->length <= (l)->capacity)
+
 /* GF add (a + b) */
 #define GfAdd(a, b) ((a) ^ (b))
 
@@ -129,7 +131,7 @@ static DmtxPassFail RsEncode(DmtxMessage *message, int sizeIdx)
             message->code[i] = *(--eccPtr);
         }
 
-        assert(ecc.b == eccPtr);
+        DmtxAssert(ecc.b == eccPtr);
     }
 
     return DmtxPass;
@@ -411,7 +413,7 @@ static DmtxBoolean RsFindErrorLocatorPoly(DmtxByteList *elpOut, const DmtxByteLi
             disTmp = GfAdd(disTmp, GfMult(syn->b[iNext - j], elp[iNext].b[j]));
         }
 
-        assert(dis.length == iNext);
+        DmtxAssert(dis.length == iNext);
         dmtxByteListPush(&dis, disTmp, &passFail);
         CHKPASS;
     }

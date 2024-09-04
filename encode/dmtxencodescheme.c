@@ -218,7 +218,7 @@ static void EncodeChangeScheme(DmtxEncodeStream *stream, DmtxScheme targetScheme
             break;
         default:
             /* Nothing to do for ASCII or Base 256 */
-            assert(stream->currentScheme == DmtxSchemeAscii || stream->currentScheme == DmtxSchemeBase256);
+            DmtxAssert(stream->currentScheme == DmtxSchemeAscii || stream->currentScheme == DmtxSchemeBase256);
             break;
     }
     stream->currentScheme = DmtxSchemeAscii;

@@ -134,7 +134,7 @@ static int GetEncodationScheme(unsigned char cw)
  */
 static void PushOutputWord(DmtxMessage *msg, int value)
 {
-    assert(value >= 0 && value < 256);
+    DmtxAssert(value >= 0 && value < 256);
 
     msg->output[msg->outputIdx++] = (unsigned char)value;
 }
@@ -154,12 +154,12 @@ static DmtxBoolean ValidOutputWord(int value)
  */
 static void PushOutputC40TextWord(DmtxMessage *msg, C40TextState *state, int value)
 {
-    assert(value >= 0 && value < 256);
+    DmtxAssert(value >= 0 && value < 256);
 
     msg->output[msg->outputIdx] = (unsigned char)value;
 
     if (state->upperShift == DmtxTrue) {
-        assert(value < 128);
+        DmtxAssert(value < 128);
         msg->output[msg->outputIdx] += 128;
     }
 
@@ -181,7 +181,7 @@ static void PushOutputMacroHeader(DmtxMessage *msg, int macroType)
     PushOutputWord(msg, 30); /* ASCII RS */
     PushOutputWord(msg, '0');
 
-    assert(macroType == DmtxValue05Macro || macroType == DmtxValue06Macro);
+    DmtxAssert(macroType == DmtxValue05Macro || macroType == DmtxValue06Macro);
     if (macroType == DmtxValue05Macro) {
         PushOutputWord(msg, '5');
     } else {
@@ -231,8 +231,8 @@ static unsigned char *DecodeSchemeAscii(DmtxMessage *msg, unsigned char *ptr, un
         } else if (codeword == DmtxValueAsciiUpperShift) {
             upperShift = DmtxTrue;
         } else if (codeword == DmtxValueAsciiPad) {
-            assert(dataEnd >= ptr);
-            assert(dataEnd - ptr <= INT_MAX);
+            DmtxAssert(dataEnd >= ptr);
+            DmtxAssert(dataEnd - ptr <= INT_MAX);
             msg->padCount = (int)(dataEnd - ptr);
             return dataEnd;
         } else if (codeword == 0 || codeword >= 242) {
@@ -276,7 +276,7 @@ static unsigned char *DecodeSchemeC40Text(DmtxMessage *msg, unsigned char *ptr, 
     state.shift = DmtxC40TextBasicSet;
     state.upperShift = DmtxFalse;
 
-    assert(encScheme == DmtxSchemeC40 || encScheme == DmtxSchemeText);
+    DmtxAssert(encScheme == DmtxSchemeC40 || encScheme == DmtxSchemeText);
 
     /* Unlatch is implied if only one codeword remains */
     if (dataEnd - ptr < 2) {
@@ -442,7 +442,7 @@ static unsigned char *DecodeSchemeEdifact(DmtxMessage *msg, unsigned char *ptr, 
 
             /* Test for unlatch condition */
             if (unpacked[i] == DmtxValueEdifactUnlatch) {
-                assert(msg->output[msg->outputIdx] == 0); /* XXX dirty why? */
+                DmtxAssert(msg->output[msg->outputIdx] == 0); /* XXX dirty why? */
                 return ptr;
             }
 
@@ -474,7 +474,7 @@ static unsigned char *DecodeSchemeEdifact(DmtxMessage *msg, unsigned char *ptr, 
           bitCount -= 6;
 
           if(value == 0x1f) {
-             assert(bits == 0); // should be padded with zero-value bits
+             DmtxAssert(bits == 0); // should be padded with zero-value bits
              return ptr;
           }
           PushOutputWord(msg, value ^ (((value & 0x20) ^ 0x20) << 1));
@@ -484,8 +484,8 @@ static unsigned char *DecodeSchemeEdifact(DmtxMessage *msg, unsigned char *ptr, 
              return ptr;
        }
 
-       assert(bits == 0); // should be padded with zero-value bits
-       assert(bitCount == 0); // should be padded with zero-value bits
+       DmtxAssert(bits == 0); // should be padded with zero-value bits
+       DmtxAssert(bitCount == 0); // should be padded with zero-value bits
        return ptr;
     */
 }
@@ -505,8 +505,8 @@ static unsigned char *DecodeSchemeBase256(DmtxMessage *msg, unsigned char *ptr, 
     unsigned char *ptrEnd;
 
     /* Find positional index used for unrandomizing */
-    assert(ptr + 1 >= msg->code);
-    assert(ptr + 1 - msg->code <= INT_MAX);
+    DmtxAssert(ptr + 1 >= msg->code);
+    DmtxAssert(ptr + 1 - msg->code <= INT_MAX);
     idx = (int)(ptr + 1 - msg->code);
 
     d0 = UnRandomize255State(*(ptr++), idx++);

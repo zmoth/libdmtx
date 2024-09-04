@@ -214,7 +214,7 @@ extern unsigned char *dmtxDecodeGetCache(DmtxDecode *dec, int x, int y)
 {
     int width, height;
 
-    assert(dec != NULL);
+    DmtxAssert(dec != NULL);
 
     /* if(dec.cacheComplete == DmtxFalse)
           CacheImage(); */
@@ -303,8 +303,8 @@ static void CacheFillQuad(DmtxDecode *dec, DmtxPixelLoc p0, DmtxPixelLoc p1, Dmt
     scanlineMin = (int *)malloc(sizeY * sizeof(int));
     scanlineMax = (int *)calloc(sizeY, sizeof(int));
 
-    assert(scanlineMin); /* XXX handle this better */
-    assert(scanlineMax); /* XXX handle this better */
+    DmtxAssert(scanlineMin); /* XXX handle this better */
+    DmtxAssert(scanlineMax); /* XXX handle this better */
 
     for (i = 0; i < sizeY; i++) {
         scanlineMin[i] = dec->xMax;
@@ -576,7 +576,7 @@ extern unsigned char *dmtxDecodeCreateDiagnostic(DmtxDecode *dec, int *totalByte
             *(output++) = (unsigned char)rgb[2];
         }
     }
-    assert(output == pnm + *totalBytes);
+    DmtxAssert(output == pnm + *totalBytes);
 
     return pnm;
 }
@@ -609,7 +609,7 @@ static void TallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, int tally[][24], 
     int statusPrev, statusModule;
     int tPrev, tModule;
 
-    assert(dir == DmtxDirUp || dir == DmtxDirLeft || dir == DmtxDirDown || dir == DmtxDirRight);
+    DmtxAssert(dir == DmtxDirUp || dir == DmtxDirLeft || dir == DmtxDirDown || dir == DmtxDirRight);
 
     travelStep = (dir == DmtxDirUp || dir == DmtxDirRight) ? 1 : -1;
 
@@ -625,7 +625,7 @@ static void TallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, int tally[][24], 
         travelStart = (travelStep == 1) ? xOrigin - 1 : xOrigin + mapWidth;
         travelStop = (travelStep == 1) ? xOrigin + mapWidth : xOrigin - 1;
     } else {
-        assert(dir & DmtxDirVertical);
+        DmtxAssert(dir & DmtxDirVertical);
         line = &symbolCol;
         travel = &symbolRow;
         extent = mapHeight;
@@ -638,7 +638,7 @@ static void TallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, int tally[][24], 
     darkOnLight = (int)(reg->offColor > reg->onColor);
     jumpThreshold = abs((int)(0.4 * (reg->offColor - reg->onColor) + 0.5));
 
-    assert(jumpThreshold >= 0);
+    DmtxAssert(jumpThreshold >= 0);
 
     for (*line = lineStart; *line < lineStop; (*line)++) {
         /* Capture tModule for each leading border module as normal but
@@ -678,7 +678,7 @@ static void TallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, int tally[][24], 
 
             mapRow = symbolRow - yOrigin;
             mapCol = symbolCol - xOrigin;
-            assert(mapRow < 24 && mapCol < 24);
+            DmtxAssert(mapRow < 24 && mapCol < 24);
 
             if (statusModule == DmtxModuleOnRGB) {
                 tally[mapRow][mapCol] += (2 * weight);
@@ -687,7 +687,7 @@ static void TallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, int tally[][24], 
             weight--;
         }
 
-        assert(weight == 0);
+        DmtxAssert(weight == 0);
     }
 }
 
@@ -721,7 +721,7 @@ static DmtxPassFail PopulateArrayFromMatrix(DmtxDecode *dec, DmtxRegion *reg, Dm
     mapHeight = dmtxGetSymbolAttribute(DmtxSymAttribDataRegionRows, reg->sizeIdx);
 
     weightFactor = 2 * (mapHeight + mapWidth + 2);
-    assert(weightFactor > 0);
+    DmtxAssert(weightFactor > 0);
 
     // fprintf(stdout, "libdmtx::PopulateArrayFromMatrix::reg->sizeIdx: %d\n", reg->sizeIdx);
     // fprintf(stdout, "libdmtx::PopulateArrayFromMatrix::reg->flowBegin.plane: %d\n", reg->flowBegin.plane);

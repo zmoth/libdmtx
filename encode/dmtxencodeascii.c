@@ -211,7 +211,7 @@ static DmtxByte Randomize253State(DmtxByte cwValue, int cwPosition)
         tmp -= 254;
     }
 
-    assert(tmp >= 0 && tmp < 256);
+    DmtxAssert(tmp >= 0 && tmp < 256);
 
     return (DmtxByte)tmp;
 }

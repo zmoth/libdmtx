@@ -81,7 +81,7 @@ static void CompleteIfDoneBase256(DmtxEncodeStream *stream, int sizeIdxRequest)
 
     if (!StreamInputHasNext(stream)) {
         headerByteCount = stream->outputChainWordCount - stream->outputChainValueCount;
-        assert(headerByteCount == 1 || headerByteCount == 2);
+        DmtxAssert(headerByteCount == 1 || headerByteCount == 2);
 
         /* Check for special case where every last symbol word is used */
         if (headerByteCount == 2) {
@@ -276,7 +276,7 @@ static unsigned char UnRandomize255State(unsigned char value, int idx)
         tmp += 256;
     }
 
-    assert(tmp >= 0 && tmp < 256);
+    DmtxAssert(tmp >= 0 && tmp < 256);
 
     return (unsigned char)tmp;
 }

@@ -71,7 +71,7 @@ static void StreamMarkComplete(DmtxEncodeStream *stream, int sizeIdx)
     if (stream->status == DmtxStatusEncoding) {
         stream->sizeIdx = sizeIdx;
         stream->status = DmtxStatusComplete;
-        assert(stream->reason == NULL);
+        DmtxAssert(stream->reason == NULL);
     }
 }
 

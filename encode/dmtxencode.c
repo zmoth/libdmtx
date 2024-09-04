@@ -190,7 +190,7 @@ extern DmtxPassFail dmtxEncodeDataMatrix(DmtxEncode *enc, int inputSize, unsigne
     }
 
     /* EncodeDataCodewords() should have updated any auto sizeIdx to a real one */
-    assert(sizeIdx != DmtxSymbolSquareAuto && sizeIdx != DmtxSymbolRectAuto);
+    DmtxAssert(sizeIdx != DmtxSymbolSquareAuto && sizeIdx != DmtxSymbolRectAuto);
 
     /* XXX we can remove a lot of this redundant data */
     enc->region.sizeIdx = sizeIdx;
@@ -216,7 +216,7 @@ extern DmtxPassFail dmtxEncodeDataMatrix(DmtxEncode *enc, int inputSize, unsigne
     if (bitsPerPixel == DmtxUndefined) {
         return DmtxFail;
     }
-    assert(bitsPerPixel % 8 == 0);
+    DmtxAssert(bitsPerPixel % 8 == 0);
 
     /* Allocate memory for the image to be generated */
     pxl = (unsigned char *)malloc((width * bitsPerPixel / 8 + enc->rowPadBytes) * height);

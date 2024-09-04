@@ -265,7 +265,7 @@ static void CompletePartialC40Text(DmtxEncodeStream *stream, DmtxByteList *value
     }
 
     /* Should have exactly one or two input values left */
-    assert(valueList->length == 1 || valueList->length == 2);
+    DmtxAssert(valueList->length == 1 || valueList->length == 2);
 
     sizeIdx1 = FindSymbolSize(stream->output->length + 1, sizeIdxRequest);
     sizeIdx2 = FindSymbolSize(stream->output->length + 2, sizeIdxRequest);
@@ -357,7 +357,7 @@ static void CompletePartialX12(DmtxEncodeStream *stream, DmtxByteList *valueList
     }
 
     /* Should have exactly one or two input values left */
-    assert(valueList->length == 1 || valueList->length == 2);
+    DmtxAssert(valueList->length == 1 || valueList->length == 2);
 
     /* Roll back input progress */
     for (i = 0; i < valueList->length; i++) {
@@ -450,7 +450,7 @@ static DmtxBoolean PartialX12ChunkRemains(DmtxEncodeStream *stream)
 static void PushCTXValues(DmtxByteList *valueList, DmtxByte inputValue, int targetScheme, DmtxPassFail *passFail,
                           int fnc1)
 {
-    assert(valueList->length <= 2);
+    DmtxAssert(valueList->length <= 2);
 
     /* Handle extended ASCII with Upper Shift character */
     if (inputValue > 127 && (fnc1 == DmtxUndefined || (int)inputValue != fnc1)) {

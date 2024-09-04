@@ -17,6 +17,9 @@
 #ifndef __DMTXSTATIC_H__
 #define __DMTXSTATIC_H__
 
+#include <assert.h>
+#include <stdio.h>
+
 #include "dmtx.h"
 
 #define DmtxAlmostZero 0.000001
@@ -89,6 +92,15 @@
             return;                                      \
         }                                                \
     }
+
+#define DmtxAssert(expr)                    \
+    do {                                    \
+        assert(expr);                       \
+        if (!!(expr)) {                     \
+        } else {                            \
+            fprintf(stderr, "%s\n", #expr); \
+        }                                   \
+    } while (0)
 
 typedef enum
 {
