@@ -179,10 +179,10 @@ void BlitActiveRegion(SDL_Surface *screen, SDL_Surface *active, int zoom, int sc
     if (zoom == 1) {
         SDL_BlitSurface(active, NULL, screen, &clipRect);
     } else {
-        /* DO NOT USE SMOOTHING OPTION -- distorts symbol proportions */
-        src = zoomSurface(active, 2.0, 2.0, 0 /* smoothing */);
-        SDL_BlitSurface(src, NULL, screen, &clipRect);
-        SDL_FreeSurface(src);
+        // /* DO NOT USE SMOOTHING OPTION -- distorts symbol proportions */
+        // src = zoomSurface(active, 2.0, 2.0, 0 /* smoothing */);
+        // SDL_BlitSurface(src, NULL, screen, &clipRect);
+        // SDL_FreeSurface(src);
     }
 }
 
@@ -474,10 +474,10 @@ void DrawActiveBorder(SDL_Surface *screen, int activeExtent)
     x11 = x10;
     y11 = y01;
 
-    lineColor(screen, x00, y00, x10, y10, 0x0000ffff);
-    lineColor(screen, x10, y10, x11, y11, 0x0000ffff);
-    lineColor(screen, x11, y11, x01, y01, 0x0000ffff);
-    lineColor(screen, x01, y01, x00, y00, 0x0000ffff);
+    // lineColor(screen, x00, y00, x10, y10, 0x0000ffff);
+    // lineColor(screen, x10, y10, x11, y11, 0x0000ffff);
+    // lineColor(screen, x11, y11, x01, y01, 0x0000ffff);
+    // lineColor(screen, x01, y01, x00, y00, 0x0000ffff);
 }
 
 /**
@@ -511,7 +511,7 @@ void DrawLine(SDL_Surface *screen, int baseExtent, int screenX, int screenY, int
     d0.Y = screenY + (scaledExtent - (int)(p0.Y + 0.5) - 1);
     d1.Y = screenY + (scaledExtent - (int)(p1.Y + 0.5) - 1);
 
-    lineColor(screen, d0.X, d0.Y, d1.X, d1.Y, color);
+    // lineColor(screen, d0.X, d0.Y, d1.X, d1.Y, color);
 }
 
 /**
@@ -540,7 +540,7 @@ void DrawVanishingPoints(SDL_Surface *screen, VanishPointSort *sort, int screenY
         else
             rgba = 0x000077ff; /* blue: weakest */
 
-        rectangleColor(screen, d0.X, d0.Y, d1.X, d1.Y, rgba);
+        // rectangleColor(screen, d0.X, d0.Y, d1.X, d1.Y, rgba);
     }
 }
 
@@ -865,5 +865,5 @@ void DrawPerimeterSide(SDL_Surface *screen, int x00, int y00, int x11, int y11, 
     else
         color = 0x00ff00ff;
 
-    lineColor(screen, xBeg, yBeg, xEnd, yEnd, color);
+    // lineColor(screen, xBeg, yBeg, xEnd, yEnd, color);
 }

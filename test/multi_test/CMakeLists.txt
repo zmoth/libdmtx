@@ -15,6 +15,18 @@ endif()
 
 include_directories(${SDL2_INCLUDE_DIRS})
 
+find_package(SDL2_image REQUIRED)
+
+if(SDL2_image_FOUND)
+    message(STATUS "[${PROJECT_NAME}] SDL2_image_VERSION: ${SDL2_image_VERSION}, SDL2_image_DIR: ${SDL2_image_DIR}")
+    message(STATUS ${SDL2_image_INCLUDE_DIRS})
+    message(STATUS ${SDL2_image_LIBRARIES})
+else()
+    message(FATAL_ERROR "[${PROJECT_NAME}] SDL2_image found failed")
+endif()
+
+include_directories(${SDL2_image_INCLUDE_DIRS})
+
 # 查找OpenGL库
 find_package(OpenGL REQUIRED)
 
@@ -37,5 +49,6 @@ target_link_libraries(
     ${PROJECT_NAME}
     PRIVATE dmtx
     PRIVATE ${SDL2_LIBRARIES}
+    PRIVATE ${SDL2_image_LIBRARIES}
     PRIVATE ${OPENGL_LIBRARIES}
 )

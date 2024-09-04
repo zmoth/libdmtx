@@ -85,6 +85,7 @@ typedef struct AppState_struct
     SDL_Surface *screen;
     SDL_Surface *local;
     SDL_Surface *localTmp;
+    SDL_Window *window;
 } AppState;
 
 typedef enum

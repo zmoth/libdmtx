@@ -64,9 +64,11 @@ int main(int argc, char *argv[])
     DmtxDecode2 *dec2;
     SDL_Rect clipRect;
 
-    if (HandleArgs(&opt, &argc, &argv) == DmtxFail) {
-        exit(1);
-    }
+    // if (HandleArgs(&opt, &argc, &argv) == DmtxFail) {
+    //     exit(1);
+    // }
+
+    opt.imagePath = "D:\\proj\\rack_scanner\\libdmtx\\build\\test\\rotate_test\\Debug\\images\\test_image01.bmp";
 
     gState = InitAppState();
 
@@ -164,7 +166,7 @@ int main(int argc, char *argv[])
         if (gState.printValues == DmtxTrue)
             gState.printValues = DmtxFalse;
 
-        SDL_Flip(gState.screen);
+        // SDL_Flip(gState.screen);
     }
 
     SDL_FreeSurface(gState.localTmp);
@@ -377,7 +379,17 @@ SDL_Surface *SetWindowSize(int windowWidth, int windowHeight)
 {
     SDL_Surface *screen;
 
-    screen = SDL_SetVideoMode(windowWidth, windowHeight, 32, SDL_HWSURFACE | SDL_DOUBLEBUF); /* | SDL_RESIZABLE); */
+    gState.window = SDL_CreateWindow("Multi Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth,
+                                     windowHeight, SDL_WINDOW_RESIZABLE);
+    if (gState.window == NULL) {
+        SDL_Log("Window creation failed: %s\n", SDL_GetError());
+        SDL_Quit();
+        exit(2);
+    }
+
+    screen = SDL_GetWindowSurface(gState.window);
+
+    // screen = SDL_SetVideoMode(windowWidth, windowHeight, 32, SDL_HWSURFACE | SDL_DOUBLEBUF); /* | SDL_RESIZABLE); */
 
     if (screen == NULL) {
         fprintf(stderr, "Couldn't set %dx%dx32 video mode: %s\n", windowWidth, windowHeight, SDL_GetError());
@@ -467,14 +479,14 @@ DmtxPassFail HandleEvent(SDL_Event *event, AppState *state, SDL_Surface *picture
                 case SDL_BUTTON_RIGHT:
                     state->rightButton = event->button.state;
                     break;
-                case SDL_BUTTON_WHEELDOWN:
-                    if (state->activeExtent > 32)
-                        state->activeExtent /= 2;
-                    break;
-                case SDL_BUTTON_WHEELUP:
-                    if (state->activeExtent < 64)
-                        state->activeExtent *= 2;
-                    break;
+                    // case SDL_BUTTON_WHEELDOWN:
+                    //     if (state->activeExtent > 32)
+                    //         state->activeExtent /= 2;
+                    //     break;
+                    // case SDL_BUTTON_WHEELUP:
+                    //     if (state->activeExtent < 64)
+                    //         state->activeExtent *= 2;
+                    //     break;
             }
             break;
 
@@ -504,12 +516,12 @@ DmtxPassFail HandleEvent(SDL_Event *event, AppState *state, SDL_Surface *picture
             state->quit = DmtxTrue;
             break;
 
-        case SDL_VIDEORESIZE:
-            state->windowWidth = event->resize.w;
-            state->windowHeight = event->resize.h;
-            *screen = SetWindowSize(state->windowWidth, state->windowHeight);
-            nudgeRequired = DmtxTrue;
-            break;
+            // case SDL_VIDEORESIZE:
+            //     state->windowWidth = event->resize.w;
+            //     state->windowHeight = event->resize.h;
+            //     *screen = SetWindowSize(state->windowWidth, state->windowHeight);
+            //     nudgeRequired = DmtxTrue;
+            //     break;
 
         default:
             break;
