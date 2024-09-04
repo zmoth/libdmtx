@@ -13,6 +13,8 @@
 #ifndef __CALLBACK_H__
 #define __CALLBACK_H__
 
+#include "dmtx.h"
+
 void BuildMatrixCallback2(DmtxRegion *region);
 void BuildMatrixCallback3(DmtxMatrix3 region);
 void BuildMatrixCallback4(DmtxMatrix3 region);

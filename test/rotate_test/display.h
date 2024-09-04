@@ -10,15 +10,22 @@
  * \file display.h
  */
 
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <SDL/SDL.h>
+#include <SDL.h>
+#include <SDL_opengl.h>
+
+#ifdef _WIN32
+#    include <gl/GL.h>
+#    include <gl/GLU.h>
+#else
+#    include <OpenGL/gl.h>
+#    include <OpenGL/glu.h>
+#endif
 
 GLfloat view_rotx, view_roty, view_rotz;
 GLfloat angle;
 
-GLuint   barcodeTexture;
-GLint    barcodeList;
+GLuint barcodeTexture;
+GLint barcodeList;
 
 SDL_Surface *initDisplay(void);
 void DrawBarCode(void);
