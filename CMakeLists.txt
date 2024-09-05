@@ -34,15 +34,15 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 endif()
 
 if(DMTX_SHARED)
-  add_library(${PROJECT_NAME} SHARED "dmtx.c")
+  add_library(${PROJECT_NAME} SHARED "src/dmtx.c")
 else()
-  add_library(${PROJECT_NAME} STATIC "dmtx.c")
+  add_library(${PROJECT_NAME} STATIC "src/dmtx.c")
 endif()
 
 # 添加配置头文件，将CMake中的版本等信息转换为头文件
 configure_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/config.h.in"
-  "${CMAKE_CURRENT_SOURCE_DIR}/config.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/config.h"
   @ONLY
 )
 
@@ -56,11 +56,11 @@ else()
   target_link_libraries(${PROJECT_NAME} PUBLIC -lm)
 endif()
 
-set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/dmtx.h")
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/src/dmtx.h")
 
 target_include_directories(
   ${PROJECT_NAME}
-  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 )
 
 # 设定工程（通常是库或可执行文件）的输出目录
