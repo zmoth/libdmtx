@@ -30,26 +30,6 @@
 #include "config.h"
 #include "dmtxstatic.h"
 
-#ifndef CALLBACK_POINT_PLOT
-#    define CALLBACK_POINT_PLOT(a, b, c, d) (void)0
-#endif
-
-#ifndef CALLBACK_POINT_XFRM
-#    define CALLBACK_POINT_XFRM(a, b, c, d) (void)0
-#endif
-
-#ifndef CALLBACK_MODULE
-#    define CALLBACK_MODULE(a, b, c, d, e) (void)0
-#endif
-
-#ifndef CALLBACK_MATRIX
-#    define CALLBACK_MATRIX(a) (void)0
-#endif
-
-#ifndef CALLBACK_FINAL
-#    define CALLBACK_FINAL(a, b) (void)0
-#endif
-
 /**
  * Use #include to merge the individual .c source files into a single combined
  * file during preprocessing. This allows the project to be organized in files
@@ -60,6 +40,7 @@
 
 #include "decode/dmtxdecode.c"
 #include "decode/dmtxdecodescheme.c"
+#include "dmtxcallback.c"
 #include "dmtxmessage.c"
 #include "dmtxplacemod.c"
 #include "dmtxreedsol.c"

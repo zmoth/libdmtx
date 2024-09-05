@@ -153,7 +153,11 @@ extern DmtxRegion *dmtxRegionScanPixel(DmtxDecode *dec, int x, int y)
         return NULL;
     }
 
-    CALLBACK_MATRIX(&reg);
+#ifdef DEBUG_CALLBACK
+    if (cbBuildMatrixRegion) {
+        cbBuildMatrixRegion(&reg);
+    }
+#endif
 
     /* Calculate the best fitting symbol size */
     if (matrixRegionFindSize(dec, &reg) == DmtxFail) {
@@ -201,7 +205,11 @@ static DmtxPointFlow matrixRegionSeekEdge(DmtxDecode *dec, DmtxPixelLoc loc)
         flowNegBack = findStrongestNeighbor(dec, flowNeg, +1);
         if (flowPos.arrive == (flowPosBack.arrive + 4) % 8 && flowNeg.arrive == (flowNegBack.arrive + 4) % 8) {
             flow.arrive = dmtxNeighborNone;
-            CALLBACK_POINT_PLOT(flow.loc, 1, 1, 1);
+#ifdef DEBUG_CALLBACK
+            if (cbPlotPoint) {
+                cbPlotPoint(flow.loc, 1, 1, 1);
+            }
+#endif
             return flow;
         }
     }
@@ -364,8 +372,12 @@ static DmtxPassFail matrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, Dm
         }
     }
 
-    CALLBACK_POINT_PLOT(reg->locR, 2, 1, 1);
-    CALLBACK_POINT_PLOT(reg->locT, 2, 1, 1);
+#ifdef DEBUG_CALLBACK
+    if (cbPlotPoint) {
+        cbPlotPoint(reg->locR, 2, 1, 1);
+        cbPlotPoint(reg->locT, 2, 1, 1);
+    }
+#endif
 
     reg->leftKnown = reg->bottomKnown = 1;
 
@@ -1158,7 +1170,11 @@ static DmtxPassFail trailBlazeContinuous(DmtxDecode *dec, DmtxRegion *reg, DmtxP
                 boundMin.Y = flow.loc.Y;
             }
 
-            CALLBACK_POINT_PLOT(flow.loc, (sign > 0) ? 2 : 3, 1, 2);
+#ifdef DEBUG_CALLBACK
+            if (cbPlotPoint) {
+                cbPlotPoint(flow.loc, (sign > 0) ? 2 : 3, 1, 2);
+            }
+#endif
         }
 
         if (sign > 0) {
@@ -1411,7 +1427,11 @@ static DmtxBestLine findBestSolidLine(DmtxDecode *dec, DmtxRegion *reg, int step
             }
         }
 
-        CALLBACK_POINT_PLOT(follow.loc, (sign > 1) ? 4 : 3, 1, 2);
+#ifdef DEBUG_CALLBACK
+        if (cbPlotPoint) {
+            cbPlotPoint(follow.loc, (sign > 1) ? 4 : 3, 1, 2);
+        }
+#endif
 
         follow = followStep(dec, reg, follow, sign);
     }
@@ -1498,7 +1518,11 @@ static DmtxBestLine findBestSolidLine2(DmtxDecode *dec, DmtxPixelLoc loc0, int t
             }
         }
 
-        CALLBACK_POINT_PLOT(follow.loc, (sign > 1) ? 4 : 3, 1, 2);
+#ifdef DEBUG_CALLBACK
+        if (cbPlotPoint) {
+            cbPlotPoint(follow.loc, (sign > 1) ? 4 : 3, 1, 2);
+        }
+#endif
 
         follow = followStep2(dec, follow, sign);
     }
@@ -1593,8 +1617,12 @@ static DmtxPassFail findTravelLimits(DmtxDecode *dec, DmtxRegion *reg, DmtxBestL
             break;
         }
 
-        CALLBACK_POINT_PLOT(followPos.loc, 2, 1, 2);
-        CALLBACK_POINT_PLOT(followNeg.loc, 4, 1, 2);
+#ifdef DEBUG_CALLBACK
+        if (cbPlotPoint) {
+            cbPlotPoint(followPos.loc, 2, 1, 2);
+            cbPlotPoint(followNeg.loc, 4, 1, 2);
+        }
+#endif
 
         followPos = followStep(dec, reg, followPos, +1);
         followNeg = followStep(dec, reg, followNeg, -1);
@@ -1602,8 +1630,12 @@ static DmtxPassFail findTravelLimits(DmtxDecode *dec, DmtxRegion *reg, DmtxBestL
     line->devn = max(posWanderMaxLock - posWanderMinLock, negWanderMaxLock - negWanderMinLock) / 256;
     line->distSq = distSqMax;
 
-    CALLBACK_POINT_PLOT(posMax, 2, 1, 1);
-    CALLBACK_POINT_PLOT(negMax, 2, 1, 1);
+#ifdef DEBUG_CALLBACK
+    if (cbPlotPoint) {
+        cbPlotPoint(posMax, 2, 1, 1);
+        cbPlotPoint(negMax, 2, 1, 1);
+    }
+#endif
 
     return DmtxPass;
 }
@@ -1741,8 +1773,12 @@ static DmtxBresLine bresLineInit(DmtxPixelLoc loc0, DmtxPixelLoc loc1, DmtxPixel
     line.outward = 0;
     line.error = (line.steep) ? line.yDelta / 2 : line.xDelta / 2;
 
-    CALLBACK_POINT_PLOT(loc0, 3, 1, 1);
-    CALLBACK_POINT_PLOT(loc1, 3, 1, 1);
+#ifdef DEBUG_CALLBACK
+    if (cbPlotPoint) {
+        cbPlotPoint(loc0, 3, 1, 1);
+        cbPlotPoint(loc1, 3, 1, 1);
+    }
+#endif
 
     return line;
 }

@@ -12,14 +12,12 @@
 
 #include "rotate_test.h"
 
+#include "callback.h"
 #include "image.h"
 
 // Pane Layout
-//  ———————————
-// | 1 | 2 | 3 |
-// |———————————|
-// | 4 | 5 | 6 |
-//  ———————————
+// |1|2|3|
+// |4|5|6|
 
 GLfloat view_rotx = 0.0, view_roty = 0.0, view_rotz = 0.0;
 GLfloat angle = 0.0;
@@ -51,6 +49,9 @@ int main(int argc, char *argv[])
     DmtxRegion *reg = NULL;
     DmtxMessage *msg = NULL;
     DmtxTime timeout;
+
+    dmtxCallbackBuildMatrixRegion(BuildMatrixCallback2);
+    dmtxCallbackPlotPoint(PlotPointCallback);
 
     /* Initialize display window */
     screen = initDisplay();

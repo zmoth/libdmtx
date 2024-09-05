@@ -651,6 +651,21 @@ extern "C"
 
     extern char *dmtxVersion(void);
 
+#ifdef DEBUG_CALLBACK
+    typedef void (*DmtxCallbackBuildMatrixRegion)(DmtxRegion *region);
+    typedef void (*DmtxCallbackBuildMatrix)(DmtxMatrix3 matrix);
+    typedef void (*DmtxCallbackPlotPoint)(DmtxPixelLoc loc, int colorInt, int paneNbr, int dispType);
+    typedef void (*DmtxCallbackXfrmPlotPoint)(DmtxVector2 point, DmtxMatrix3 xfrm, int paneNbr, int dispType);
+    typedef void (*DmtxCallbackFinal)(DmtxDecode *decode, DmtxRegion *region);
+    // typedef void (*DmtxCallbackPlotModule)(DmtxDecode *info, DmtxRegion *region, int row, int col, DmtxColor3 color);
+
+    extern void dmtxCallbackBuildMatrixRegion(DmtxCallbackBuildMatrixRegion cb);
+    extern void dmtxCallbackBuildMatrix(DmtxCallbackBuildMatrix cb);
+    extern void dmtxCallbackPlotPoint(DmtxCallbackPlotPoint cb);
+    extern void dmtxCallbackXfrmPlotPoint(DmtxCallbackXfrmPlotPoint cb);
+    extern void dmtxCallbackFinal(DmtxCallbackFinal cb);
+#endif
+
 #ifdef __cplusplus
 }
 #endif
