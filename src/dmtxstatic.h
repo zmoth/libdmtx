@@ -269,8 +269,8 @@ static DmtxPassFail rsRepairErrors(DmtxByteList *rec, const DmtxByteList *loc, c
 
 /* dmtxscangrid.c */
 static DmtxScanGrid initScanGrid(DmtxDecode *dec);
-static int popGridLocation(DmtxScanGrid *grid, /*@out@*/ DmtxPixelLoc *locPtr);
-static int getGridCoordinates(DmtxScanGrid *grid, /*@out@*/ DmtxPixelLoc *locPtr);
+static int popGridLocation(DmtxScanGrid *grid, OUT DmtxPixelLoc *locPtr);
+static int getGridCoordinates(DmtxScanGrid *grid, OUT DmtxPixelLoc *locPtr);
 static void setDerivedFields(DmtxScanGrid *grid);
 
 /* dmtxsymbol.c */

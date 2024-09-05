@@ -71,6 +71,10 @@ extern "C"
 #define dmtxLogError(...) dmtxLog(DmtxLogError, __FILE__, __LINE__, __VA_ARGS__)
 #define dmtxLogFatal(...) dmtxLog(DmtxLogFatal, __FILE__, __LINE__, __VA_ARGS__)
 
+#define IN    /*表示输入参数，指针指向的值不会修改*/
+#define OUT   /*表示输出参数，指针指向的值会修改，且不会读*/
+#define INOUT /*表示输入输出参数，指针指向的值会修改，且会读取*/
+
     typedef enum
     {
         DmtxStatusEncoding, /* Encoding is currently underway */
@@ -585,12 +589,12 @@ extern "C"
     extern DmtxPassFail dmtxDecodeSetProp(DmtxDecode *dec, int prop, int value);
     extern int dmtxDecodeGetProp(DmtxDecode *dec, int prop);
     extern /*@exposed@*/ unsigned char *dmtxDecodeGetCache(DmtxDecode *dec, int x, int y);
-    extern DmtxPassFail dmtxDecodeGetPixelValue(DmtxDecode *dec, int x, int y, int channel, /*@out@*/ int *value);
+    extern DmtxPassFail dmtxDecodeGetPixelValue(DmtxDecode *dec, int x, int y, int channel, OUT int *value);
     extern DmtxMessage *dmtxDecodeMatrixRegion(DmtxDecode *dec, DmtxRegion *reg, int fix);
     extern DmtxMessage *dmtxDecodePopulatedArray(int sizeIdx, DmtxMessage *msg, int fix);
     extern DmtxMessage *dmtxDecodeMosaicRegion(DmtxDecode *dec, DmtxRegion *reg, int fix);
-    extern unsigned char *dmtxDecodeCreateDiagnostic(DmtxDecode *dec, /*@out@*/ int *totalBytes,
-                                                     /*@out@*/ int *headerBytes, int style);
+    extern unsigned char *dmtxDecodeCreateDiagnostic(DmtxDecode *dec, OUT int *totalBytes, OUT int *headerBytes,
+                                                     int style);
 
     /* dmtxregion.c */
     extern DmtxRegion *dmtxRegionCreate(DmtxRegion *reg);
@@ -612,41 +616,41 @@ extern "C"
     extern DmtxPassFail dmtxImageSetProp(DmtxImage *img, int prop, int value);
     extern int dmtxImageGetProp(DmtxImage *img, int prop);
     extern int dmtxImageGetByteOffset(DmtxImage *img, int x, int y);
-    extern DmtxPassFail dmtxImageGetPixelValue(DmtxImage *img, int x, int y, int channel, /*@out@*/ int *value);
+    extern DmtxPassFail dmtxImageGetPixelValue(DmtxImage *img, int x, int y, int channel, OUT int *value);
     extern DmtxPassFail dmtxImageSetPixelValue(DmtxImage *img, int x, int y, int channel, int value);
     extern DmtxBoolean dmtxImageContainsInt(DmtxImage *img, int margin, int x, int y);
     extern DmtxBoolean dmtxImageContainsFloat(DmtxImage *img, double x, double y);
 
     /* dmtxvector2.c */
     extern DmtxVector2 *dmtxVector2AddTo(DmtxVector2 *v1, const DmtxVector2 *v2);
-    extern DmtxVector2 *dmtxVector2Add(/*@out@*/ DmtxVector2 *vOut, const DmtxVector2 *v1, const DmtxVector2 *v2);
+    extern DmtxVector2 *dmtxVector2Add(OUT DmtxVector2 *vOut, const DmtxVector2 *v1, const DmtxVector2 *v2);
     extern DmtxVector2 *dmtxVector2SubFrom(DmtxVector2 *v1, const DmtxVector2 *v2);
-    extern DmtxVector2 *dmtxVector2Sub(/*@out@*/ DmtxVector2 *vOut, const DmtxVector2 *v1, const DmtxVector2 *v2);
+    extern DmtxVector2 *dmtxVector2Sub(OUT DmtxVector2 *vOut, const DmtxVector2 *v1, const DmtxVector2 *v2);
     extern DmtxVector2 *dmtxVector2ScaleBy(DmtxVector2 *v, double s);
-    extern DmtxVector2 *dmtxVector2Scale(/*@out@*/ DmtxVector2 *vOut, const DmtxVector2 *v, double s);
+    extern DmtxVector2 *dmtxVector2Scale(OUT DmtxVector2 *vOut, const DmtxVector2 *v, double s);
     extern double dmtxVector2Cross(const DmtxVector2 *v1, const DmtxVector2 *v2);
     extern double dmtxVector2Norm(DmtxVector2 *v);
     extern double dmtxVector2Dot(const DmtxVector2 *v1, const DmtxVector2 *v2);
     extern double dmtxVector2Mag(const DmtxVector2 *v);
     extern double dmtxDistanceFromRay2(const DmtxRay2 *r, const DmtxVector2 *q);
     extern double dmtxDistanceAlongRay2(const DmtxRay2 *r, const DmtxVector2 *q);
-    extern DmtxPassFail dmtxRay2Intersect(/*@out@*/ DmtxVector2 *point, const DmtxRay2 *p0, const DmtxRay2 *p1);
-    extern DmtxPassFail dmtxPointAlongRay2(/*@out@*/ DmtxVector2 *point, const DmtxRay2 *r, double t);
+    extern DmtxPassFail dmtxRay2Intersect(OUT DmtxVector2 *point, const DmtxRay2 *p0, const DmtxRay2 *p1);
+    extern DmtxPassFail dmtxPointAlongRay2(OUT DmtxVector2 *point, const DmtxRay2 *r, double t);
 
     /* dmtxmatrix3.c */
-    extern void dmtxMatrix3Copy(/*@out@*/ DmtxMatrix3 m0, DmtxMatrix3 m1);
-    extern void dmtxMatrix3Identity(/*@out@*/ DmtxMatrix3 m);
-    extern void dmtxMatrix3Translate(/*@out@*/ DmtxMatrix3 m, double tx, double ty);
-    extern void dmtxMatrix3Rotate(/*@out@*/ DmtxMatrix3 m, double angle);
-    extern void dmtxMatrix3Scale(/*@out@*/ DmtxMatrix3 m, double sx, double sy);
-    extern void dmtxMatrix3Shear(/*@out@*/ DmtxMatrix3 m, double shx, double shy);
-    extern void dmtxMatrix3LineSkewTop(/*@out@*/ DmtxMatrix3 m, double b0, double b1, double sz);
-    extern void dmtxMatrix3LineSkewTopInv(/*@out@*/ DmtxMatrix3 m, double b0, double b1, double sz);
-    extern void dmtxMatrix3LineSkewSide(/*@out@*/ DmtxMatrix3 m, double b0, double b1, double sz);
-    extern void dmtxMatrix3LineSkewSideInv(/*@out@*/ DmtxMatrix3 m, double b0, double b1, double sz);
-    extern void dmtxMatrix3Multiply(/*@out@*/ DmtxMatrix3 mOut, DmtxMatrix3 m0, DmtxMatrix3 m1);
+    extern void dmtxMatrix3Copy(OUT DmtxMatrix3 m0, DmtxMatrix3 m1);
+    extern void dmtxMatrix3Identity(OUT DmtxMatrix3 m);
+    extern void dmtxMatrix3Translate(OUT DmtxMatrix3 m, double tx, double ty);
+    extern void dmtxMatrix3Rotate(OUT DmtxMatrix3 m, double angle);
+    extern void dmtxMatrix3Scale(OUT DmtxMatrix3 m, double sx, double sy);
+    extern void dmtxMatrix3Shear(OUT DmtxMatrix3 m, double shx, double shy);
+    extern void dmtxMatrix3LineSkewTop(OUT DmtxMatrix3 m, double b0, double b1, double sz);
+    extern void dmtxMatrix3LineSkewTopInv(OUT DmtxMatrix3 m, double b0, double b1, double sz);
+    extern void dmtxMatrix3LineSkewSide(OUT DmtxMatrix3 m, double b0, double b1, double sz);
+    extern void dmtxMatrix3LineSkewSideInv(OUT DmtxMatrix3 m, double b0, double b1, double sz);
+    extern void dmtxMatrix3Multiply(OUT DmtxMatrix3 mOut, DmtxMatrix3 m0, DmtxMatrix3 m1);
     extern void dmtxMatrix3MultiplyBy(DmtxMatrix3 m0, DmtxMatrix3 m1);
-    extern int dmtxMatrix3VMultiply(/*@out@*/ DmtxVector2 *vOut, DmtxVector2 *vIn, DmtxMatrix3 m);
+    extern int dmtxMatrix3VMultiply(OUT DmtxVector2 *vOut, DmtxVector2 *vIn, DmtxMatrix3 m);
     extern int dmtxMatrix3VMultiplyBy(DmtxVector2 *v, DmtxMatrix3 m);
     extern void dmtxMatrix3Print(DmtxMatrix3 m);
 
