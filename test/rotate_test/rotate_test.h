@@ -16,11 +16,11 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <assert.h>
+#include <dmtx.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../dmtx.h"
 #include "display.h"
 
 extern GLfloat view_rotx;

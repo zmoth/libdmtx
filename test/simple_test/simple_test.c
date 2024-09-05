@@ -14,110 +14,109 @@
  * \file simple_test.c
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <assert.h>
+#include <dmtx.h>
 #include <math.h>
-#include "../../dmtx.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-   size_t          width, height, bytesPerPixel;
-   unsigned char   str[] = "30Q324343430794<OQQ";
-   unsigned char  *pxl;
-   DmtxEncode     *enc;
-   DmtxImage      *img;
-   DmtxDecode     *dec;
-   DmtxRegion     *reg;
-   DmtxMessage    *msg;
+    size_t width, height, bytesPerPixel;
+    unsigned char str[] = "30Q324343430794<OQQ";
+    unsigned char *pxl;
+    DmtxEncode *enc;
+    DmtxImage *img;
+    DmtxDecode *dec;
+    DmtxRegion *reg;
+    DmtxMessage *msg;
 
-   fprintf(stdout, "input:  \"%s\"\n", str);
+    printf("input:  \"%s\"\n", str);
 
-   /* 1) ENCODE a new Data Matrix barcode image (in memory only) */
+    /* 1) ENCODE a new Data Matrix barcode image (in memory only) */
 
-   enc = dmtxEncodeCreate();
+    enc = dmtxEncodeCreate();
 
-   /*
-    dmtxEncodeSetProp( enc, DmtxPropPixelPacking, DmtxPack16bppRGB );
-    dmtxEncodeSetProp( enc, DmtxPropPixelPacking, DmtxPack32bppRGB );
-    dmtxEncodeSetProp( enc, DmtxPropWidth, 160 );
-    dmtxEncodeSetProp( enc, DmtxPropHeight, 160 );
-   */
+    /*
+     dmtxEncodeSetProp( enc, DmtxPropPixelPacking, DmtxPack16bppRGB );
+     dmtxEncodeSetProp( enc, DmtxPropPixelPacking, DmtxPack32bppRGB );
+     dmtxEncodeSetProp( enc, DmtxPropWidth, 160 );
+     dmtxEncodeSetProp( enc, DmtxPropHeight, 160 );
+    */
 
-   assert(enc != NULL);
-   dmtxEncodeDataMatrix(enc, strlen((const char *)str), str);
+    assert(enc != NULL);
+    dmtxEncodeDataMatrix(enc, (int)strlen((const char *)str), str);
 
-   /* 2) COPY the new image data before releasing encoding memory */
+    /* 2) COPY the new image data before releasing encoding memory */
 
-   width = dmtxImageGetProp(enc->image, DmtxPropWidth);
-   height = dmtxImageGetProp(enc->image, DmtxPropHeight);
-   bytesPerPixel = dmtxImageGetProp(enc->image, DmtxPropBytesPerPixel);
+    width = dmtxImageGetProp(enc->image, DmtxPropWidth);
+    height = dmtxImageGetProp(enc->image, DmtxPropHeight);
+    bytesPerPixel = dmtxImageGetProp(enc->image, DmtxPropBytesPerPixel);
 
-   pxl = (unsigned char *)malloc(width * height * bytesPerPixel);
-   assert(pxl != NULL);
-   memcpy(pxl, enc->image->pxl, width * height * bytesPerPixel);
+    pxl = (unsigned char *)malloc(width * height * bytesPerPixel);
+    assert(pxl != NULL);
+    memcpy(pxl, enc->image->pxl, width * height * bytesPerPixel);
 
-   dmtxEncodeDestroy(&enc);
+    dmtxEncodeDestroy(&enc);
 
-   fprintf(stdout, "width:  \"%zd\"\n", width);
-   fprintf(stdout, "height: \"%zd\"\n", height);
-   fprintf(stdout, "bpp:    \"%zd\"\n", bytesPerPixel);
+    printf("width:  \"%zd\"\n", width);
+    printf("height: \"%zd\"\n", height);
+    printf("bpp:    \"%zd\"\n", bytesPerPixel);
 
-   for (int i=0; i<width*height; i++){
-      fprintf(stdout, "%d", (pxl[i*3])==0);
-      if (i%width==width-1){
-         fprintf(stdout, "\n");
-      }
-   }
+    for (int i = 0; i < width * height; i++) {
+        printf("%d", (pxl[i * 3]) == 0);
+        if (i % width == width - 1) {
+            printf("\n");
+        }
+    }
 
-   /* 3) DECODE the Data Matrix barcode from the copied image */
+    /* 3) DECODE the Data Matrix barcode from the copied image */
 
-   img = dmtxImageCreate(pxl, width, height, DmtxPack24bppRGB);
-   assert(img != NULL);
+    img = dmtxImageCreate(pxl, (int)width, (int)height, DmtxPack24bppRGB);
+    assert(img != NULL);
 
-   dec = dmtxDecodeCreate(img, 1);
-   assert(dec != NULL);
+    dec = dmtxDecodeCreate(img, 1);
+    assert(dec != NULL);
 
-   reg = dmtxRegionFindNext(dec, NULL);
-   if(reg != NULL) {
-      msg = dmtxDecodeMatrixRegion(dec, reg, DmtxUndefined);
+    reg = dmtxRegionFindNext(dec, NULL);
+    if (reg != NULL) {
+        msg = dmtxDecodeMatrixRegion(dec, reg, DmtxUndefined);
 
-      fprintf(stdout, "msg->arraySize :  \"%zd\"\n", msg->arraySize );
-      fprintf(stdout, "msg->codeSize  :  \"%zd\"\n", msg->codeSize  );
-      fprintf(stdout, "msg->outputSize:  \"%zd\"\n", msg->outputSize);
-      int oned = sqrt(msg->arraySize);
-      for (int i=0; i<msg->arraySize; i++){
-         fprintf(stdout, " %c.", msg->array[i]);
-         if (i%oned==oned-1){
-            fprintf(stdout, "\n");
-         }
-      }
-      fprintf(stdout, "\n\n");
-      for (int j=0; j<msg->codeSize; j++){
-         fprintf(stdout, " %c.", msg->code[j]);
-      }
-      fprintf(stdout, "\n\n");
-      for (int k=0; k<msg->outputSize; k++){
-         fprintf(stdout, " %c.", msg->output[k]);
-      }
-      fprintf(stdout, "\n\n");
+        printf("msg->arraySize :  \"%zd\"\n", msg->arraySize);
+        printf("msg->codeSize  :  \"%zd\"\n", msg->codeSize);
+        printf("msg->outputSize:  \"%zd\"\n", msg->outputSize);
+        int oned = (int)sqrt((double)msg->arraySize);
+        for (int i = 0; i < msg->arraySize; i++) {
+            printf(" %c.", msg->array[i]);
+            if (i % oned == oned - 1) {
+                printf("\n");
+            }
+        }
+        printf("\n\n");
+        for (int j = 0; j < msg->codeSize; j++) {
+            printf(" %c.", msg->code[j]);
+        }
+        printf("\n\n");
+        for (int k = 0; k < msg->outputSize; k++) {
+            printf(" %c.", msg->output[k]);
+        }
+        printf("\n\n");
 
-      if(msg != NULL) {
-         fputs("output: \"", stdout);
-         fwrite(msg->output, sizeof(unsigned char), msg->outputIdx, stdout);
-         fputs("\"\n", stdout);
-         dmtxMessageDestroy(&msg);
-      }
-      dmtxRegionDestroy(&reg);
-   }
+        if (msg != NULL) {
+            fputs("output: \"", stdout);
+            fwrite(msg->output, sizeof(unsigned char), msg->outputIdx, stdout);
+            fputs("\"\n", stdout);
+            dmtxMessageDestroy(&msg);
+        }
+        dmtxRegionDestroy(&reg);
+    }
 
-   dmtxDecodeDestroy(&dec);
-   dmtxImageDestroy(&img);
-   free(pxl);
+    dmtxDecodeDestroy(&dec);
+    dmtxImageDestroy(&img);
+    free(pxl);
 
-   fprintf(stdout, "%d\n", getSizeIdxFromSymbolDimension(12, 12));
+    printf("%d\n", getSizeIdxFromSymbolDimension(12, 12));
 
-   exit(0);
+    exit(0);
 }

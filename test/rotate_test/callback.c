@@ -361,14 +361,14 @@ void PlotModuleCallback(DmtxDecode *info, DmtxRegion *region, int row, int col, 
     }
 
     glBegin(GL_QUADS);
-    glVertex2f((float)modSize * (col + 0.5) + padSize - halfModsize,
-               (float)modSize * (row + 0.5) + padSize - halfModsize);
-    glVertex2f((float)modSize * (col + 0.5) + padSize + halfModsize,
-               (float)modSize * (row + 0.5) + padSize - halfModsize);
-    glVertex2f((float)modSize * (col + 0.5) + padSize + halfModsize,
-               (float)modSize * (row + 0.5) + padSize + halfModsize);
-    glVertex2f((float)modSize * (col + 0.5) + padSize - halfModsize,
-               (float)modSize * (row + 0.5) + padSize + halfModsize);
+    glVertex2f((float)(modSize * (col + 0.5) + padSize - halfModsize),
+               (float)(modSize * (row + 0.5) + padSize - halfModsize));
+    glVertex2f((float)(modSize * (col + 0.5) + padSize + halfModsize),
+               (float)(modSize * (row + 0.5) + padSize - halfModsize));
+    glVertex2f((float)(modSize * (col + 0.5) + padSize + halfModsize),
+               (float)(modSize * (row + 0.5) + padSize + halfModsize));
+    glVertex2f((float)(modSize * (col + 0.5) + padSize - halfModsize),
+               (float)(modSize * (row + 0.5) + padSize + halfModsize));
     glEnd();
 }
 
@@ -380,7 +380,7 @@ void FinalCallback(DmtxDecode *decode, DmtxRegion *region)
 {
     int row, col;
     int symbolRows, symbolCols;
-    int moduleStatus;
+    int moduleStatus = 0;
     /* DmtxColor3 black = { 0.0, 0.0, 0.0 };
        DmtxColor3 white = { 255.0, 255.0, 255.0 }; */
 

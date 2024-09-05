@@ -11,91 +11,90 @@
  */
 
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
+#    include <unistd.h>
 #endif
 
-#include <stdlib.h>
+#include <dmtx.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include "../../dmtx.h"
 
 char *programName;
 
-static void FatalError(int idx, char* msg)
+static void FatalError(int idx, char *msg)
 {
-   fprintf(stdout, "FAIL: (%d) %s\n", idx, msg);
-   exit(1);
+    printf("FAIL: (%d) %s\n", idx, msg);
+    exit(1);
 }
 
 static void timeAddTest(void);
 static void timePrint(DmtxTime t);
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-   programName = argv[0];
+    programName = argv[0];
 
-   timeAddTest();
+    timeAddTest();
 
-   exit(0);
+    exit(0);
 }
 
 /**
  *
  *
  */
-static void
-timePrint(DmtxTime t)
+static void timePrint(DmtxTime t)
 {
 #ifdef _MSC_VER
-   fprintf(stdout, "t.sec: %llu\n", t.sec);
+    printf("t.sec: %llu\n", t.sec);
 #else
-   fprintf(stdout, "t.sec: %lu\n", t.sec);
+    printf("t.sec: %lu\n", t.sec);
 #endif
 
-   fprintf(stdout, "t.usec: %lu\n", t.usec);
+    printf("t.usec: %lu\n", t.usec);
 }
 
 /**
  *
  *
  */
-static void
-timeAddTest(void)
+static void timeAddTest(void)
 {
-   DmtxTime t0, t1;
+    DmtxTime t0, t1;
 
-   t0 = dmtxTimeNow();
-   t0.usec = 999000;
+    t0 = dmtxTimeNow();
+    t0.usec = 999000;
 
-   t1 = dmtxTimeAdd(t0, 0);
-   if(memcmp(&t0, &t1, sizeof(DmtxTime)) != 0)
-      FatalError(1, "timeAddTest\n");
+    t1 = dmtxTimeAdd(t0, 0);
+    if (memcmp(&t0, &t1, sizeof(DmtxTime)) != 0) {
+        FatalError(1, "timeAddTest\n");
+    }
 
-   t1 = dmtxTimeAdd(t0, 1);
-   if(memcmp(&t0, &t1, sizeof(DmtxTime)) == 0)
-      FatalError(2, "timeAddTest\n");
+    t1 = dmtxTimeAdd(t0, 1);
+    if (memcmp(&t0, &t1, sizeof(DmtxTime)) == 0) {
+        FatalError(2, "timeAddTest\n");
+    }
 
-   t1 = dmtxTimeAdd(t0, 1);
-   if(t1.sec != t0.sec + 1 || t1.usec != 0) {
-      timePrint(t0);
-      timePrint(t1);
-      FatalError(3, "timeAddTest\n");
-   }
+    t1 = dmtxTimeAdd(t0, 1);
+    if (t1.sec != t0.sec + 1 || t1.usec != 0) {
+        timePrint(t0);
+        timePrint(t1);
+        FatalError(3, "timeAddTest\n");
+    }
 
-   t1 = dmtxTimeAdd(t0, 1001);
-   if(t1.sec != t0.sec + 2 || t1.usec != 0) {
-      timePrint(t0);
-      timePrint(t1);
-      FatalError(4, "timeAddTest\n");
-   }
+    t1 = dmtxTimeAdd(t0, 1001);
+    if (t1.sec != t0.sec + 2 || t1.usec != 0) {
+        timePrint(t0);
+        timePrint(t1);
+        FatalError(4, "timeAddTest\n");
+    }
 
-   t1 = dmtxTimeAdd(t0, 2002);
-   if(t1.sec != t0.sec + 3 || t1.usec != 1000) {
-      timePrint(t0);
-      timePrint(t1);
-      FatalError(5, "timeAddTest\n");
-   }
+    t1 = dmtxTimeAdd(t0, 2002);
+    if (t1.sec != t0.sec + 3 || t1.usec != 1000) {
+        timePrint(t0);
+        timePrint(t1);
+        FatalError(5, "timeAddTest\n");
+    }
 }
 
 /**

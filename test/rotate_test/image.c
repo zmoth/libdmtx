@@ -109,7 +109,7 @@ SDL_Surface *loadTextureImage()
     int err = gluBuild2DMipmaps(GL_TEXTURE_2D, bmp->format->BytesPerPixel, bmp->w, bmp->h, getFormat(bmp),
                                 GL_UNSIGNED_BYTE, bmp->pixels);
     if (err) {
-        SDL_Log(gluErrorStringWIN(err));
+        SDL_Log((const char *)gluErrorStringWIN(err));
     }
 #else
     int err = gluBuild2DMipmaps(GL_TEXTURE_2D, bmp->format->BytesPerPixel, bmp->w, bmp->h, getFormat(bmp),
