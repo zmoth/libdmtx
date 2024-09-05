@@ -47,12 +47,12 @@ static void DumpStreams(DmtxEncodeStream *streamBest)
     enum SchemeState state;
     char prefix[32];
 
-    printf("----------------------------------------\n");
+    dmtxLogInfo("----------------------------------------\n");
     for (state = 0; state < SchemeStateCount; state++) {
         if (streamBest[state].status == DmtxStatusEncoding || streamBest[state].status == DmtxStatusComplete)
-            printf("\"%c\" ", streamBest[state].input->b[streamBest[state].inputNext - 1]);
+            dmtxLogInfo("\"%c\" ", streamBest[state].input->b[streamBest[state].inputNext - 1]);
         else
-            printf("    ");
+            dmtxLogInfo("    ");
 
         switch (streamBest[state].status) {
             case DmtxStatusEncoding:

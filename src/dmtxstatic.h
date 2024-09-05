@@ -93,13 +93,13 @@
         }                                                \
     }
 
-#define DmtxAssert(expr)                    \
-    do {                                    \
-        assert(expr);                       \
-        if (!!(expr)) {                     \
-        } else {                            \
-            fprintf(stderr, "%s\n", #expr); \
-        }                                   \
+#define DmtxAssert(expr)                 \
+    do {                                 \
+        assert(expr);                    \
+        if (!!(expr)) {                  \
+        } else {                         \
+            dmtxLogError("%s\n", #expr); \
+        }                                \
     } while (0)
 
 typedef enum
@@ -174,6 +174,20 @@ typedef struct C40TextState_struct
     int shift;
     DmtxBoolean upperShift;
 } C40TextState;
+
+typedef struct
+{
+    va_list ap;
+    const char *fmt;
+    const char *file;
+    struct tm *time;
+    void *udata;
+    int line;
+    int level;
+} DmtxLogEvent;
+
+typedef void (*DmtxLogFn)(DmtxLogEvent *ev);
+typedef void (*DmtxLogLockFn)(DmtxBoolean lock, void *udata);
 
 /* dmtxregion.c */
 static double rightAngleTrueness(DmtxVector2 c0, DmtxVector2 c1, DmtxVector2 c2, double angle);

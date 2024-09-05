@@ -121,11 +121,11 @@ extern void dmtxByteListPrint(DmtxByteList *list, char *prefix)
     int i;
 
     if (prefix != NULL) {
-        printf("%s", prefix);
+        dmtxLogInfo("%s", prefix);
     }
 
     for (i = 0; i < list->length; i++) {
-        printf(" %d", list->b[i]);
+        dmtxLogInfo(" %d", list->b[i]);
     }
 
     fputc('\n', stdout);

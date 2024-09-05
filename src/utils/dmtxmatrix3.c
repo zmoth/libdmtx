@@ -341,8 +341,8 @@ extern int dmtxMatrix3VMultiplyBy(DmtxVector2 *v, DmtxMatrix3 m)
  */
 extern void dmtxMatrix3Print(DmtxMatrix3 m)
 {
-    printf("%8.8f\t%8.8f\t%8.8f\n", m[0][0], m[0][1], m[0][2]);
-    printf("%8.8f\t%8.8f\t%8.8f\n", m[1][0], m[1][1], m[1][2]);
-    printf("%8.8f\t%8.8f\t%8.8f\n", m[2][0], m[2][1], m[2][2]);
-    printf("\n");
+    dmtxLogInfo("%8.8f\t%8.8f\t%8.8f\n", m[0][0], m[0][1], m[0][2]);
+    dmtxLogInfo("%8.8f\t%8.8f\t%8.8f\n", m[1][0], m[1][1], m[1][2]);
+    dmtxLogInfo("%8.8f\t%8.8f\t%8.8f\n", m[2][0], m[2][1], m[2][2]);
+    dmtxLogInfo("\n");
 }

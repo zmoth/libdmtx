@@ -28,12 +28,12 @@
  */
 extern DmtxPassFail decodeDataStream(DmtxMessage *msg, int sizeIdx, unsigned char *outputStart)
 {
-    // printf("libdmtx::decodeDataStream()\n");
+    // dmtxLogInfo("libdmtx::decodeDataStream()\n");
     // int oned = sqrt(msg->arraySize);
     // for (int i=0; i<msg->arraySize; i++){
-    //    printf(" %c.", msg->array[i]);
+    //    dmtxLogInfo(" %c.", msg->array[i]);
     //    if (i%oned==oned-1){
-    //       printf("\n");
+    //       dmtxLogInfo("\n");
     //    }
     // }
 

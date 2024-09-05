@@ -342,7 +342,7 @@ static void CacheFillQuad(DmtxDecode *dec, DmtxPixelLoc p0, DmtxPixelLoc p1, Dmt
  */
 extern DmtxMessage *dmtxDecodeMatrixRegion(DmtxDecode *dec, DmtxRegion *reg, int fix)
 {
-    // printf("libdmtx::dmtxDecodeMatrixRegion()\n");
+    // dmtxLogInfo("libdmtx::dmtxDecodeMatrixRegion()\n");
     DmtxMessage *msg;
     DmtxVector2 topLeft, topRight, bottomLeft, bottomRight;
     DmtxPixelLoc pxTopLeft, pxTopRight, pxBottomLeft, pxBottomRight;
@@ -700,7 +700,7 @@ static void tallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, int tally[][24], 
  */
 static DmtxPassFail populateArrayFromMatrix(DmtxDecode *dec, DmtxRegion *reg, DmtxMessage *msg)
 {
-    // printf("libdmtx::populateArrayFromMatrix()\n");
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix()\n");
     int weightFactor;
     int mapWidth, mapHeight;
     int xRegionTotal, yRegionTotal;
@@ -723,15 +723,15 @@ static DmtxPassFail populateArrayFromMatrix(DmtxDecode *dec, DmtxRegion *reg, Dm
     weightFactor = 2 * (mapHeight + mapWidth + 2);
     DmtxAssert(weightFactor > 0);
 
-    // printf("libdmtx::populateArrayFromMatrix::reg->sizeIdx: %d\n", reg->sizeIdx);
-    // printf("libdmtx::populateArrayFromMatrix::reg->flowBegin.plane: %d\n", reg->flowBegin.plane);
-    // printf("libdmtx::populateArrayFromMatrix::reg->onColor: %d\n", reg->onColor);
-    // printf("libdmtx::populateArrayFromMatrix::reg->offColor: %d\n", reg->offColor);
-    // printf("libdmtx::populateArrayFromMatrix::xRegionTotal: %d\n", xRegionTotal);
-    // printf("libdmtx::populateArrayFromMatrix::yRegionTotal: %d\n", yRegionTotal);
-    // printf("libdmtx::populateArrayFromMatrix::mapWidth: %d\n", mapWidth);
-    // printf("libdmtx::populateArrayFromMatrix::mapHeight: %d\n", mapHeight);
-    // printf("libdmtx::populateArrayFromMatrix::weightFactor: %d\n", weightFactor);
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::reg->sizeIdx: %d\n", reg->sizeIdx);
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::reg->flowBegin.plane: %d\n", reg->flowBegin.plane);
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::reg->onColor: %d\n", reg->onColor);
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::reg->offColor: %d\n", reg->offColor);
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::xRegionTotal: %d\n", xRegionTotal);
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::yRegionTotal: %d\n", yRegionTotal);
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::mapWidth: %d\n", mapWidth);
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::mapHeight: %d\n", mapHeight);
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::weightFactor: %d\n", weightFactor);
     // reg->fit2raw[1][0]=0;
     // reg->fit2raw[0][1]=0;
     // reg->fit2raw[0][2]=0;
@@ -751,7 +751,7 @@ static DmtxPassFail populateArrayFromMatrix(DmtxDecode *dec, DmtxRegion *reg, Dm
         for (xRegionCount = 0; xRegionCount < xRegionTotal; xRegionCount++) {
             /* X location of mapping region origin in symbol coordinates */
             xOrigin = xRegionCount * (mapWidth + 2) + 1;
-            // printf("libdmtx::populateArrayFromMatrix::xOrigin: %d\n", xOrigin);
+            // dmtxLogInfo("libdmtx::populateArrayFromMatrix::xOrigin: %d\n", xOrigin);
 
             memset(tally, 0x00, sizeof(int) * 24 * 24);
             tallyModuleJumps(dec, reg, tally, xOrigin, yOrigin, mapWidth, mapHeight, DmtxDirUp);
@@ -767,19 +767,19 @@ static DmtxPassFail populateArrayFromMatrix(DmtxDecode *dec, DmtxRegion *reg, Dm
                     rowTmp = yRegionTotal * mapHeight - rowTmp - 1;
                     colTmp = (xRegionCount * mapWidth) + mapCol;
                     idx = (rowTmp * xRegionTotal * mapWidth) + colTmp;
-                    // printf("libdmtx::populateArrayFromMatrix::idx: %d @ %d,%d\n", idx, mapCol, mapRow);
-                    // printf("%c ",tally[mapRow][mapCol]==DmtxModuleOff ? 'X' : ' ');
+                    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::idx: %d @ %d,%d\n", idx, mapCol, mapRow);
+                    // dmtxLogInfo("%c ",tally[mapRow][mapCol]==DmtxModuleOff ? 'X' : ' ');
                     if (tally[mapRow][mapCol] / (double)weightFactor >= 0.5) {
                         msg->array[idx] = DmtxModuleOnRGB;
-                        // printf("X ");
+                        // dmtxLogInfo("X ");
                     } else {
                         msg->array[idx] = DmtxModuleOff;
-                        // printf("  ");
+                        // dmtxLogInfo("  ");
                     }
 
                     msg->array[idx] |= DmtxModuleAssigned;
                 }
-                // printf("\n");
+                // dmtxLogInfo("\n");
             }
         }
     }

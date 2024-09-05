@@ -57,6 +57,7 @@
 #include "encode/dmtxencodestream.c"
 #include "utils/dmtxbytelist.c"
 #include "utils/dmtximage.c"
+#include "utils/dmtxlog.c"
 #include "utils/dmtxmatrix3.c"
 #include "utils/dmtxtime.c"
 #include "utils/dmtxvector2.c"

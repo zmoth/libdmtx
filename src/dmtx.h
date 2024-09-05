@@ -64,6 +64,13 @@ extern "C"
 #define DmtxModuleVisited 0x20
 #define DmtxModuleData 0x40
 
+#define dmtxLogTrace(...) dmtxLog(DmtxLogTrace, __FILE__, __LINE__, __VA_ARGS__)
+#define dmtxLogDebug(...) dmtxLog(DmtxLogDebug, __FILE__, __LINE__, __VA_ARGS__)
+#define dmtxLogInfo(...) dmtxLog(DmtxLogInfo, __FILE__, __LINE__, __VA_ARGS__)
+#define dmtxLogWarn(...) dmtxLog(DmtxLogWarn, __FILE__, __LINE__, __VA_ARGS__)
+#define dmtxLogError(...) dmtxLog(DmtxLogError, __FILE__, __LINE__, __VA_ARGS__)
+#define dmtxLogFatal(...) dmtxLog(DmtxLogFatal, __FILE__, __LINE__, __VA_ARGS__)
+
     typedef enum
     {
         DmtxStatusEncoding, /* Encoding is currently underway */
@@ -227,6 +234,16 @@ extern "C"
         DmtxFlipX = 0x01 << 0,
         DmtxFlipY = 0x01 << 1
     } DmtxFlip;
+
+    typedef enum
+    {
+        DmtxLogTrace,
+        DmtxLogDebug,
+        DmtxLogInfo,
+        DmtxLogWarn,
+        DmtxLogError,
+        DmtxLogFatal
+    } DmtxLogLevel;
 
     typedef double DmtxMatrix3[3][3];
 
@@ -650,6 +667,10 @@ extern "C"
     extern void dmtxByteListPrint(DmtxByteList *list, char *prefix);
 
     extern char *dmtxVersion(void);
+
+    extern void dmtxLog(int level, const char *file, int line, const char *fmt, ...);
+    extern void dmtxLogSetLevel(int level);
+    extern void dmtxLogSetQuiet(DmtxBoolean enable);
 
 #ifdef DEBUG_CALLBACK
     typedef void (*DmtxCallbackBuildMatrixRegion)(DmtxRegion *region);

@@ -643,12 +643,12 @@ static int readModuleColor(DmtxDecode *dec, DmtxRegion *reg, int symbolRow, int 
 
         dmtxMatrix3VMultiplyBy(&p, reg->fit2raw);
 
-        // printf("%dx%d\n", (int)(p.X + 0.5), (int)(p.Y + 0.5));
+        // dmtxLogInfo("%dx%d\n", (int)(p.X + 0.5), (int)(p.Y + 0.5));
 
         dmtxDecodeGetPixelValue(dec, (int)(p.X + 0.5), (int)(p.Y + 0.5), colorPlane, &colorTmp);
         color += colorTmp;
     }
-    // printf("\n");
+    // dmtxLogInfo("\n");
     return color / 5;
 }
 
