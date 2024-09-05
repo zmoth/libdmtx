@@ -53,6 +53,9 @@ target_include_directories(
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   add_definitions(-DDEBUG_CALLBACK)
 
+  # EXAMPLES
+  add_subdirectory(examples)
+
   include(CTest)
 
   if(BUILD_TESTING)
