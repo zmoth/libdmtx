@@ -312,24 +312,20 @@ extern "C"
         DmtxByteList *output;
     } DmtxEncodeStream;
 
-    /**
-     * @struct DmtxImage
-     * @brief DmtxImage
-     */
     typedef struct DmtxImage_struct
     {
-        int width;
-        int height;
-        int pixelPacking;
-        int bitsPerPixel;
-        int bytesPerPixel;
-        int rowPadBytes;
-        int rowSizeBytes;
-        int imageFlip;
-        int channelCount;
-        int channelStart[4];
-        int bitsPerChannel[4];
-        unsigned char *pxl;
+        int width;             /**< 图像的宽度，以像素为单位 */
+        int height;            /**< 图像的高度，以像素为单位 */
+        int pixelPacking;      /**< 图像格式类型，像素打包方式 @ref DmtxPackOrder */
+        int bitsPerPixel;      /**< 每个像素的位数 */
+        int bytesPerPixel;     /**< 每个像素的字节数 */
+        int rowPadBytes;       /**< 每行像素在内存中的填充或对齐字节数 */
+        int rowSizeBytes;      /**< 每一行（包括填充）在内存中的总字节数 */
+        int imageFlip;         /**< 图像是否需要翻转，通常用于处理上下颠倒的图像 @ref DmtxFlip */
+        int channelCount;      /**< 图像的通道数量，如RGB图像为3，CMYK图像为4 */
+        int channelStart[4];   /**< 每个通道在像素数据中的起始位置（位偏移） */
+        int bitsPerChannel[4]; /**< 每个通道的位数，描述每个颜色分量的精度 */
+        unsigned char *pxl;    /**< 实际的像素数据缓冲区 */
     } DmtxImage;
 
     /**

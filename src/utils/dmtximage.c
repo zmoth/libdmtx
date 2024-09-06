@@ -10,8 +10,8 @@
  * Vadim A. Misbakh-Soloviov <dmtx@mva.name>
  * Mike Laughton <mike@dragonflylogic.com>
  *
- * \file dmtximage.c
- * \brief Image handling
+ * @file dmtximage.c
+ * @brief Image handling
  */
 
 #include <assert.h>
@@ -39,6 +39,16 @@
  * consider coordinate (0,0) to mathematically represent the bottom-left pixel
  * location of an image using a right-handed coordinate system.
  *
+ * libdmtx 将图像数据存储为一个大型一维数组，扫描条形码时从数组中读取，创建条形码时向数组中写入。
+ * 除了这种交互，调用程序还负责在图像数组和外部世界之间填充和调度像素，
+ * 无论是从文件中加载图像、获取摄像头输入、向屏幕显示输出、保存到磁盘等。
+ *
+ * 默认情况下，libdmtx 将图像数组的第一个像素视为物理图像的左上角，最后一个像素位于右下角。
+ * 不过，如果以这种方式映射像素缓冲区会产生反转图像，调用程序可以在创建图像时指定 DmtxFlipY 来消除反转。
+ * 这对性能的影响可以忽略不计，因为它只修改了像素映射数学，而不会改变任何像素数据。
+ *
+ * 无论图像内部如何存储，所有 libdmtx 函数都认为坐标（0,0）在数学上代表使用右手坐标系的图像左下角像素位置。
+ *
  *                (0,HEIGHT-1)        (WIDTH-1,HEIGHT-1)
  *
  *          array pos = 0,1,2,3,...-----------+
@@ -61,14 +71,14 @@
  */
 
 /**
- * \brief  XXX
- * \param  XXX
- * \return XXX
+ * @brief 创建一个新的图像对象
+ *
+ * @note 创建的图像对象需要在不再使用时通过调用 dmtxImageDestroy 进行销毁。
  */
 extern DmtxImage *dmtxImageCreate(unsigned char *pxl, int width, int height, int pack)
 {
     //   DmtxPassFail err;
-    DmtxImage *img;
+    DmtxImage *img = NULL;
 
     if (pxl == NULL || width < 1 || height < 1) {
         return NULL;
@@ -150,9 +160,9 @@ extern DmtxImage *dmtxImageCreate(unsigned char *pxl, int width, int height, int
 }
 
 /**
- * \brief  Free libdmtx image memory
- * \param  img pointer to img location
- * \return DmtxFail | DmtxPass
+ * @brief Free libdmtx image memory
+ * @param[in] img pointer to img location
+ * @return DmtxFail | DmtxPass
  */
 extern DmtxPassFail dmtxImageDestroy(DmtxImage **img)
 {
@@ -168,8 +178,7 @@ extern DmtxPassFail dmtxImageDestroy(DmtxImage **img)
 }
 
 /**
- *
- *
+ * @brief 设置图像的颜色通道信息，包括每个通道的起始位和位数。
  */
 extern DmtxPassFail dmtxImageSetChannel(DmtxImage *img, int channelStart, int bitsPerChannel)
 {
@@ -189,9 +198,8 @@ extern DmtxPassFail dmtxImageSetChannel(DmtxImage *img, int channelStart, int bi
 }
 
 /**
- * \brief  Set image property
- * \param  img pointer to image
- * \return image width
+ * @brief 设置图像属性
+ * @param[in] img pointer to image
  */
 extern DmtxPassFail dmtxImageSetProp(DmtxImage *img, int prop, int value)
 {
@@ -215,9 +223,9 @@ extern DmtxPassFail dmtxImageSetProp(DmtxImage *img, int prop, int value)
 }
 
 /**
- * \brief  Get image width
- * \param  img pointer to image
- * \return image width
+ * @brief 获取图像属性
+ * @param[in] img pointer to image
+ * @return 失败返回 DmtxUndefined
  */
 extern int dmtxImageGetProp(DmtxImage *img, int prop)
 {
@@ -252,11 +260,7 @@ extern int dmtxImageGetProp(DmtxImage *img, int prop)
 }
 
 /**
- * \brief  Returns pixel offset for image
- * \param  img
- * \param  x coordinate
- * \param  y coordinate
- * \return pixel byte offset
+ * @brief 根据给定的坐标 (x, y) 计算并返回图像中对应像素的字节偏移量
  */
 extern int dmtxImageGetByteOffset(DmtxImage *img, int x, int y)
 {
@@ -275,8 +279,18 @@ extern int dmtxImageGetByteOffset(DmtxImage *img, int x, int y)
 }
 
 /**
+ * @brief 获取指定坐标的像素值
  *
+ * 此函数用于获取图像中指定坐标 (x, y) 处特定颜色通道的像素值。
+ * 如果坐标超出图像边界或通道索引无效，则返回失败。
  *
+ * @param[in] img 指向图像对象的指针
+ * @param[in] x 像素的 X 轴坐标
+ * @param[in] y 像素的 Y 轴坐标
+ * @param[in] channel 要获取值的颜色通道索引
+ * @param[out] value 用于存储像素值的指针
+ *
+ * @return 返回 DmtxPass 表示成功，DmtxFail 表示失败
  */
 extern DmtxPassFail dmtxImageGetPixelValue(DmtxImage *img, int x, int y, int channel, int *value)
 {
@@ -320,8 +334,7 @@ extern DmtxPassFail dmtxImageGetPixelValue(DmtxImage *img, int x, int y, int cha
 }
 
 /**
- *
- *
+ * @brief 设置指定坐标、通道的像素值
  */
 extern DmtxPassFail dmtxImageSetPixelValue(DmtxImage *img, int x, int y, int channel, int value)
 {
@@ -365,12 +378,12 @@ extern DmtxPassFail dmtxImageSetPixelValue(DmtxImage *img, int x, int y, int cha
 }
 
 /**
- * \brief  Test whether image contains a coordinate expressed in integers
- * \param  img
- * \param  margin width
- * \param  x coordinate
- * \param  y coordinate
- * \return DmtxTrue | DmtxFalse
+ * @brief 判断坐标 (x, y) 是否在图像范围内
+ * @param[in] img
+ * @param[in] margin width
+ * @param[in] x coordinate
+ * @param[in] y coordinate
+ * @return DmtxTrue | DmtxFalse
  */
 extern DmtxBoolean dmtxImageContainsInt(DmtxImage *img, int margin, int x, int y)
 {
@@ -384,11 +397,11 @@ extern DmtxBoolean dmtxImageContainsInt(DmtxImage *img, int margin, int x, int y
 }
 
 /**
- * \brief  Test whether image contains a coordinate expressed in floating points
- * \param  img
- * \param  x coordinate
- * \param  y coordinate
- * \return DmtxTrue | DmtxFalse
+ * @brief 判断坐标 (x, y) 是否在图像范围内
+ * @param[in] img
+ * @param[in] x coordinate
+ * @param[in] y coordinate
+ * @return DmtxTrue | DmtxFalse
  */
 extern DmtxBoolean dmtxImageContainsFloat(DmtxImage *img, double x, double y)
 {
@@ -402,8 +415,7 @@ extern DmtxBoolean dmtxImageContainsFloat(DmtxImage *img, double x, double y)
 }
 
 /**
- *
- *
+ * @brief 根据给定的打包方式（pack）返回每个像素所占的位数
  */
 static int getBitsPerPixel(int pack)
 {
