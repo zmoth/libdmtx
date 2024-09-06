@@ -132,10 +132,10 @@ extern double dmtxDistanceFromRay2(const DmtxRay2 *r, const DmtxVector2 *q)
 {
     DmtxVector2 vSubTmp;
 
-    /* Assumes that v is a unit vector */
-    DmtxAssert(fabs(1.0 - dmtxVector2Mag(&(r->v))) <= DmtxAlmostZero);  // XXX: 可以不强制需要单位向量
+    double mag = dmtxVector2Mag(&(r->v));
+    DmtxAssert(fabs(mag) > DmtxAlmostZero);
 
-    return dmtxVector2Cross(&(r->v), dmtxVector2Sub(&vSubTmp, q, &(r->p)));
+    return dmtxVector2Cross(&(r->v), dmtxVector2Sub(&vSubTmp, q, &(r->p))) / mag;
 }
 
 /**
