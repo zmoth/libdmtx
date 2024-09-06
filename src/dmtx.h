@@ -249,11 +249,13 @@ extern "C"
         DmtxLogFatal
     } DmtxLogLevel;
 
+    /**
+     * @brief DmtxMatrix3 类型定义，表示一个3x3的双精度浮点数矩阵
+     */
     typedef double DmtxMatrix3[3][3];
 
     /**
-     * @struct DmtxPixelLoc
-     * @brief DmtxPixelLoc
+     * @brief 像素坐标
      */
     typedef struct DmtxPixelLoc_struct
     {
@@ -262,8 +264,7 @@ extern "C"
     } DmtxPixelLoc;
 
     /**
-     * @struct DmtxVector2
-     * @brief DmtxVector2
+     * @brief 二维向量
      */
     typedef struct DmtxVector2_struct
     {
@@ -272,8 +273,7 @@ extern "C"
     } DmtxVector2;
 
     /**
-     * @struct DmtxRay2
-     * @brief DmtxRay2
+     * @brief 向量表示的直线(线段)
      */
     typedef struct DmtxRay2_struct
     {
@@ -291,16 +291,14 @@ extern "C"
      * Use signed int for length fields instead of size_t to play nicely with RS
      * arithmetic
      */
-    typedef struct DmtxByteList_struct DmtxByteList;
-    struct DmtxByteList_struct
+    typedef struct DmtxByteList_struct
     {
         int length;
         int capacity;
         DmtxByte *b;
-    };
+    } DmtxByteList;
 
-    typedef struct DmtxEncodeStream_struct DmtxEncodeStream;
-    struct DmtxEncodeStream_struct
+    typedef struct DmtxEncodeStream_struct
     {
         int currentScheme;         /* Current encodation scheme */
         int inputNext;             /* Index of next unprocessed input word in queue */
@@ -312,7 +310,7 @@ extern "C"
         DmtxStatus status;
         DmtxByteList *input;
         DmtxByteList *output;
-    };
+    } DmtxEncodeStream;
 
     /**
      * @struct DmtxImage
@@ -649,9 +647,9 @@ extern "C"
     extern void dmtxMatrix3LineSkewSide(OUT DmtxMatrix3 m, double b0, double b1, double sz);
     extern void dmtxMatrix3LineSkewSideInv(OUT DmtxMatrix3 m, double b0, double b1, double sz);
     extern void dmtxMatrix3Multiply(OUT DmtxMatrix3 mOut, DmtxMatrix3 m0, DmtxMatrix3 m1);
-    extern void dmtxMatrix3MultiplyBy(DmtxMatrix3 m0, DmtxMatrix3 m1);
-    extern int dmtxMatrix3VMultiply(OUT DmtxVector2 *vOut, DmtxVector2 *vIn, DmtxMatrix3 m);
-    extern int dmtxMatrix3VMultiplyBy(DmtxVector2 *v, DmtxMatrix3 m);
+    extern void dmtxMatrix3MultiplyBy(INOUT DmtxMatrix3 m0, DmtxMatrix3 m1);
+    extern DmtxPassFail dmtxMatrix3VMultiply(OUT DmtxVector2 *vOut, DmtxVector2 *vIn, DmtxMatrix3 m);
+    extern DmtxPassFail dmtxMatrix3VMultiplyBy(INOUT DmtxVector2 *v, DmtxMatrix3 m);
     extern void dmtxMatrix3Print(DmtxMatrix3 m);
 
     /* dmtxsymbol.c */
@@ -670,12 +668,12 @@ extern "C"
     extern DmtxByte dmtxByteListPop(DmtxByteList *list, DmtxPassFail *passFail);
     extern void dmtxByteListPrint(DmtxByteList *list, char *prefix);
 
-    extern char *dmtxVersion(void);
-
+    /* dmtxlog.c */
     extern void dmtxLog(int level, const char *file, int line, const char *fmt, ...);
     extern void dmtxLogSetLevel(int level);
     extern void dmtxLogSetQuiet(DmtxBoolean enable);
 
+    /* dmtxcallback.c */
 #ifdef DEBUG_CALLBACK
     typedef void (*DmtxCallbackBuildMatrixRegion)(DmtxRegion *region);
     typedef void (*DmtxCallbackBuildMatrix)(DmtxMatrix3 matrix);
@@ -690,6 +688,8 @@ extern "C"
     extern void dmtxCallbackXfrmPlotPoint(DmtxCallbackXfrmPlotPoint cb);
     extern void dmtxCallbackFinal(DmtxCallbackFinal cb);
 #endif
+
+    extern char *dmtxVersion(void);
 
 #ifdef __cplusplus
 }

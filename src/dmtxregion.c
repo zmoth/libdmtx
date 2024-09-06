@@ -177,7 +177,7 @@ static DmtxPointFlow matrixRegionSeekEdge(DmtxDecode *dec, DmtxPixelLoc loc)
     int i;
     int strongIdx;
     int channelCount;
-    DmtxPointFlow flow, flowPlane[3];
+    DmtxPointFlow flow, flowPlane[3] = {};
     DmtxPointFlow flowPos, flowPosBack;
     DmtxPointFlow flowNeg, flowNegBack;
 
@@ -1656,7 +1656,7 @@ static DmtxPassFail matrixRegionAlignCalibEdge(DmtxDecode *dec, DmtxRegion *reg,
     DmtxFollow follow;
     DmtxBestLine bestLine;
 
-    /* Determine pixel coordinates of origin */
+    /* 确定原点的像素坐标 */
     pTmp.X = 0.0;
     pTmp.Y = 0.0;
     dmtxMatrix3VMultiplyBy(&pTmp, reg->fit2raw);

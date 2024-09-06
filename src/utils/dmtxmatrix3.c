@@ -10,8 +10,8 @@
  * Vadim A. Misbakh-Soloviov <dmtx@mva.name>
  * Mike Laughton <mike@dragonflylogic.com>
  *
- * \file dmtxmatrix3.c
- * \brief 2D Matrix (3x3) math
+ * @file dmtxmatrix3.c
+ * @brief 二维矩阵(3x3)数学运算
  */
 
 #include <assert.h>
@@ -24,20 +24,20 @@
 #include "dmtxstatic.h"
 
 /**
- * \brief  Copy matrix contents
- * \param  m0 Copy target
- * \param  m1 Copy source
- * \return void
+ * @brief 复制3x3矩阵
+ *
+ * 该函数将一个 3x3 矩阵的内容复制到另一个矩阵。
+ *
+ * @param[out] m0 指向目标矩阵的指针，用于存储复制的结果
+ * @param[in] m1 指向源矩阵的指针，从中读取数据进行复制
  */
-extern void dmtxMatrix3Copy(DmtxMatrix3 m0, DmtxMatrix3 m1)
+extern void dmtxMatrix3Copy(OUT DmtxMatrix3 m0, DmtxMatrix3 m1)
 {
     memcpy(m0, m1, sizeof(DmtxMatrix3));
 }
 
 /**
- * \brief  Generate identity transformation matrix
- * \param  m Generated matrix
- * \return void
+ * @brief 生成单位变换矩阵
  *
  *      | 1  0  0 |
  *  m = | 0  1  0 |
@@ -53,18 +53,17 @@ extern void dmtxMatrix3Copy(DmtxMatrix3 m0, DmtxMatrix3 m1)
  *  (0,0)     (1,0)      |/     (0,0)     (1,0)
  *
  */
-extern void dmtxMatrix3Identity(DmtxMatrix3 m)
+extern void dmtxMatrix3Identity(OUT DmtxMatrix3 m)
 {
     static DmtxMatrix3 tmp = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
     dmtxMatrix3Copy(m, tmp);
 }
 
 /**
- * \brief  Generate translate transformation matrix
- * \param  m Generated matrix
- * \param  tx
- * \param  ty
- * \return void
+ * @brief 生成平移变换矩阵
+ * @param[out] m 生成的矩阵
+ * @param[in] tx 沿 x 轴的平移量
+ * @param[in] ty 沿 y 轴的平移量
  *
  *      | 1  0  0 |
  *  m = | 0  1  0 |
@@ -80,7 +79,7 @@ extern void dmtxMatrix3Identity(DmtxMatrix3 m)
  *  (0,0)     (1,0)                (0,0)     (1,0)
  *
  */
-void dmtxMatrix3Translate(DmtxMatrix3 m, double tx, double ty)
+void dmtxMatrix3Translate(OUT DmtxMatrix3 m, double tx, double ty)
 {
     dmtxMatrix3Identity(m);
     m[2][0] = tx;
@@ -88,10 +87,9 @@ void dmtxMatrix3Translate(DmtxMatrix3 m, double tx, double ty)
 }
 
 /**
- * \brief  Generate rotate transformation
- * \param  m Generated matrix
- * \param  angle
- * \return void
+ * @brief 生成旋转变换矩阵
+ * @param[out] m 生成的矩阵
+ * @param[in] angle 旋转的角度
  *
  *     |  cos(a)  sin(a)  0 |
  * m = | -sin(a)  cos(a)  0 |
@@ -106,7 +104,7 @@ void dmtxMatrix3Translate(DmtxMatrix3 m, double tx, double ty)
  *  (0,0)     (1,0)                     (0,0)
  *
  */
-extern void dmtxMatrix3Rotate(DmtxMatrix3 m, double angle)
+extern void dmtxMatrix3Rotate(OUT DmtxMatrix3 m, double angle)
 {
     double sinAngle, cosAngle;
 
@@ -121,11 +119,10 @@ extern void dmtxMatrix3Rotate(DmtxMatrix3 m, double angle)
 }
 
 /**
- * \brief  Generate scale transformation matrix
- * \param  m Generated matrix
- * \param  sx
- * \param  sy
- * \return void
+ * @brief 生成缩放变换矩阵
+ * @param[out] m 生成的矩阵
+ * @param[in] sx x轴的缩放因子
+ * @param[in] sy y轴的缩放因子
  *
  *     | sx 0  0 |
  * m = | 0  sy 0 |
@@ -141,7 +138,7 @@ extern void dmtxMatrix3Rotate(DmtxMatrix3 m, double angle)
  *  (0,0)     (1,0)                (0,0)            (sx,0)
  *
  */
-extern void dmtxMatrix3Scale(DmtxMatrix3 m, double sx, double sy)
+extern void dmtxMatrix3Scale(OUT DmtxMatrix3 m, double sx, double sy)
 {
     dmtxMatrix3Identity(m);
     m[0][0] = sx;
@@ -149,17 +146,22 @@ extern void dmtxMatrix3Scale(DmtxMatrix3 m, double sx, double sy)
 }
 
 /**
- * \brief  Generate shear transformation matrix
- * \param  m Generated matrix
- * \param  shx
- * \param  shy
- * \return void
+ * @brief 生成剪切变换矩阵
+ *
+ * 剪切变换(shear transformation)是空间线性变换之一，是仿射变换的一种原始变换。
+ * 它指的是类似于四边形不稳定性那种性质，方形变平行四边形，任意一边都可以被拉长的过程。
+ *
+ * XXX: 这里的X和Y方向是不是弄反了
+ *
+ * @param[out] m 生成的矩阵
+ * @param[in] shx x轴方向的剪切因子
+ * @param[in] shy y轴方向的剪切因子
  *
  *     | 0    shy  0 |
  * m = | shx  0    0 |
  *     | 0    0    1 |
  */
-extern void dmtxMatrix3Shear(DmtxMatrix3 m, double shx, double shy)
+extern void dmtxMatrix3Shear(OUT DmtxMatrix3 m, double shx, double shy)
 {
     dmtxMatrix3Identity(m);
     m[1][0] = shx;
@@ -167,12 +169,15 @@ extern void dmtxMatrix3Shear(DmtxMatrix3 m, double shx, double shy)
 }
 
 /**
- * \brief  Generate top line skew transformation
- * \param  m
- * \param  b0
- * \param  b1
- * \param  sz
- * \return void
+ * @brief 生成顶部线倾斜变换矩阵
+ *
+ * 该函数用于创建一个变换矩阵，该矩阵用于对图像进行顶部线的倾斜变换。
+ * 这种变换通常用于校正图像中的透视失真。
+ *
+ * @param[out] m 生成的矩阵
+ * @param[in] b0 基线起点的 y 坐标
+ * @param[in] b1 基线终点的 y 坐标
+ * @param[in] sz 变换后的高度
  *
  *     | b1/b0    0    (b1-b0)/(sz*b0) |
  * m = |   0    sz/b0         0        |
@@ -192,7 +197,7 @@ extern void dmtxMatrix3Shear(DmtxMatrix3 m, double shx, double shy)
  *  (0,0)    (sz,0)                (0,0)    (sz,0)
  *
  */
-extern void dmtxMatrix3LineSkewTop(DmtxMatrix3 m, double b0, double b1, double sz)
+extern void dmtxMatrix3LineSkewTop(OUT DmtxMatrix3 m, double b0, double b1, double sz)
 {
     DmtxAssert(b0 >= DmtxAlmostZero);
 
@@ -203,14 +208,13 @@ extern void dmtxMatrix3LineSkewTop(DmtxMatrix3 m, double b0, double b1, double s
 }
 
 /**
- * \brief  Generate top line skew transformation (inverse)
- * \param  m
- * \param  b0
- * \param  b1
- * \param  sz
- * \return void
+ * @brief Generate top line skew transformation (inverse)
+ * @param[out] m
+ * @param[in] b0
+ * @param[in] b1
+ * @param[in] sz
  */
-extern void dmtxMatrix3LineSkewTopInv(DmtxMatrix3 m, double b0, double b1, double sz)
+extern void dmtxMatrix3LineSkewTopInv(OUT DmtxMatrix3 m, double b0, double b1, double sz)
 {
     DmtxAssert(b1 >= DmtxAlmostZero);
 
@@ -221,14 +225,13 @@ extern void dmtxMatrix3LineSkewTopInv(DmtxMatrix3 m, double b0, double b1, doubl
 }
 
 /**
- * \brief  Generate side line skew transformation
- * \param  m
- * \param  b0
- * \param  b1
- * \param  sz
- * \return void
+ * @brief Generate side line skew transformation
+ * @param[out] m
+ * @param[in] b0
+ * @param[in] b1
+ * @param[in] sz
  */
-extern void dmtxMatrix3LineSkewSide(DmtxMatrix3 m, double b0, double b1, double sz)
+extern void dmtxMatrix3LineSkewSide(OUT DmtxMatrix3 m, double b0, double b1, double sz)
 {
     DmtxAssert(b0 >= DmtxAlmostZero);
 
@@ -239,14 +242,13 @@ extern void dmtxMatrix3LineSkewSide(DmtxMatrix3 m, double b0, double b1, double 
 }
 
 /**
- * \brief  Generate side line skew transformation (inverse)
- * \param  m
- * \param  b0
- * \param  b1
- * \param  sz
- * \return void
+ * @brief Generate side line skew transformation (inverse)
+ * @param[out] m
+ * @param[in] b0
+ * @param[in] b1
+ * @param[in] sz
  */
-extern void dmtxMatrix3LineSkewSideInv(DmtxMatrix3 m, double b0, double b1, double sz)
+extern void dmtxMatrix3LineSkewSideInv(OUT DmtxMatrix3 m, double b0, double b1, double sz)
 {
     DmtxAssert(b1 >= DmtxAlmostZero);
 
@@ -257,13 +259,15 @@ extern void dmtxMatrix3LineSkewSideInv(DmtxMatrix3 m, double b0, double b1, doub
 }
 
 /**
- * \brief  Multiply two matrices to create a third
- * \param  mOut
- * \param  m0
- * \param  m1
- * \return void
+ * @brief 矩阵相乘
+ *
+ * 该函数用于将两个 3x3 矩阵相乘，并将结果存储在输出矩阵中。
+ *
+ * @param[out] mOut 指向输出矩阵的指针，用于存储乘法结果
+ * @param[in] m0 指向第一个输入矩阵的指针
+ * @param[in] m1 指向第二个输入矩阵的指针
  */
-extern void dmtxMatrix3Multiply(DmtxMatrix3 mOut, DmtxMatrix3 m0, DmtxMatrix3 m1)
+extern void dmtxMatrix3Multiply(OUT DmtxMatrix3 mOut, DmtxMatrix3 m0, DmtxMatrix3 m1)
 {
     int i, j, k;
     double val;
@@ -280,12 +284,14 @@ extern void dmtxMatrix3Multiply(DmtxMatrix3 mOut, DmtxMatrix3 m0, DmtxMatrix3 m1
 }
 
 /**
- * \brief  Multiply two matrices in place
- * \param  m0
- * \param  m1
- * \return void
+ * @brief 矩阵相乘
+ *
+ * 该函数用于将两个 3x3 矩阵相乘，并将结果存储在第一个矩阵中。
+ *
+ * @param[in,out] m0 指向第一个输入矩阵的指针，其内容将被修改为乘法的结果
+ * @param[in] m1 指向第二个输入矩阵的指针
  */
-extern void dmtxMatrix3MultiplyBy(DmtxMatrix3 m0, DmtxMatrix3 m1)
+extern void dmtxMatrix3MultiplyBy(INOUT DmtxMatrix3 m0, DmtxMatrix3 m1)
 {
     DmtxMatrix3 mTmp;
 
@@ -294,13 +300,16 @@ extern void dmtxMatrix3MultiplyBy(DmtxMatrix3 m0, DmtxMatrix3 m1)
 }
 
 /**
- * \brief  Multiply vector and matrix
- * \param  vOut Vector (output)
- * \param  vIn Vector (input)
- * \param  m Matrix to be multiplied
- * \return DmtxPass | DmtxFail
+ * @brief 将向量与矩阵相乘
+ *
+ * 该函数用于将一个 3x3 矩阵与一个 2D 向量相乘，并将结果存储在输出向量中。
+ *
+ * @param[out] vOut 指向输出向量的指针，用于存储乘法结果
+ * @param[in] vIn 指向输入向量的指针
+ * @param[in] m 要与向量相乘的 3x3 矩阵（仿射变换矩阵）
+ * @return DmtxPass | DmtxFail
  */
-extern int dmtxMatrix3VMultiply(DmtxVector2 *vOut, DmtxVector2 *vIn, DmtxMatrix3 m)
+extern DmtxPassFail dmtxMatrix3VMultiply(OUT DmtxVector2 *vOut, DmtxVector2 *vIn, DmtxMatrix3 m)
 {
     double w;
 
@@ -318,14 +327,17 @@ extern int dmtxMatrix3VMultiply(DmtxVector2 *vOut, DmtxVector2 *vIn, DmtxMatrix3
 }
 
 /**
- * \brief  Multiply vector and matrix in place
- * \param  v Vector (input and output)
- * \param  m Matrix to be multiplied
- * \return DmtxPass | DmtxFail
+ * @brief 将向量与矩阵相乘
+ *
+ * 此函数将输入向量`v`与给定矩阵`m`相乘，并直接更新输入向量`v`为乘法的结果。
+ *
+ * @param[in,out] v 输入向量同时也是输出向量，乘法操作后存储结果。
+ * @param[in] m 用于乘法运算的3x3矩阵。
+ * @return DmtxPass | DmtxFail
  */
-extern int dmtxMatrix3VMultiplyBy(DmtxVector2 *v, DmtxMatrix3 m)
+extern DmtxPassFail dmtxMatrix3VMultiplyBy(INOUT DmtxVector2 *v, DmtxMatrix3 m)
 {
-    int success;
+    DmtxPassFail success;
     DmtxVector2 vOut;
 
     success = dmtxMatrix3VMultiply(&vOut, v, m);
@@ -335,9 +347,8 @@ extern int dmtxMatrix3VMultiplyBy(DmtxVector2 *v, DmtxMatrix3 m)
 }
 
 /**
- * \brief  Print matrix contents to STDOUT
- * \param  m
- * \return void
+ * @brief Print matrix contents to STDOUT
+ * @param[in] m
  */
 extern void dmtxMatrix3Print(DmtxMatrix3 m)
 {
