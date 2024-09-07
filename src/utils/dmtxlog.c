@@ -49,9 +49,9 @@ static struct
     int level;
     unsigned int quiet;
     Callback callbacks[MAX_CALLBACKS];
-} L;
+} l;
 
-static const char *level_strings[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
+static const char *levelStrings[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
 
 #ifdef LOG_USE_COLOR
 static const char *level_colors[] = {"\x1b[94m", "\x1b[36m", "\x1b[32m", "\x1b[33m", "\x1b[31m", "\x1b[35m"};
@@ -65,7 +65,7 @@ static void stdoutCallback(DmtxLogEvent *ev)
     DmtxPrint(ev->udata, "%s %s%-5s\x1b[0m \x1b[90m%s:%d:\x1b[0m ", buf, level_colors[ev->level],
               level_strings[ev->level], ev->file, ev->line);
 #else
-    DmtxPrint(ev->udata, "%s %-5s %s:%d: ", buf, level_strings[ev->level], ev->file, ev->line);
+    DmtxPrint(ev->udata, "%s %-5s %s:%d: ", buf, levelStrings[ev->level], ev->file, ev->line);
 #endif
     vfprintf(ev->udata, ev->fmt, ev->ap);
     DmtxPrint(ev->udata, "\n");
@@ -76,7 +76,7 @@ static void fileCallback(DmtxLogEvent *ev)
 {
     char buf[64];
     buf[strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", ev->time)] = '\0';
-    DmtxPrint(ev->udata, "%s %-5s %s:%d: ", buf, level_strings[ev->level], ev->file, ev->line);
+    DmtxPrint(ev->udata, "%s %-5s %s:%d: ", buf, levelStrings[ev->level], ev->file, ev->line);
     vfprintf(ev->udata, ev->fmt, ev->ap);
     DmtxPrint(ev->udata, "\n");
     fflush(ev->udata);
@@ -84,44 +84,44 @@ static void fileCallback(DmtxLogEvent *ev)
 
 static void lock(void)
 {
-    if (L.lock) {
-        L.lock(1, L.udata);
+    if (l.lock) {
+        l.lock(1, l.udata);
     }
 }
 
 static void unlock(void)
 {
-    if (L.lock) {
-        L.lock(0, L.udata);
+    if (l.lock) {
+        l.lock(0, l.udata);
     }
 }
 
 const char *dmtxLogLevelString(int level)
 {
-    return level_strings[level];
+    return levelStrings[level];
 }
 
 void dmtxLogSetLock(DmtxLogLockFn fn, void *udata)
 {
-    L.lock = fn;
-    L.udata = udata;
+    l.lock = fn;
+    l.udata = udata;
 }
 
 extern void dmtxLogSetLevel(int level)
 {
-    L.level = level;
+    l.level = level;
 }
 
 extern void dmtxLogSetQuiet(DmtxBoolean enable)
 {
-    L.quiet = enable;
+    l.quiet = enable;
 }
 
 int dmtxLogAddCallback(DmtxLogFn fn, void *udata, int level)
 {
     for (int i = 0; i < MAX_CALLBACKS; i++) {
-        if (!L.callbacks[i].fn) {
-            L.callbacks[i] = (Callback){fn, udata, level};
+        if (!l.callbacks[i].fn) {
+            l.callbacks[i] = (Callback){fn, udata, level};
             return 0;
         }
     }
@@ -159,15 +159,15 @@ extern void dmtxLog(int level, const char *file, int line, const char *fmt, ...)
 
     lock();
 
-    if (!L.quiet && level >= L.level) {
+    if (!l.quiet && level >= l.level) {
         initEvent(&ev, stderr);
         va_start(ev.ap, fmt);
         stdoutCallback(&ev);
         va_end(ev.ap);
     }
 
-    for (int i = 0; i < MAX_CALLBACKS && L.callbacks[i].fn; i++) {
-        Callback *cb = &L.callbacks[i];
+    for (int i = 0; i < MAX_CALLBACKS && l.callbacks[i].fn; i++) {
+        Callback *cb = &l.callbacks[i];
         if (level >= cb->level) {
             initEvent(&ev, cb->udata);
             va_start(ev.ap, fmt);

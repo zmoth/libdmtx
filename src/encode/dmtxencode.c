@@ -450,13 +450,13 @@ static void printPattern(DmtxEncode *enc)
 
     for (symbolRow = 0; symbolRow < enc->region.symbolRows; symbolRow++) {
         for (symbolCol = 0; symbolCol < enc->region.symbolCols; symbolCol++) {
-            vIn.X = symbolCol;
-            vIn.Y = symbolRow;
+            vIn.x = symbolCol;
+            vIn.y = symbolRow;
 
             dmtxMatrix3VMultiply(&vOut, &vIn, enc->rxfrm);
 
-            pixelCol = (int)(vOut.X);
-            pixelRow = (int)(vOut.Y);
+            pixelCol = (int)(vOut.x);
+            pixelRow = (int)(vOut.y);
 
             moduleStatus = dmtxSymbolModuleStatus(enc->message, enc->region.sizeIdx, symbolRow, symbolCol);
 

@@ -59,7 +59,7 @@ extern DmtxDecode *dmtxDecodeCreate(DmtxImage *img, int scale)
     dec->yMax = height - 1;
     dec->scale = scale;
 
-    dec->cache = (unsigned char *)calloc(width * height, sizeof(unsigned char));
+    dec->cache = (unsigned char *)calloc((size_t)width * height, sizeof(unsigned char));
     if (dec->cache == NULL) {
         free(dec);
         return NULL;
@@ -272,7 +272,7 @@ extern DmtxPassFail dmtxDecodeGetPixelValue(DmtxDecode *dec, int x, int y, int c
 /**
  * \brief  Fill the region covered by the quadrilateral given by (p0,p1,p2,p3) in the cache.
  */
-static void CacheFillQuad(DmtxDecode *dec, DmtxPixelLoc p0, DmtxPixelLoc p1, DmtxPixelLoc p2, DmtxPixelLoc p3)
+static void cacheFillQuad(DmtxDecode *dec, DmtxPixelLoc p0, DmtxPixelLoc p1, DmtxPixelLoc p2, DmtxPixelLoc p3)
 {
     DmtxBresLine lines[4];
     DmtxPixelLoc pEmpty = {0, 0};
@@ -289,14 +289,14 @@ static void CacheFillQuad(DmtxDecode *dec, DmtxPixelLoc p0, DmtxPixelLoc p1, Dmt
     minY = dec->yMax;
     maxY = 0;
 
-    minY = min(minY, p0.Y);
-    maxY = max(maxY, p0.Y);
-    minY = min(minY, p1.Y);
-    maxY = max(maxY, p1.Y);
-    minY = min(minY, p2.Y);
-    maxY = max(maxY, p2.Y);
-    minY = min(minY, p3.Y);
-    maxY = max(maxY, p3.Y);
+    minY = min(minY, p0.y);
+    maxY = max(maxY, p0.y);
+    minY = min(minY, p1.y);
+    maxY = max(maxY, p1.y);
+    minY = min(minY, p2.y);
+    maxY = max(maxY, p2.y);
+    minY = min(minY, p3.y);
+    maxY = max(maxY, p3.y);
 
     sizeY = maxY - minY + 1;
 
@@ -311,10 +311,10 @@ static void CacheFillQuad(DmtxDecode *dec, DmtxPixelLoc p0, DmtxPixelLoc p1, Dmt
     }
 
     for (i = 0; i < 4; i++) {
-        while (lines[i].loc.X != lines[i].loc1.X || lines[i].loc.Y != lines[i].loc1.Y) {
-            idx = lines[i].loc.Y - minY;
-            scanlineMin[idx] = min(scanlineMin[idx], lines[i].loc.X);
-            scanlineMax[idx] = max(scanlineMax[idx], lines[i].loc.X);
+        while (lines[i].loc.x != lines[i].loc1.x || lines[i].loc.y != lines[i].loc1.y) {
+            idx = lines[i].loc.y - minY;
+            scanlineMin[idx] = min(scanlineMin[idx], lines[i].loc.x);
+            scanlineMax[idx] = max(scanlineMax[idx], lines[i].loc.x);
             bresLineStep(lines + i, 1, 0);
         }
     }
@@ -359,24 +359,24 @@ extern DmtxMessage *dmtxDecodeMatrixRegion(DmtxDecode *dec, DmtxRegion *reg, int
 
     msg->fnc1 = dec->fnc1;
 
-    topLeft.X = bottomLeft.X = topLeft.Y = topRight.Y = -0.1;
-    topRight.X = bottomRight.X = bottomLeft.Y = bottomRight.Y = 1.1;
+    topLeft.x = bottomLeft.x = topLeft.y = topRight.y = -0.1;
+    topRight.x = bottomRight.x = bottomLeft.y = bottomRight.y = 1.1;
 
     dmtxMatrix3VMultiplyBy(&topLeft, reg->fit2raw);
     dmtxMatrix3VMultiplyBy(&topRight, reg->fit2raw);
     dmtxMatrix3VMultiplyBy(&bottomLeft, reg->fit2raw);
     dmtxMatrix3VMultiplyBy(&bottomRight, reg->fit2raw);
 
-    pxTopLeft.X = (int)(0.5 + topLeft.X);
-    pxTopLeft.Y = (int)(0.5 + topLeft.Y);
-    pxBottomLeft.X = (int)(0.5 + bottomLeft.X);
-    pxBottomLeft.Y = (int)(0.5 + bottomLeft.Y);
-    pxTopRight.X = (int)(0.5 + topRight.X);
-    pxTopRight.Y = (int)(0.5 + topRight.Y);
-    pxBottomRight.X = (int)(0.5 + bottomRight.X);
-    pxBottomRight.Y = (int)(0.5 + bottomRight.Y);
+    pxTopLeft.x = (int)(0.5 + topLeft.x);
+    pxTopLeft.y = (int)(0.5 + topLeft.y);
+    pxBottomLeft.x = (int)(0.5 + bottomLeft.x);
+    pxBottomLeft.y = (int)(0.5 + bottomLeft.y);
+    pxTopRight.x = (int)(0.5 + topRight.x);
+    pxTopRight.y = (int)(0.5 + topRight.y);
+    pxBottomRight.x = (int)(0.5 + bottomRight.x);
+    pxBottomRight.y = (int)(0.5 + bottomRight.y);
 
-    CacheFillQuad(dec, pxTopLeft, pxTopRight, pxBottomRight, pxBottomLeft);
+    cacheFillQuad(dec, pxTopLeft, pxTopRight, pxBottomRight, pxBottomLeft);
 
     return dmtxDecodePopulatedArray(reg->sizeIdx, msg, fix);
 }

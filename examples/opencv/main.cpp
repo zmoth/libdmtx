@@ -15,13 +15,13 @@ DmtxImage *gImage = NULL;
 void buildMatrixRegion(DmtxRegion *reg)
 {
     cv::Mat s = img.clone();
-    cv::rectangle(s, cv::Point(reg->boundMin.X, gImage->height - reg->boundMin.Y),
-                  cv::Point(reg->boundMax.X, gImage->height - reg->boundMax.Y), CV_RGB(0, 0, 255));
+    cv::rectangle(s, cv::Point(reg->boundMin.x, gImage->height - reg->boundMin.y),
+                  cv::Point(reg->boundMax.x, gImage->height - reg->boundMax.y), CV_RGB(0, 0, 255));
 
-    cv::line(s, cv::Point(reg->leftLine.locPos.X, gImage->height - reg->leftLine.locPos.Y),
-             cv::Point(reg->leftLine.locNeg.X, gImage->height - reg->leftLine.locNeg.Y), CV_RGB(255, 0, 0));
-    cv::line(s, cv::Point(reg->bottomLine.locPos.X, gImage->height - reg->bottomLine.locPos.Y),
-             cv::Point(reg->bottomLine.locNeg.X, gImage->height - reg->bottomLine.locNeg.Y), CV_RGB(0, 255, 0));
+    cv::line(s, cv::Point(reg->leftLine.locPos.x, gImage->height - reg->leftLine.locPos.y),
+             cv::Point(reg->leftLine.locNeg.x, gImage->height - reg->leftLine.locNeg.y), CV_RGB(255, 0, 0));
+    cv::line(s, cv::Point(reg->bottomLine.locPos.x, gImage->height - reg->bottomLine.locPos.y),
+             cv::Point(reg->bottomLine.locNeg.x, gImage->height - reg->bottomLine.locNeg.y), CV_RGB(0, 255, 0));
 
     pointShow = img.clone();
 
@@ -36,8 +36,8 @@ void plotPoint(DmtxPixelLoc loc, int colorInt, int paneNbr, int dispType)
     DmtxVector2 point;
     std::string winname;
 
-    point.X = loc.X;
-    point.Y = loc.Y;
+    point.x = loc.x;
+    point.y = loc.y;
 
     switch (paneNbr) {
         case 1:
@@ -84,10 +84,10 @@ void plotPoint(DmtxPixelLoc loc, int colorInt, int paneNbr, int dispType)
         if (colorInt == 1) {
             pointShow = img.clone();
         }
-        cv::circle(pointShow, cv::Point((int)point.X, gImage->height - (int)point.Y), 3, color, 2);
+        cv::circle(pointShow, cv::Point((int)point.x, gImage->height - (int)point.y), 3, color, 2);
     } else if (dispType == DMTX_DISPLAY_POINT) {
-        int x = (int)(point.X + 0.5);
-        int y = (int)(gImage->height - point.Y + 0.5);
+        int x = (int)(point.x + 0.5);
+        int y = (int)(gImage->height - point.y + 0.5);
         cv::circle(pointShow, cv::Point(x, y), 1, color, -1);
     }
 
@@ -218,26 +218,26 @@ int main(int argc, char *argv[])
         if (msg != NULL) {
             std::cout << msg->outputIdx << " - " << msg->output << std::endl;
 
-            cv::circle(show, cv::Point(reg->leftLoc.X, gImage->height - reg->leftLoc.Y), 2, CV_RGB(255, 0, 0), -1);
-            cv::circle(show, cv::Point(reg->bottomLoc.X, gImage->height - reg->bottomLoc.Y), 2, CV_RGB(0, 255, 0), -1);
+            cv::circle(show, cv::Point(reg->leftLoc.x, gImage->height - reg->leftLoc.y), 2, CV_RGB(255, 0, 0), -1);
+            cv::circle(show, cv::Point(reg->bottomLoc.x, gImage->height - reg->bottomLoc.y), 2, CV_RGB(0, 255, 0), -1);
 
-            cv::circle(show, cv::Point(reg->topLoc.X, gImage->height - reg->topLoc.Y), 2, CV_RGB(255, 255, 0), -1);
-            cv::circle(show, cv::Point(reg->rightLoc.X, gImage->height - reg->rightLoc.Y), 2, CV_RGB(0, 255, 255), -1);
+            cv::circle(show, cv::Point(reg->topLoc.x, gImage->height - reg->topLoc.y), 2, CV_RGB(255, 255, 0), -1);
+            cv::circle(show, cv::Point(reg->rightLoc.x, gImage->height - reg->rightLoc.y), 2, CV_RGB(0, 255, 255), -1);
 
             cv::Point bl, br, tl, tr;
-            bl = findIntersection(cv::Point(reg->leftLoc.X, gImage->height - reg->leftLoc.Y), 180 - reg->leftAngle,
-                                  cv::Point(reg->bottomLoc.X, gImage->height - reg->bottomLoc.Y),
+            bl = findIntersection(cv::Point(reg->leftLoc.x, gImage->height - reg->leftLoc.y), 180 - reg->leftAngle,
+                                  cv::Point(reg->bottomLoc.x, gImage->height - reg->bottomLoc.y),
                                   180 - reg->bottomAngle);
 
-            br = findIntersection(cv::Point(reg->rightLoc.X, gImage->height - reg->rightLoc.Y), 180 - reg->rightAngle,
-                                  cv::Point(reg->bottomLoc.X, gImage->height - reg->bottomLoc.Y),
+            br = findIntersection(cv::Point(reg->rightLoc.x, gImage->height - reg->rightLoc.y), 180 - reg->rightAngle,
+                                  cv::Point(reg->bottomLoc.x, gImage->height - reg->bottomLoc.y),
                                   180 - reg->bottomAngle);
 
-            tl = findIntersection(cv::Point(reg->leftLoc.X, gImage->height - reg->leftLoc.Y), 180 - reg->leftAngle,
-                                  cv::Point(reg->topLoc.X, gImage->height - reg->topLoc.Y), 180 - reg->topAngle);
+            tl = findIntersection(cv::Point(reg->leftLoc.x, gImage->height - reg->leftLoc.y), 180 - reg->leftAngle,
+                                  cv::Point(reg->topLoc.x, gImage->height - reg->topLoc.y), 180 - reg->topAngle);
 
-            tr = findIntersection(cv::Point(reg->rightLoc.X, gImage->height - reg->rightLoc.Y), 180 - reg->rightAngle,
-                                  cv::Point(reg->topLoc.X, gImage->height - reg->topLoc.Y), 180 - reg->topAngle);
+            tr = findIntersection(cv::Point(reg->rightLoc.x, gImage->height - reg->rightLoc.y), 180 - reg->rightAngle,
+                                  cv::Point(reg->topLoc.x, gImage->height - reg->topLoc.y), 180 - reg->topAngle);
 
             cv::line(show, bl, br, CV_RGB(0, 255, 0));
             cv::line(show, br, tr, CV_RGB(0, 255, 255));

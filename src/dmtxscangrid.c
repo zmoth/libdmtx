@@ -125,7 +125,7 @@ static int getGridCoordinates(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
     }
 
     if (grid->extent == 0 || grid->extent < grid->minExtent) {
-        locPtr->X = locPtr->Y = -1;
+        locPtr->x = locPtr->y = -1;
         return DmtxRangeEnd;
     }
 
@@ -135,31 +135,31 @@ static int getGridCoordinates(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
 
     if (count == grid->pixelTotal - 1) {
         /* center pixel */
-        loc.X = grid->xCenter;
-        loc.Y = grid->yCenter;
+        loc.x = grid->xCenter;
+        loc.y = grid->yCenter;
     } else {
         half = grid->pixelTotal / 2;
         quarter = half / 2;
 
         /* horizontal portion */
         if (count < half) {
-            loc.X = grid->xCenter + ((count < quarter) ? (count - quarter) : (half - count));
-            loc.Y = grid->yCenter;
+            loc.x = grid->xCenter + ((count < quarter) ? (count - quarter) : (half - count));
+            loc.y = grid->yCenter;
         }
         /* vertical portion */
         else {
             count -= half;
-            loc.X = grid->xCenter;
-            loc.Y = grid->yCenter + ((count < quarter) ? (count - quarter) : (half - count));
+            loc.x = grid->xCenter;
+            loc.y = grid->yCenter + ((count < quarter) ? (count - quarter) : (half - count));
         }
     }
 
-    loc.X += grid->xOffset;
-    loc.Y += grid->yOffset;
+    loc.x += grid->xOffset;
+    loc.y += grid->yOffset;
 
     *locPtr = loc;
 
-    if (loc.X < grid->xMin || loc.X > grid->xMax || loc.Y < grid->yMin || loc.Y > grid->yMax) {
+    if (loc.x < grid->xMin || loc.x > grid->xMax || loc.y < grid->yMin || loc.y > grid->yMax) {
         return DmtxRangeBad;
     }
 

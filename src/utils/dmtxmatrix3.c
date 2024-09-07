@@ -313,15 +313,15 @@ extern DmtxPassFail dmtxMatrix3VMultiply(OUT DmtxVector2 *vOut, DmtxVector2 *vIn
 {
     double w;
 
-    w = vIn->X * m[0][2] + vIn->Y * m[1][2] + m[2][2];
+    w = vIn->x * m[0][2] + vIn->y * m[1][2] + m[2][2];
     if (fabs(w) <= DmtxAlmostZero) {
-        vOut->X = FLT_MAX;
-        vOut->Y = FLT_MAX;
+        vOut->x = FLT_MAX;
+        vOut->y = FLT_MAX;
         return DmtxFail;
     }
 
-    vOut->X = (vIn->X * m[0][0] + vIn->Y * m[1][0] + m[2][0]) / w;
-    vOut->Y = (vIn->X * m[0][1] + vIn->Y * m[1][1] + m[2][1]) / w;
+    vOut->x = (vIn->x * m[0][0] + vIn->y * m[1][0] + m[2][0]) / w;
+    vOut->y = (vIn->x * m[0][1] + vIn->y * m[1][1] + m[2][1]) / w;
 
     return DmtxPass;
 }

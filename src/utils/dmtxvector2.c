@@ -25,8 +25,8 @@
  */
 extern DmtxVector2 *dmtxVector2AddTo(INOUT DmtxVector2 *v1, const DmtxVector2 *v2)
 {
-    v1->X += v2->X;
-    v1->Y += v2->Y;
+    v1->x += v2->x;
+    v1->y += v2->y;
 
     return v1;
 }
@@ -46,8 +46,8 @@ extern DmtxVector2 *dmtxVector2Add(OUT DmtxVector2 *vOut, const DmtxVector2 *v1,
  */
 extern DmtxVector2 *dmtxVector2SubFrom(INOUT DmtxVector2 *v1, const DmtxVector2 *v2)
 {
-    v1->X -= v2->X;
-    v1->Y -= v2->Y;
+    v1->x -= v2->x;
+    v1->y -= v2->y;
 
     return v1;
 }
@@ -67,8 +67,8 @@ extern DmtxVector2 *dmtxVector2Sub(OUT DmtxVector2 *vOut, const DmtxVector2 *v1,
  */
 extern DmtxVector2 *dmtxVector2ScaleBy(INOUT DmtxVector2 *v, double s)
 {
-    v->X *= s;
-    v->Y *= s;
+    v->x *= s;
+    v->y *= s;
 
     return v;
 }
@@ -88,7 +88,7 @@ extern DmtxVector2 *dmtxVector2Scale(OUT DmtxVector2 *vOut, const DmtxVector2 *v
  */
 extern double dmtxVector2Cross(const DmtxVector2 *v1, const DmtxVector2 *v2)
 {
-    return (v1->X * v2->Y) - (v1->Y * v2->X);
+    return (v1->x * v2->y) - (v1->y * v2->x);
 }
 
 /**
@@ -114,7 +114,7 @@ extern double dmtxVector2Norm(INOUT DmtxVector2 *v)
  */
 extern double dmtxVector2Dot(const DmtxVector2 *v1, const DmtxVector2 *v2)
 {
-    return (v1->X * v2->X) + (v1->Y * v2->Y);
+    return (v1->x * v2->x) + (v1->y * v2->y);
 }
 
 /**
@@ -122,7 +122,7 @@ extern double dmtxVector2Dot(const DmtxVector2 *v1, const DmtxVector2 *v2)
  */
 extern double dmtxVector2Mag(const DmtxVector2 *v)
 {
-    return sqrt(v->X * v->X + v->Y * v->Y);
+    return sqrt(v->x * v->x + v->y * v->y);
 }
 
 /**

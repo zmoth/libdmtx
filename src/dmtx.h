@@ -259,8 +259,8 @@ extern "C"
      */
     typedef struct DmtxPixelLoc_struct
     {
-        int X;
-        int Y;
+        int x;
+        int y;
     } DmtxPixelLoc;
 
     /**
@@ -268,8 +268,8 @@ extern "C"
      */
     typedef struct DmtxVector2_struct
     {
-        double X;
-        double Y;
+        double x;
+        double y;
     } DmtxVector2;
 
     /**

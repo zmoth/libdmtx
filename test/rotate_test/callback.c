@@ -46,12 +46,12 @@ void BuildMatrixCallback2(DmtxRegion *region)
 
     for (i = 0; i < 320; i++) {
         for (j = 0; j < 320; j++) {
-            point.X = j;
-            point.Y = i;
+            point.x = j;
+            point.y = i;
             dmtxMatrix3VMultiplyBy(&point, mInv);
-            dmtxImageGetPixelValue(gImage, (int)(point.X + 0.5), (int)(point.Y + 0.5), 0, &rgb[0]);
-            dmtxImageGetPixelValue(gImage, (int)(point.X + 0.5), (int)(point.Y + 0.5), 1, &rgb[1]);
-            dmtxImageGetPixelValue(gImage, (int)(point.X + 0.5), (int)(point.Y + 0.5), 2, &rgb[2]);
+            dmtxImageGetPixelValue(gImage, (int)(point.x + 0.5), (int)(point.y + 0.5), 0, &rgb[0]);
+            dmtxImageGetPixelValue(gImage, (int)(point.x + 0.5), (int)(point.y + 0.5), 1, &rgb[1]);
+            dmtxImageGetPixelValue(gImage, (int)(point.x + 0.5), (int)(point.y + 0.5), 2, &rgb[2]);
 
             offset = (320 * i + j) * 3;
             passTwoPxl[offset + 0] = rgb[0];
@@ -103,12 +103,12 @@ void BuildMatrixCallback3(DmtxMatrix3 mChainInv)
 
     for (i = 0; i < 320; i++) {
         for (j = 0; j < 320; j++) {
-            point.X = j;
-            point.Y = i;
+            point.x = j;
+            point.y = i;
             dmtxMatrix3VMultiplyBy(&point, mInv);
-            dmtxImageGetPixelValue(gImage, (int)(point.X + 0.5), (int)(point.Y + 0.5), 0, &rgb[0]);
-            dmtxImageGetPixelValue(gImage, (int)(point.X + 0.5), (int)(point.Y + 0.5), 1, &rgb[1]);
-            dmtxImageGetPixelValue(gImage, (int)(point.X + 0.5), (int)(point.Y + 0.5), 2, &rgb[2]);
+            dmtxImageGetPixelValue(gImage, (int)(point.x + 0.5), (int)(point.y + 0.5), 0, &rgb[0]);
+            dmtxImageGetPixelValue(gImage, (int)(point.x + 0.5), (int)(point.y + 0.5), 1, &rgb[1]);
+            dmtxImageGetPixelValue(gImage, (int)(point.x + 0.5), (int)(point.y + 0.5), 2, &rgb[2]);
 
             offset = (320 * i + j) * 3;
             passTwoPxl[offset + 0] = rgb[0];
@@ -165,12 +165,12 @@ void BuildMatrixCallback4(DmtxMatrix3 mChainInv)
 
     for (i = 0; i < 320; i++) {
         for (j = 0; j < 320; j++) {
-            point.X = j;
-            point.Y = i;
+            point.x = j;
+            point.y = i;
             dmtxMatrix3VMultiplyBy(&point, mInv);
-            dmtxImageGetPixelValue(gImage, (int)(point.X + 0.5), (int)(point.Y + 0.5), 0, &rgb[0]);
-            dmtxImageGetPixelValue(gImage, (int)(point.X + 0.5), (int)(point.Y + 0.5), 1, &rgb[1]);
-            dmtxImageGetPixelValue(gImage, (int)(point.X + 0.5), (int)(point.Y + 0.5), 2, &rgb[2]);
+            dmtxImageGetPixelValue(gImage, (int)(point.x + 0.5), (int)(point.y + 0.5), 0, &rgb[0]);
+            dmtxImageGetPixelValue(gImage, (int)(point.x + 0.5), (int)(point.y + 0.5), 1, &rgb[1]);
+            dmtxImageGetPixelValue(gImage, (int)(point.x + 0.5), (int)(point.y + 0.5), 2, &rgb[2]);
 
             offset = (320 * i + j) * 3;
             passTwoPxl[offset + 0] = rgb[0];
@@ -207,8 +207,8 @@ void PlotPointCallback(DmtxPixelLoc loc, int colorInt, int paneNbr, int dispType
     DmtxImage *image = NULL;
     DmtxVector2 point;
 
-    point.X = loc.X;
-    point.Y = loc.Y;
+    point.x = loc.x;
+    point.y = loc.y;
 
     switch (paneNbr) {
         case 1:
@@ -251,7 +251,7 @@ void PlotPointCallback(DmtxPixelLoc loc, int colorInt, int paneNbr, int dispType
                 break;
         }
 
-        plotPoint(image, (float)point.Y, (float)point.X, color);
+        plotPoint(image, (float)point.y, (float)point.x, color);
         /*    plotPoint(image, point.Y + 1, point.X - 1, color);
               plotPoint(image, point.Y + 1, point.X + 1, color);
               plotPoint(image, point.Y - 1, point.X - 1, color);
@@ -286,14 +286,14 @@ void PlotPointCallback(DmtxPixelLoc loc, int colorInt, int paneNbr, int dispType
 
         if (dispType == DMTX_DISPLAY_SQUARE) {
             glBegin(GL_QUADS);
-            glVertex2f((float)point.X - 3, (float)point.Y - 3);
-            glVertex2f((float)point.X + 3, (float)point.Y - 3);
-            glVertex2f((float)point.X + 3, (float)point.Y + 3);
-            glVertex2f((float)point.X - 3, (float)point.Y + 3);
+            glVertex2f((float)point.x - 3, (float)point.y - 3);
+            glVertex2f((float)point.x + 3, (float)point.y - 3);
+            glVertex2f((float)point.x + 3, (float)point.y + 3);
+            glVertex2f((float)point.x - 3, (float)point.y + 3);
             glEnd();
         } else if (dispType == DMTX_DISPLAY_POINT) {
-            int x = (int)(point.X + 0.5);
-            int y = (int)(point.Y + 0.5);
+            int x = (int)(point.x + 0.5);
+            int y = (int)(point.y + 0.5);
 
             glBegin(GL_POINTS);
             glVertex2f((float)x, (float)y);
