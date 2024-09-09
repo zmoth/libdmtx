@@ -673,7 +673,7 @@ extern "C"
 #ifdef DEBUG_CALLBACK
     typedef void (*DmtxCallbackBuildMatrixRegion)(DmtxRegion *region);
     typedef void (*DmtxCallbackBuildMatrix)(DmtxMatrix3 matrix);
-    typedef void (*DmtxCallbackPlotPoint)(DmtxPixelLoc loc, int colorInt, int paneNbr, int dispType);
+    typedef void (*DmtxCallbackPlotPoint)(DmtxPixelLoc loc, float colorHue, int paneNbr, int dispType);
     typedef void (*DmtxCallbackXfrmPlotPoint)(DmtxVector2 point, DmtxMatrix3 xfrm, int paneNbr, int dispType);
     typedef void (*DmtxCallbackFinal)(DmtxDecode *decode, DmtxRegion *region);
     // typedef void (*DmtxCallbackPlotModule)(DmtxDecode *info, DmtxRegion *region, int row, int col, DmtxColor3 color);

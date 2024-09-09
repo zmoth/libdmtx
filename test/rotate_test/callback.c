@@ -197,14 +197,47 @@ void BuildMatrixCallback4(DmtxMatrix3 mChainInv)
     glEnd();
 }
 
+void hsv2rgb(float h, float s, float v)
+{
+    double c, h_, x;
+    double r, g, b;
+
+    h = fmod(h, 360.0F);
+
+    c = s;
+    h_ = h / 60;
+    x = c * (1 - fabs(fmod(h_, 2) - 1.0));
+    r = g = b = v - c;
+
+    if (h_ < 1) {
+        r += c;
+        g += x;
+    } else if (h_ < 2) {
+        r += x;
+        g += c;
+    } else if (h_ < 3) {
+        g += c;
+        b += x;
+    } else if (h_ < 4) {
+        g += x;
+        b += c;
+    } else if (h_ < 5) {
+        r += x;
+        b += c;
+    } else if (h_ < 6) {
+        r += c;
+        b += x;
+    }
+
+    glColor3f((float)r, (float)g, (float)b);
+}
+
 /**
  *
  *
  */
-void PlotPointCallback(DmtxPixelLoc loc, int colorInt, int paneNbr, int dispType)
+void PlotPointCallback(DmtxPixelLoc loc, float colorHue, int paneNbr, int dispType)
 {
-    int color;
-    DmtxImage *image = NULL;
     DmtxVector2 point;
 
     point.x = loc.x;
@@ -232,73 +265,31 @@ void PlotPointCallback(DmtxPixelLoc loc, int colorInt, int paneNbr, int dispType
             break;
     }
 
-    if (image != NULL) {
-        switch (colorInt) {
-            case 1:
-                color = ColorRed;
-                break;
-            case 2:
-                color = ColorGreen;
-                break;
-            case 3:
-                color = ColorBlue;
-                break;
-            case 4:
-                color = ColorYellow;
-                break;
-            default:
-                color = ColorWhite;
-                break;
-        }
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-0.5, 319.5, -0.5, 319.5, -1.0, 10.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
-        plotPoint(image, (float)point.y, (float)point.x, color);
-        /*    plotPoint(image, point.Y + 1, point.X - 1, color);
-              plotPoint(image, point.Y + 1, point.X + 1, color);
-              plotPoint(image, point.Y - 1, point.X - 1, color);
-              plotPoint(image, point.Y - 1, point.X + 1, color); */
-    } else {
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(-0.5, 319.5, -0.5, 319.5, -1.0, 10.0);
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
+    glDisable(GL_TEXTURE_2D);
+    glPolygonMode(GL_FRONT, GL_LINE);
 
-        glDisable(GL_TEXTURE_2D);
-        glPolygonMode(GL_FRONT, GL_LINE);
+    hsv2rgb(colorHue, 1.0F, 1.0F);
 
-        switch (colorInt) {
-            case 1:
-                glColor3f(1.0F, 0.0F, 0.0F);
-                break;
-            case 2:
-                glColor3f(0.0F, 1.0F, 0.0F);
-                break;
-            case 3:
-                glColor3f(0.0F, 0.0F, 1.0F);
-                break;
-            case 4:
-                glColor3f(1.0F, 1.0F, 0.0F);
-                break;
-            default:
-                glColor3f(1.0F, 1.0F, 1.0F);
-                break;
-        }
+    if (dispType == DMTX_DISPLAY_SQUARE) {
+        glBegin(GL_QUADS);
+        glVertex2f((float)point.x - 3, (float)point.y - 3);
+        glVertex2f((float)point.x + 3, (float)point.y - 3);
+        glVertex2f((float)point.x + 3, (float)point.y + 3);
+        glVertex2f((float)point.x - 3, (float)point.y + 3);
+        glEnd();
+    } else if (dispType == DMTX_DISPLAY_POINT) {
+        int x = (int)(point.x + 0.5);
+        int y = (int)(point.y + 0.5);
 
-        if (dispType == DMTX_DISPLAY_SQUARE) {
-            glBegin(GL_QUADS);
-            glVertex2f((float)point.x - 3, (float)point.y - 3);
-            glVertex2f((float)point.x + 3, (float)point.y - 3);
-            glVertex2f((float)point.x + 3, (float)point.y + 3);
-            glVertex2f((float)point.x - 3, (float)point.y + 3);
-            glEnd();
-        } else if (dispType == DMTX_DISPLAY_POINT) {
-            int x = (int)(point.x + 0.5);
-            int y = (int)(point.y + 0.5);
-
-            glBegin(GL_POINTS);
-            glVertex2f((float)x, (float)y);
-            glEnd();
-        }
+        glBegin(GL_POINTS);
+        glVertex2f((float)x, (float)y);
+        glEnd();
     }
 }
 

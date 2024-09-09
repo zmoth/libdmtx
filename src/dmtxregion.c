@@ -169,8 +169,16 @@ extern DmtxRegion *dmtxRegionScanPixel(DmtxDecode *dec, int x, int y)
 }
 
 /**
+ * @brief 寻找指定像素位置梯度流向，并检查该点是否能形成闭环。如果成功暂定该点在DataMatrix的'L'型边上
  *
+ * 该函数分析指定像素位置的各颜色通道，以确定哪个通道展现了最明显的边缘特征。
+ * 然后，它通过分析正负方向上的邻近像素强度，精确定位并返回最强边缘的方向向量。
+ * 如果找不到清晰的边缘特征，则返回表示空白边缘(dmtxBlankEdge)的默认值。
  *
+ * @param dec 解码上下文，包含图像数据和解码设置。
+ * @param loc 待分析的像素位置。
+ *
+ * @return DmtxPointFlow 结构，表示找到的边缘方向和强度；如果未找到有效边缘，则返回 dmtxBlankEdge。
  */
 static DmtxPointFlow matrixRegionSeekEdge(DmtxDecode *dec, DmtxPixelLoc loc)
 {
@@ -192,22 +200,30 @@ static DmtxPointFlow matrixRegionSeekEdge(DmtxDecode *dec, DmtxPixelLoc loc)
         }
     }
 
-    if (flowPlane[strongIdx].mag < 10) {
+    if (flowPlane[strongIdx].mag < 10) {  // 如果最强边缘的幅度小于阈值，返回空白边缘
         return dmtxBlankEdge;
     }
 
     flow = flowPlane[strongIdx];
 
+    // 寻找正负方向上的最强邻近边缘
     flowPos = findStrongestNeighbor(dec, flow, +1);
     flowNeg = findStrongestNeighbor(dec, flow, -1);
+
+    // 来回验证是否该起点的能不能按照相同的位置原路返回
+    //
+    // 这个机制是为了保证选取的起始点位在规定的搜索时间内能够闭合：
+    // 闭合的自然条件是按照原来的方向返回该点位如果这个机制无法通过，
+    // 则说明选择的点位在返回时和出发时有两个不同的方向，这种情况在一个闭合的轮廓边界中是不允许的
     if (flowPos.mag != 0 && flowNeg.mag != 0) {
         flowPosBack = findStrongestNeighbor(dec, flowPos, -1);
         flowNegBack = findStrongestNeighbor(dec, flowNeg, +1);
         if (flowPos.arrive == (flowPosBack.arrive + 4) % 8 && flowNeg.arrive == (flowNegBack.arrive + 4) % 8) {
+            // 如果沿着flow点往正负方向走，如果下一个点能够通过同样的方式走回到flow点，那么认为这个点是有可能形成一个闭合的形状的
             flow.arrive = dmtxNeighborNone;
 #ifdef DEBUG_CALLBACK
             if (cbPlotPoint) {
-                cbPlotPoint(flow.loc, 1, 1, 1);
+                cbPlotPoint(flow.loc, 0.0F, 1, 1);
             }
 #endif
             return flow;
@@ -218,8 +234,17 @@ static DmtxPointFlow matrixRegionSeekEdge(DmtxDecode *dec, DmtxPixelLoc loc)
 }
 
 /**
+ * @brief 确定数据矩阵区域的方向和关键边界
  *
+ * 此函数分析并确定给定解码上下文中数据矩阵区域的方向性、极性和关键坐标点。
+ * 它通过跟随边缘、查找最佳直线、评估交叉点等步骤来实现对区域的精确定位。
  *
+ * @param dec 解码上下文，包含了解码设置和辅助信息
+ * @param reg 待分析的数据矩阵区域结构体，用于存储识别结果
+ * @param begin 起始追踪点，用于初始化追踪过程
+ *
+ * @retval DmtxPass 成功确定区域方向
+ * @retval DmtxFail 未能成功确定区域方向或区域不符合预期条件
  */
 static DmtxPassFail matrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, DmtxPointFlow begin)
 {
@@ -374,8 +399,8 @@ static DmtxPassFail matrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, Dm
 
 #ifdef DEBUG_CALLBACK
     if (cbPlotPoint) {
-        cbPlotPoint(reg->locR, 2, 1, 1);
-        cbPlotPoint(reg->locT, 2, 1, 1);
+        cbPlotPoint(reg->locR, 180.0F /*青*/, 1, 1);
+        cbPlotPoint(reg->locT, 180.0F /*青*/, 1, 1);
     }
 #endif
 
@@ -1092,17 +1117,20 @@ static DmtxFollow followStep2(DmtxDecode *dec, DmtxFollow followBeg, int sign)
 }
 
 /**
+ * @brief 追踪匹配DataMatrix的'L'型连续直线
+ *
  * vaiiiooo
  * --------
  * 0x80 v = visited bit
  * 0x40 a = assigned bit
  * 0x38 u = 3 bits points upstream 0-7
  * 0x07 d = 3 bits points downstream 0-7
+ *
  */
 static DmtxPassFail trailBlazeContinuous(DmtxDecode *dec, DmtxRegion *reg, DmtxPointFlow flowBegin, int maxDiagonal)
 {
     int posAssigns, negAssigns, clears;
-    int sign;
+    int sign;  // 方向标志，+1为正向，-1为负向
     int steps;
     unsigned char *cache, *cacheNext, *cacheBeg;
     DmtxPointFlow flow, flowNext;
@@ -1118,11 +1146,12 @@ static DmtxPassFail trailBlazeContinuous(DmtxDecode *dec, DmtxRegion *reg, DmtxP
     reg->flowBegin = flowBegin;
 
     posAssigns = negAssigns = 0;
-    for (sign = 1; sign >= -1; sign -= 2) {
+    for (sign = 1; sign >= -1; sign -= 2) {  // 分别进行正向和负向探索
         flow = flowBegin;
         cache = cacheBeg;
 
         for (steps = 0;; steps++) {
+            // 检查是否超过最大对角线限制
             if (maxDiagonal != DmtxUndefined &&
                 (boundMax.x - boundMin.x > maxDiagonal || boundMax.y - boundMin.y > maxDiagonal)) {
                 break;
@@ -1172,7 +1201,7 @@ static DmtxPassFail trailBlazeContinuous(DmtxDecode *dec, DmtxRegion *reg, DmtxP
 
 #ifdef DEBUG_CALLBACK
             if (cbPlotPoint) {
-                cbPlotPoint(flow.loc, (sign > 0) ? 2 : 3, 1, 2);
+                cbPlotPoint(flow.loc, (sign > 0) ? 0.0F /*红*/ : 180.0F /*青*/, 1, 2);
             }
 #endif
         }
@@ -1429,7 +1458,7 @@ static DmtxBestLine findBestSolidLine(DmtxDecode *dec, DmtxRegion *reg, int step
 
 #ifdef DEBUG_CALLBACK
         if (cbPlotPoint) {
-            cbPlotPoint(follow.loc, (sign > 1) ? 4 : 3, 1, 2);
+            cbPlotPoint(follow.loc, (sign > 1) ? 120.0F + step : 300.0F + step, 1, 2);
         }
 #endif
 
@@ -1520,7 +1549,7 @@ static DmtxBestLine findBestSolidLine2(DmtxDecode *dec, DmtxPixelLoc loc0, int t
 
 #ifdef DEBUG_CALLBACK
         if (cbPlotPoint) {
-            cbPlotPoint(follow.loc, (sign > 1) ? 4 : 3, 1, 2);
+            cbPlotPoint(follow.loc, (sign > 1) ? 300.0F /*品红*/ : 120.0F /*绿*/, 1, 2);
         }
 #endif
 
@@ -1619,8 +1648,8 @@ static DmtxPassFail findTravelLimits(DmtxDecode *dec, DmtxRegion *reg, DmtxBestL
 
 #ifdef DEBUG_CALLBACK
         if (cbPlotPoint) {
-            cbPlotPoint(followPos.loc, 2, 1, 2);
-            cbPlotPoint(followNeg.loc, 4, 1, 2);
+            cbPlotPoint(followPos.loc, 60.0F /*黄*/, 1, 2);
+            cbPlotPoint(followNeg.loc, 240.0F /*蓝*/, 1, 2);
         }
 #endif
 
@@ -1632,8 +1661,8 @@ static DmtxPassFail findTravelLimits(DmtxDecode *dec, DmtxRegion *reg, DmtxBestL
 
 #ifdef DEBUG_CALLBACK
     if (cbPlotPoint) {
-        cbPlotPoint(posMax, 2, 1, 1);
-        cbPlotPoint(negMax, 2, 1, 1);
+        cbPlotPoint(posMax, 120.0F /*绿*/, 1, 1);
+        cbPlotPoint(negMax, 120.0F /*绿*/, 1, 1);
     }
 #endif
 
@@ -1775,8 +1804,8 @@ static DmtxBresLine bresLineInit(DmtxPixelLoc loc0, DmtxPixelLoc loc1, DmtxPixel
 
 #ifdef DEBUG_CALLBACK
     if (cbPlotPoint) {
-        cbPlotPoint(loc0, 3, 1, 1);
-        cbPlotPoint(loc1, 3, 1, 1);
+        cbPlotPoint(loc0, 240.0F /*蓝*/, 1, 1);
+        cbPlotPoint(loc1, 240.0F /*蓝*/, 1, 1);
     }
 #endif
 
@@ -1931,8 +1960,8 @@ static void WriteDiagnosticImage(DmtxDecode *dec, DmtxRegion *reg, char *imagePa
     rgb[0] = 255;
     rgb[1] = 0;
     rgb[2] = 0;
-    dmtxImageSetRgb(img, reg->topLoc.X, reg->topLoc.Y, rgb);
-    dmtxImageSetRgb(img, reg->rightLoc.X, reg->rightLoc.Y, rgb);
+    dmtxImageSetRgb(img, reg->toploc.x, reg->toploc.y, rgb);
+    dmtxImageSetRgb(img, reg->rightloc.x, reg->rightloc.y, rgb);
 
     /* Write image to PNM file */
     fprintf(fp, "P6\n%d %d\n255\n", width, height);

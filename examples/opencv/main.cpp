@@ -12,6 +12,41 @@
 cv::Mat image, img, show, pointShow;
 DmtxImage *gImage = NULL;
 
+cv::Scalar hsv2rgb(float h, float s = 1.0F, float v = 1.0F)
+{
+    double c, h_, x;
+    double r, g, b;
+
+    h = fmod(h, 360.0F);
+
+    c = s;
+    h_ = h / 60;
+    x = c * (1 - abs(fmod(h_, 2) - 1));
+    r = g = b = v - c;
+
+    if (h_ < 1) {
+        r += c;
+        g += x;
+    } else if (h_ < 2) {
+        r += x;
+        g += c;
+    } else if (h_ < 3) {
+        g += c;
+        b += x;
+    } else if (h_ < 4) {
+        g += x;
+        b += c;
+    } else if (h_ < 5) {
+        r += x;
+        b += c;
+    } else if (h_ < 6) {
+        r += c;
+        b += x;
+    }
+
+    return CV_RGB(r * 255, g * 255, b * 255);
+}
+
 void buildMatrixRegion(DmtxRegion *reg)
 {
     cv::Mat s = img.clone();
@@ -30,7 +65,7 @@ void buildMatrixRegion(DmtxRegion *reg)
     cv::waitKey();
 }
 
-void plotPoint(DmtxPixelLoc loc, int colorInt, int paneNbr, int dispType)
+void plotPoint(DmtxPixelLoc loc, float colorHue, int paneNbr, int dispType)
 {
     cv::Scalar color;
     DmtxVector2 point;
@@ -62,26 +97,10 @@ void plotPoint(DmtxPixelLoc loc, int colorInt, int paneNbr, int dispType)
             winname = "showPlotPoint";
     }
 
-    switch (colorInt) {
-        case 1:
-            color = CV_RGB(255, 0, 0);
-            break;
-        case 2:
-            color = CV_RGB(0, 255, 0);
-            break;
-        case 3:
-            color = CV_RGB(0, 0, 255);
-            break;
-        case 4:
-            color = CV_RGB(255, 255, 0);
-            break;
-        default:
-            color = CV_RGB(255, 255, 255);
-            break;
-    }
+    color = hsv2rgb(colorHue);
 
     if (dispType == DMTX_DISPLAY_SQUARE) {
-        if (colorInt == 1) {
+        if (abs(colorHue) < 0.0001F) {
             pointShow = img.clone();
         }
         cv::circle(pointShow, cv::Point((int)point.x, gImage->height - (int)point.y), 3, color, 2);
