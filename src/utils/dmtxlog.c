@@ -22,6 +22,7 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 #include "dmtx.h"
@@ -135,27 +136,24 @@ int dmtxLogAddFp(FILE *fp, int level)
 
 static void initEvent(DmtxLogEvent *ev, void *udata)
 {
-    if (!ev->time) {
-        time_t t = time(NULL);
+    if (ev->time == NULL) {
+        ev->time = malloc(sizeof(struct tm));
+    }
+
+    time_t t = time(NULL);
 #if defined(_WIN32) || defined(_WIN64)
-        localtime_s(ev->time, &t);
+    localtime_s(ev->time, &t);
 #elif defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__)
-        localtime_r(&t, ev->time);
+    localtime_r(&t, ev->time);
 #else
 #    error "Unsupported platform"
 #endif
-    }
     ev->udata = udata;
 }
 
 extern void dmtxLog(int level, const char *file, int line, const char *fmt, ...)
 {
-    DmtxLogEvent ev = {
-        .fmt = fmt,
-        .file = file,
-        .line = line,
-        .level = level,
-    };
+    DmtxLogEvent ev = {.fmt = fmt, .file = file, .line = line, .level = level, .time = malloc(sizeof(struct tm))};
 
     lock();
 
@@ -176,5 +174,6 @@ extern void dmtxLog(int level, const char *file, int line, const char *fmt, ...)
         }
     }
 
+    free(ev.time);
     unlock();
 }
