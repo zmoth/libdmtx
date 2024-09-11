@@ -230,10 +230,9 @@ extern unsigned char *dmtxDecodeGetCache(DmtxDecode *dec, int x, int y)
 }
 
 /**
- *
- *
+ * @brief 获取图像像素
  */
-extern DmtxPassFail dmtxDecodeGetPixelValue(DmtxDecode *dec, int x, int y, int channel, int *value)
+extern DmtxPassFail dmtxDecodeGetPixelValue(DmtxDecode *dec, int x, int y, int channel, OUT int *value)
 {
     int xUnscaled, yUnscaled;
     DmtxPassFail err;
@@ -334,18 +333,12 @@ static void cacheFillQuad(DmtxDecode *dec, DmtxPixelLoc p0, DmtxPixelLoc p1, Dmt
 }
 
 /**
- * \brief  Convert fitted Data Matrix region into a decoded message
- * \param  dec
- * \param  reg
- * \param  fix
- * \return Decoded message
+ * @brief 解码拟合的二维码区域
  */
-extern DmtxMessage *dmtxDecodeMatrixRegion(DmtxDecode *dec, DmtxRegion *reg, int fix)
+extern DmtxMessage *dmtxDecodeMatrixRegion(DmtxDecode *dec, DmtxRegion *reg, int fix /*DmtxUndefined*/)
 {
-    // dmtxLogInfo("libdmtx::dmtxDecodeMatrixRegion()\n");
+    // dmtxLogDebug("libdmtx::dmtxDecodeMatrixRegion()");
     DmtxMessage *msg;
-    DmtxVector2 topLeft, topRight, bottomLeft, bottomRight;
-    DmtxPixelLoc pxTopLeft, pxTopRight, pxBottomLeft, pxBottomRight;
 
     msg = dmtxMessageCreate(reg->sizeIdx, DmtxFormatMatrix);
     if (msg == NULL) {
@@ -359,46 +352,51 @@ extern DmtxMessage *dmtxDecodeMatrixRegion(DmtxDecode *dec, DmtxRegion *reg, int
 
     msg->fnc1 = dec->fnc1;
 
-    topLeft.x = bottomLeft.x = topLeft.y = topRight.y = -0.1;
-    topRight.x = bottomRight.x = bottomLeft.y = bottomRight.y = 1.1;
+    {
+        DmtxVector2 topLeft, topRight, bottomLeft, bottomRight;
+        DmtxPixelLoc pxTopLeft, pxTopRight, pxBottomLeft, pxBottomRight;
 
-    dmtxMatrix3VMultiplyBy(&topLeft, reg->fit2raw);
-    dmtxMatrix3VMultiplyBy(&topRight, reg->fit2raw);
-    dmtxMatrix3VMultiplyBy(&bottomLeft, reg->fit2raw);
-    dmtxMatrix3VMultiplyBy(&bottomRight, reg->fit2raw);
+        topLeft.x = bottomLeft.x = topLeft.y = topRight.y = -0.1;
+        topRight.x = bottomRight.x = bottomLeft.y = bottomRight.y = 1.1;
 
-    pxTopLeft.x = (int)(0.5 + topLeft.x);
-    pxTopLeft.y = (int)(0.5 + topLeft.y);
-    pxBottomLeft.x = (int)(0.5 + bottomLeft.x);
-    pxBottomLeft.y = (int)(0.5 + bottomLeft.y);
-    pxTopRight.x = (int)(0.5 + topRight.x);
-    pxTopRight.y = (int)(0.5 + topRight.y);
-    pxBottomRight.x = (int)(0.5 + bottomRight.x);
-    pxBottomRight.y = (int)(0.5 + bottomRight.y);
+        dmtxMatrix3VMultiplyBy(&topLeft, reg->fit2raw);
+        dmtxMatrix3VMultiplyBy(&topRight, reg->fit2raw);
+        dmtxMatrix3VMultiplyBy(&bottomLeft, reg->fit2raw);
+        dmtxMatrix3VMultiplyBy(&bottomRight, reg->fit2raw);
 
-    cacheFillQuad(dec, pxTopLeft, pxTopRight, pxBottomRight, pxBottomLeft);
+        pxTopLeft.x = (int)(0.5 + topLeft.x);
+        pxTopLeft.y = (int)(0.5 + topLeft.y);
+        pxBottomLeft.x = (int)(0.5 + bottomLeft.x);
+        pxBottomLeft.y = (int)(0.5 + bottomLeft.y);
+        pxTopRight.x = (int)(0.5 + topRight.x);
+        pxTopRight.y = (int)(0.5 + topRight.y);
+        pxBottomRight.x = (int)(0.5 + bottomRight.x);
+        pxBottomRight.y = (int)(0.5 + bottomRight.y);
+
+        cacheFillQuad(dec, pxTopLeft, pxTopRight, pxBottomRight, pxBottomLeft);
+    }
 
     return dmtxDecodePopulatedArray(reg->sizeIdx, msg, fix);
 }
 
 /**
- * \brief  Ripped out a part of dmtxDecodeMatrixRegion function to this one to parse own array
- * \param  sizeIdx
- * \param  msg
- * \param  fix
- * \return Decoded message (msg pointer) or NULL in case of failure.
- * \note You should reaffect msg with the result of this call
- *       since a NULL result means msg gets freed and should not be used anymore.
- *       ex: msg = dmtxDecodePopulatedArray(sizeidx, msg, fix);
+ * @brief 从DataMatrix数据区二进制矩阵解码，并将结果写入msg->output
+ *
+ * @param[in] sizeIdx 数据矩阵的尺寸索引，对应不同的符号大小。
+ * @param[in,out] msg 已经填充模块状态的解码消息结构体实例。
+ * @param[in] fix 纠错级别指示符，指定解码时使用的错误纠正能力, 默认DmtxUndefined
+ *
+ * @note 使用此函数时，应将msg变量重新赋值为该函数的返回值，因为当返回NULL时，表示msg已被释放，不应再被使用。
+ *       示例用法：msg = dmtxDecodePopulatedArray(sizeidx, msg, fix);
  */
-DmtxMessage *dmtxDecodePopulatedArray(int sizeIdx, DmtxMessage *msg, int fix)
+DmtxMessage *dmtxDecodePopulatedArray(int sizeIdx, INOUT DmtxMessage *msg, int fix /*DmtxUndefined*/)
 {
     /*
      * Example msg->array indices for a 12x12 datamatrix.
      *  also, the 'L' color (usually black) is defined as 'DmtxModuleOnRGB'
      *
      * XX    XX    XX    XX    XX    XX
-     * XX 0   1  2  3  4  5  6  7  8  9 XX
+     * XX 00 01 02 03 04 05 06 07 08 09 XX
      * XX 10 11 12 13 14 15 16 17 18 19
      * XX 20 21 22 23 24 25 26 27 28 29 XX
      * XX 30 31 32 33 34 35 36 37 38 39
@@ -412,6 +410,7 @@ DmtxMessage *dmtxDecodePopulatedArray(int sizeIdx, DmtxMessage *msg, int fix)
      *
      */
 
+    /* 根据bit数组(array)拼接为code */
     modulePlacementEcc200(msg->array, msg->code, sizeIdx, DmtxModuleOnRed | DmtxModuleOnGreen | DmtxModuleOnBlue);
 
     if (rsDecode(msg->code, sizeIdx, fix) == DmtxFail) {
@@ -582,19 +581,22 @@ extern unsigned char *dmtxDecodeCreateDiagnostic(DmtxDecode *dec, int *totalByte
 }
 
 /**
- * \brief  Increment counters used to determine module values
- * \param  img
- * \param  reg
- * \param  tally
- * \param  xOrigin
- * \param  yOrigin
- * \param  mapWidth
- * \param  mapHeight
- * \param  dir
- * \return void
+ * @brief 通过指定方向对判断bit为1的码元位置记录对应的值
+ *
+ * 此函数遍历数据矩阵区域中的模块，根据模块颜色跳变的阈值来累加计数器（tally），
+ * 以此推断模块的明暗状态（代表二进制值）。它支持向上、向下、向左、向右四个方向的遍历。
+ *
+ * @param[in] dec 解码上下文，包含解码配置和辅助函数
+ * @param[in] reg 当前处理的数据矩阵区域信息
+ * @param[in,out] tally 二维数组，用于累加模块状态的计数
+ * @param[in] xOrigin 起始位置X坐标
+ * @param[in] yOrigin 起始位置Y坐标
+ * @param[in] mapWidth 单区块码元宽度
+ * @param[in] mapHeight 单区块码元高度
+ * @param[in] dir 遍历方向
  */
-static void tallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, int tally[][24], int xOrigin, int yOrigin, int mapWidth,
-                             int mapHeight, DmtxDirection dir)
+static void tallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, INOUT int tally[][24], int xOrigin, int yOrigin,
+                             int mapWidth, int mapHeight, DmtxDirection dir)
 {
     int extent, weight;
     int travelStep;
@@ -604,7 +606,7 @@ static void tallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, int tally[][24], 
     int travelStart, travelStop;
     int *line, *travel;
     int jumpThreshold;
-    int darkOnLight;
+    int darkOnLight;  // 白底黑码：1，黑底白码：0
     int color;
     int statusPrev, statusModule;
     int tPrev, tModule;
@@ -613,8 +615,7 @@ static void tallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, int tally[][24], 
 
     travelStep = (dir == DmtxDirUp || dir == DmtxDirRight) ? 1 : -1;
 
-    /* Abstract row and column progress using pointers to allow grid
-       traversal in all 4 directions using same logic */
+    /* Abstract row and column progress using pointers to allow grid traversal in all 4 directions using same logic */
 
     if ((dir & DmtxDirHorizontal) != 0x00) {
         line = &symbolRow;
@@ -641,8 +642,8 @@ static void tallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, int tally[][24], 
     DmtxAssert(jumpThreshold >= 0);
 
     for (*line = lineStart; *line < lineStop; (*line)++) {
-        /* Capture tModule for each leading border module as normal but
-           decide status based on predictable barcode border pattern */
+        /* Capture tModule for each leading border module as normal but decide status based on predictable barcode
+         * border pattern */
 
         *travel = travelStart;
         color = readModuleColor(dec, reg, symbolRow, symbolCol, reg->sizeIdx, reg->flowBegin.plane);
@@ -656,12 +657,13 @@ static void tallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, int tally[][24], 
             tPrev = tModule;
             statusPrev = statusModule;
 
-            /* For normal data-bearing modules capture color and decide
-               module status based on comparison to previous "known" module */
+            /* For normal data-bearing modules capture color and decide module status based on comparison to previous
+             * "known" module */
 
             color = readModuleColor(dec, reg, symbolRow, symbolCol, reg->sizeIdx, reg->flowBegin.plane);
             tModule = (darkOnLight) ? reg->offColor - color : color - reg->offColor;
 
+            /* 和上一次的结果数据对比，如果在加减Threshold后满足条件，那么认为确实有一次跳变 */
             if (statusPrev == DmtxModuleOnRGB) {
                 if (tModule < tPrev - jumpThreshold) {
                     statusModule = DmtxModuleOff;
@@ -681,7 +683,7 @@ static void tallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, int tally[][24], 
             DmtxAssert(mapRow < 24 && mapCol < 24);
 
             if (statusModule == DmtxModuleOnRGB) {
-                tally[mapRow][mapCol] += (2 * weight);
+                tally[mapRow][mapCol] += (2 * weight);  // 对于bit为1的码元位置进行记录
             }
 
             weight--;
@@ -692,15 +694,19 @@ static void tallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, int tally[][24], 
 }
 
 /**
- * \brief  Populate array with codeword values based on module colors
- * \param  msg
- * \param  img
- * \param  reg
- * \return DmtxPass | DmtxFail
+ * @brief 根据模块颜色填充数组以确定码字值。
+ *
+ * 此函数遍历数据矩阵的各个区域，统计每个模块的颜色跳变，以推断出每个模块是黑（代表1）还是白（代表0）。
+ * 这一过程对于解码数据矩阵中的信息至关重要。函数首先计算整个符号的区域数量、区域尺寸等关键属性，
+ * 然后根据模块颜色对比和累加的“跳跃”计数来确定每个模块的状态，最后更新消息数组以反映解码结果。
+ *
+ * @param[in] dec 解码上下文，包含解码配置和辅助函数。
+ * @param[in] reg 当前处理的数据矩阵区域信息。
+ * @param[out] msg 根据图像更新array
  */
-static DmtxPassFail populateArrayFromMatrix(DmtxDecode *dec, DmtxRegion *reg, DmtxMessage *msg)
+static DmtxPassFail populateArrayFromMatrix(DmtxDecode *dec, DmtxRegion *reg, OUT DmtxMessage *msg)
 {
-    // dmtxLogInfo("libdmtx::populateArrayFromMatrix()\n");
+    // dmtxLogDebug("libdmtx::populateArrayFromMatrix()");
     int weightFactor;
     int mapWidth, mapHeight;
     int xRegionTotal, yRegionTotal;
@@ -708,58 +714,78 @@ static DmtxPassFail populateArrayFromMatrix(DmtxDecode *dec, DmtxRegion *reg, Dm
     int xOrigin, yOrigin;
     int mapCol, mapRow;
     int colTmp, rowTmp, idx;
-    int tally[24][24]; /* Large enough to map largest single region */
+    int tally[24][24]; /* 单个区块最大不会超过24×24，直接以最大分配 */
 
     /* memset(msg->array, 0x00, msg->arraySize); */
 
-    /* Capture number of regions present in barcode */
+    /* 获取条形码中两个方向的区块数。当码元数目超过26×26（对于数据，码元数目超过24×24）时，它会划分为区块 */
     xRegionTotal = dmtxGetSymbolAttribute(DmtxSymAttribHorizDataRegions, reg->sizeIdx);
     yRegionTotal = dmtxGetSymbolAttribute(DmtxSymAttribVertDataRegions, reg->sizeIdx);
 
-    /* Capture region dimensions (not including border modules) */
+    /* 获取区块数据区尺寸(不包括边界模块) */
     mapWidth = dmtxGetSymbolAttribute(DmtxSymAttribDataRegionCols, reg->sizeIdx);
     mapHeight = dmtxGetSymbolAttribute(DmtxSymAttribDataRegionRows, reg->sizeIdx);
 
     weightFactor = 2 * (mapHeight + mapWidth + 2);
     DmtxAssert(weightFactor > 0);
 
-    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::reg->sizeIdx: %d\n", reg->sizeIdx);
-    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::reg->flowBegin.plane: %d\n", reg->flowBegin.plane);
-    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::reg->onColor: %d\n", reg->onColor);
-    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::reg->offColor: %d\n", reg->offColor);
-    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::xRegionTotal: %d\n", xRegionTotal);
-    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::yRegionTotal: %d\n", yRegionTotal);
-    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::mapWidth: %d\n", mapWidth);
-    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::mapHeight: %d\n", mapHeight);
-    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::weightFactor: %d\n", weightFactor);
-    // reg->fit2raw[1][0]=0;
-    // reg->fit2raw[0][1]=0;
-    // reg->fit2raw[0][2]=0;
-    // reg->fit2raw[2][2]=1;
-    // reg->fit2raw[1][2]=0;
-    // reg->fit2raw[2][0]=10; //translation
-    // reg->fit2raw[2][1]=10; //translation
-    // reg->fit2raw[0][0]=60; //scale
-    // reg->fit2raw[1][1]=60; //scale
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::reg->sizeIdx: %d", reg->sizeIdx);
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::reg->flowBegin.plane: %d", reg->flowBegin.plane);
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::reg->onColor: %d", reg->onColor);
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::reg->offColor: %d", reg->offColor);
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::xRegionTotal: %d", xRegionTotal);
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::yRegionTotal: %d", yRegionTotal);
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::mapWidth: %d", mapWidth);
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::mapHeight: %d", mapHeight);
+    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::weightFactor: %d", weightFactor);
+    // reg->fit2raw[1][0] = 0;
+    // reg->fit2raw[0][1] = 0;
+    // reg->fit2raw[0][2] = 0;
+    // reg->fit2raw[2][2] = 1;
+    // reg->fit2raw[1][2] = 0;
+    // reg->fit2raw[2][0] = 10;  // translation
+    // reg->fit2raw[2][1] = 10;  // translation
+    // reg->fit2raw[0][0] = 60;  // scale
+    // reg->fit2raw[1][1] = 60;  // scale
     // dmtxMatrix3Print(reg->fit2raw);
 
-    /* Tally module changes for each region in each direction */
+    /* 每个方向上每个区域的计数模块变化 Tally module changes for each region in each direction */
     for (yRegionCount = 0; yRegionCount < yRegionTotal; yRegionCount++) {
-        /* Y location of mapping region origin in symbol coordinates */
+        /* 在符号坐标中映射区域原点的Y位置 Y location of mapping region origin in symbol coordinates */
         yOrigin = yRegionCount * (mapHeight + 2) + 1;
 
         for (xRegionCount = 0; xRegionCount < xRegionTotal; xRegionCount++) {
-            /* X location of mapping region origin in symbol coordinates */
+            /* 在符号坐标中映射区域原点的X位置 X location of mapping region origin in symbol coordinates */
             xOrigin = xRegionCount * (mapWidth + 2) + 1;
-            // dmtxLogInfo("libdmtx::populateArrayFromMatrix::xOrigin: %d\n", xOrigin);
 
+            // dmtxLogInfo("libdmtx::populateArrayFromMatrix::xOrigin: %d", xOrigin);
+
+            /**
+             * 从四个方向对图像满足跳变的点求和
+             *
+             * 对下面2x3的数据区域的计算流程:
+             * |XX      |
+             * |   XX XX|
+             *
+             * 首先 weightFactor = 2 * (2(高) + 3(宽) + 2) = 14
+             *
+             * 1. 从下到上     2. 从右到左     3. 从上到下     4. 从左到右
+             * |1x2        |  |1x2        |  |2x2        |  |3x2        |
+             * |    2x2 2x2|  |    2x2 3x2|  |    1x2 1x2|  |    2x2 1x2|
+             *
+             * 该方向上**判断为1**的码元位置记录值，记录的内容为 宽/高-码元位置坐标
+             *
+             * 对上面得到的4个矩阵求和可得:
+             * |14      |
+             * |   14 14|
+             */
             memset(tally, 0x00, sizeof(int) * 24 * 24);
             tallyModuleJumps(dec, reg, tally, xOrigin, yOrigin, mapWidth, mapHeight, DmtxDirUp);
             tallyModuleJumps(dec, reg, tally, xOrigin, yOrigin, mapWidth, mapHeight, DmtxDirLeft);
             tallyModuleJumps(dec, reg, tally, xOrigin, yOrigin, mapWidth, mapHeight, DmtxDirDown);
             tallyModuleJumps(dec, reg, tally, xOrigin, yOrigin, mapWidth, mapHeight, DmtxDirRight);
 
-            /* Decide module status based on final tallies */
+            /* 根据记录内容(tally)更新array的内容 */
             for (mapRow = 0; mapRow < mapHeight; mapRow++) {
                 // for(mapRow = mapHeight-1; mapRow >= 0; mapRow--) {
                 for (mapCol = 0; mapCol < mapWidth; mapCol++) {
@@ -767,19 +793,20 @@ static DmtxPassFail populateArrayFromMatrix(DmtxDecode *dec, DmtxRegion *reg, Dm
                     rowTmp = yRegionTotal * mapHeight - rowTmp - 1;
                     colTmp = (xRegionCount * mapWidth) + mapCol;
                     idx = (rowTmp * xRegionTotal * mapWidth) + colTmp;
-                    // dmtxLogInfo("libdmtx::populateArrayFromMatrix::idx: %d @ %d,%d\n", idx, mapCol, mapRow);
-                    // dmtxLogInfo("%c ",tally[mapRow][mapCol]==DmtxModuleOff ? 'X' : ' ');
+
+                    // printf("%c ", tally[mapRow][mapCol] == DmtxModuleOff ? '0' : '1');
                     if (tally[mapRow][mapCol] / (double)weightFactor >= 0.5) {
                         msg->array[idx] = DmtxModuleOnRGB;
-                        // dmtxLogInfo("X ");
+                        // printf("1 ");
                     } else {
                         msg->array[idx] = DmtxModuleOff;
-                        // dmtxLogInfo("  ");
+                        // printf("0 ");
                     }
+                    // printf("libdmtx::populateArrayFromMatrix::idx: %d @ (%d,%d)\n", idx, mapCol, mapRow);
 
-                    msg->array[idx] |= DmtxModuleAssigned;
+                    msg->array[idx] |= DmtxModuleAssigned;  // 标记为已分配
                 }
-                // dmtxLogInfo("\n");
+                // printf("\n");
             }
         }
     }

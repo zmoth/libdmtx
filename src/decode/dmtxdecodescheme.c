@@ -15,6 +15,7 @@
  */
 #include <assert.h>
 #include <limits.h>
+#include <math.h>
 
 #include "dmtx.h"
 #include "dmtxstatic.h"
@@ -28,13 +29,14 @@
  */
 extern DmtxPassFail decodeDataStream(DmtxMessage *msg, int sizeIdx, unsigned char *outputStart)
 {
-    // dmtxLogInfo("libdmtx::decodeDataStream()\n");
-    // int oned = sqrt(msg->arraySize);
-    // for (int i=0; i<msg->arraySize; i++){
-    //    dmtxLogInfo(" %c.", msg->array[i]);
-    //    if (i%oned==oned-1){
-    //       dmtxLogInfo("\n");
-    //    }
+    // /* 绘制DataMatrix数据区矩阵 */
+    // dmtxLogDebug("libdmtx::decodeDataStream()");
+    // int oned = (int)sqrt((double)msg->arraySize);
+    // for (int i = 0; i < msg->arraySize; i++) {
+    //     printf(" %c.", msg->array[i]);
+    //     if (i % oned == oned - 1) {
+    //         printf("\n");
+    //     }
     // }
 
     DmtxBoolean macro = DmtxFalse;

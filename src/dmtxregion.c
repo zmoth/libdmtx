@@ -159,7 +159,7 @@ extern DmtxRegion *dmtxRegionScanPixel(DmtxDecode *dec, int x, int y)
     }
 #endif
 
-    /* Calculate the best fitting symbol size */
+    /* 计算最匹配的二维码符号尺寸 */
     if (matrixRegionFindSize(dec, &reg) == DmtxFail) {
         return NULL;
     }
@@ -641,13 +641,16 @@ static double rightAngleTrueness(DmtxVector2 c0, DmtxVector2 c1, DmtxVector2 c2,
 }
 
 /**
- * \brief  Read color of Data Matrix module location
- * \param  dec
- * \param  reg
- * \param  symbolRow
- * \param  symbolCol
- * \param  sizeIdx
- * \return Averaged module color
+ * @brief 读取模块（码元）颜色值
+ *
+ * @param dec 解码上下文，包含解码所需的状态信息。
+ * @param reg 当前处理的区域信息，用于定位和变换。
+ * @param symbolRow 二维码坐标系下的行坐标
+ * @param symbolCol 二维码坐标系下的列坐标
+ * @param sizeIdx 二维码种类索引
+ * @param colorPlane 需要读取的颜色平面索引
+ *
+ * @return 返回模块位置的平均颜色值。
  */
 static int readModuleColor(DmtxDecode *dec, DmtxRegion *reg, int symbolRow, int symbolCol, int sizeIdx, int colorPlane)
 {
@@ -661,27 +664,31 @@ static int readModuleColor(DmtxDecode *dec, DmtxRegion *reg, int symbolRow, int 
     symbolRows = dmtxGetSymbolAttribute(DmtxSymAttribSymbolRows, sizeIdx);
     symbolCols = dmtxGetSymbolAttribute(DmtxSymAttribSymbolCols, sizeIdx);
 
+    /* 从给定坐标及其周围共5个点位获取图像像素并求平均值 */
     color = 0;
     for (i = 0; i < 5; i++) {
         p.x = (1.0 / symbolCols) * (symbolCol + sampleX[i]);
         p.y = (1.0 / symbolRows) * (symbolRow + sampleY[i]);
 
-        dmtxMatrix3VMultiplyBy(&p, reg->fit2raw);
+        dmtxMatrix3VMultiplyBy(&p, reg->fit2raw);  // 从二维码坐标转换到图像坐标
 
-        // dmtxLogInfo("%dx%d\n", (int)(p.X + 0.5), (int)(p.Y + 0.5));
+        // dmtxLogDebug("%dx%d", (int)(p.x + 0.5), (int)(p.y + 0.5));
 
         dmtxDecodeGetPixelValue(dec, (int)(p.x + 0.5), (int)(p.y + 0.5), colorPlane, &colorTmp);
         color += colorTmp;
     }
-    // dmtxLogInfo("\n");
+    // printf("\n");
     return color / 5;
 }
 
 /**
- * \brief  Determine barcode size, expressed in modules
- * \param  image
- * \param  reg
- * \return DmtxPass | DmtxFail
+ * @brief 确定二维码尺寸（点线中黑白点的总数）
+ *
+ * 此函数遍历可能的条形码尺寸，通过计算校准模块上的对比度来确定最佳尺寸索引。
+ * 它还会验证找到的尺寸索引是否与条形码图像的边缘和空白空间相匹配。
+ *
+ * @param[in] dec  解码上下文，包含解码设置和图像信息
+ * @param reg  区域结构，用于存储找到的区域信息
  */
 static DmtxPassFail matrixRegionFindSize(DmtxDecode *dec, DmtxRegion *reg)
 {
@@ -715,13 +722,13 @@ static DmtxPassFail matrixRegionFindSize(DmtxDecode *dec, DmtxRegion *reg)
         sizeIdxEnd = dec->sizeIdxExpected + 1;
     }
 
-    /* Test each barcode size to find best contrast in calibration modules */
+    /* 遍历每种DataMatrix种类模板，通过顶部和右侧的点线取颜色计算寻找对比度最大的模板 */
     for (sizeIdx = sizeIdxBeg; sizeIdx < sizeIdxEnd; sizeIdx++) {
         symbolRows = dmtxGetSymbolAttribute(DmtxSymAttribSymbolRows, sizeIdx);
         symbolCols = dmtxGetSymbolAttribute(DmtxSymAttribSymbolCols, sizeIdx);
         colorOnAvg = colorOffAvg = 0;
 
-        /* Sum module colors along horizontal calibration bar */
+        /* 对DataMatrix顶部点线黑白码元分别求和 */
         row = symbolRows - 1;
         for (col = 0; col < symbolCols; col++) {
             color = readModuleColor(dec, reg, row, col, sizeIdx, reg->flowBegin.plane);
@@ -732,7 +739,7 @@ static DmtxPassFail matrixRegionFindSize(DmtxDecode *dec, DmtxRegion *reg)
             }
         }
 
-        /* Sum module colors along vertical calibration bar */
+        /* 对DataMatrix右侧点线黑白码元分别求和 */
         col = symbolCols - 1;
         for (row = 0; row < symbolRows; row++) {
             color = readModuleColor(dec, reg, row, col, sizeIdx, reg->flowBegin.plane);
@@ -748,9 +755,10 @@ static DmtxPassFail matrixRegionFindSize(DmtxDecode *dec, DmtxRegion *reg)
 
         contrast = abs(colorOnAvg - colorOffAvg);
         if (contrast < 20) {
-            continue;
+            continue;  // bit1码元与bit0码元的差值小于20直接认为该模板无效
         }
 
+        /* 遍历所有类型，寻找效果最好的 */
         if (contrast > bestContrast) {
             bestContrast = contrast;
             bestSizeIdx = sizeIdx;
@@ -759,62 +767,141 @@ static DmtxPassFail matrixRegionFindSize(DmtxDecode *dec, DmtxRegion *reg)
         }
     }
 
-    /* If no sizes produced acceptable contrast then call it quits */
+    /* 如果所有的模板都不是很匹配，直接返回错误 */
     if (bestSizeIdx == DmtxUndefined || bestContrast < 20) {
         return DmtxFail;
     }
 
-    reg->sizeIdx = bestSizeIdx;
-    reg->onColor = bestColorOnAvg;
-    reg->offColor = bestColorOffAvg;
+    reg->sizeIdx = bestSizeIdx;       // 最佳DataMatrix种类模板的索引号，共30种
+    reg->onColor = bestColorOnAvg;    // bit1的码元颜色值
+    reg->offColor = bestColorOffAvg;  // bit0的码元颜色值
 
     reg->symbolRows = dmtxGetSymbolAttribute(DmtxSymAttribSymbolRows, reg->sizeIdx);
     reg->symbolCols = dmtxGetSymbolAttribute(DmtxSymAttribSymbolCols, reg->sizeIdx);
     reg->mappingRows = dmtxGetSymbolAttribute(DmtxSymAttribMappingMatrixRows, reg->sizeIdx);
     reg->mappingCols = dmtxGetSymbolAttribute(DmtxSymAttribMappingMatrixCols, reg->sizeIdx);
 
-    /* Tally jumps on horizontal calibration bar to verify sizeIdx */
+    /**
+     * 以左上角水平往右检查
+     *
+     * TL----XX----XX----->
+     * XX 01 02 03 04 XX
+     * XX 05 06 07 08
+     * XX 09 10 11 12 XX
+     * XX 13 14 15 16
+     * XX XX XX XX XX XX
+     */
     jumpCount = countJumpTally(dec, reg, 0, reg->symbolRows - 1, DmtxDirRight);
     errors = abs(1 + jumpCount - reg->symbolCols);
     if (jumpCount < 0 || errors > 2) {
         return DmtxFail;
     }
 
-    /* Tally jumps on vertical calibration bar to verify sizeIdx */
+    /**
+     * 以右下角角竖直往上检查
+     *
+     *                ^
+     *                |
+     * XX    XX    XX |
+     * XX 01 02 03 04 XX
+     * XX 05 06 07 08 |
+     * XX 09 10 11 12 XX
+     * XX 13 14 15 16 |
+     * XX XX XX XX XX BR
+     */
     jumpCount = countJumpTally(dec, reg, reg->symbolCols - 1, 0, DmtxDirUp);
     errors = abs(1 + jumpCount - reg->symbolRows);
     if (jumpCount < 0 || errors > 2) {
         return DmtxFail;
     }
 
-    /* Tally jumps on horizontal finder bar to verify sizeIdx */
+    /**
+     * 以左下角水平往右检查
+     *
+     * XX    XX    XX
+     * XX 01 02 03 04 XX
+     * XX 05 06 07 08
+     * XX 09 10 11 12 XX
+     * XX 13 14 15 16
+     * BL XX XX XX XX XX-->
+     */
     errors = countJumpTally(dec, reg, 0, 0, DmtxDirRight);
     if (jumpCount < 0 || errors > 2) {
         return DmtxFail;
     }
 
-    /* Tally jumps on vertical finder bar to verify sizeIdx */
+    /**
+     * 以左下角竖直往上检查
+     *
+     *  ^
+     *  |
+     * XX    XX    XX
+     * XX 01 02 03 04 XX
+     * XX 05 06 07 08
+     * XX 09 10 11 12 XX
+     * XX 13 14 15 16
+     * BL XX XX XX XX XX
+     */
     errors = countJumpTally(dec, reg, 0, 0, DmtxDirUp);
     if (errors < 0 || errors > 2) {
         return DmtxFail;
     }
 
-    /* Tally jumps on surrounding whitespace, else fail */
+    /**
+     * 分析DataMatrix周围的空间
+     *
+     * XX    XX    XX
+     * XX 01 02 03 04 XX
+     * XX 05 06 07 08
+     * XX 09 10 11 12 XX
+     * XX 13 14 15 16
+     * XX XX XX XX XX XX
+     * 00----------------->
+     */
     errors = countJumpTally(dec, reg, 0, -1, DmtxDirRight);
     if (errors < 0 || errors > 2) {
         return DmtxFail;
     }
 
+    /**
+     *  ^
+     *  |
+     *  | XX    XX    XX
+     *  | XX 01 02 03 04 XX
+     *  | XX 05 06 07 08
+     *  | XX 09 10 11 12 XX
+     *  | XX 13 14 15 16
+     * 00 XX XX XX XX XX XX
+     */
     errors = countJumpTally(dec, reg, -1, 0, DmtxDirUp);
     if (errors < 0 || errors > 2) {
         return DmtxFail;
     }
 
+    /**
+     * 00----------------->
+     * XX    XX    XX
+     * XX 01 02 03 04 XX
+     * XX 05 06 07 08
+     * XX 09 10 11 12 XX
+     * XX 13 14 15 16
+     * XX XX XX XX XX XX
+     */
     errors = countJumpTally(dec, reg, 0, reg->symbolRows, DmtxDirRight);
     if (errors < 0 || errors > 2) {
         return DmtxFail;
     }
 
+    /**
+     *                    ^
+     *                    |
+     * XX    XX    XX     |
+     * XX 01 02 03 04 XX  |
+     * XX 05 06 07 08     |
+     * XX 09 10 11 12 XX  |
+     * XX 13 14 15 16     |
+     * XX XX XX XX XX XX 00
+     */
     errors = countJumpTally(dec, reg, reg->symbolCols, 0, DmtxDirUp);
     if (errors < 0 || errors > 2) {
         return DmtxFail;
@@ -824,13 +911,15 @@ static DmtxPassFail matrixRegionFindSize(DmtxDecode *dec, DmtxRegion *reg)
 }
 
 /**
- * \brief  Count the number of number of transitions between light and dark
- * \param  img
- * \param  reg
- * \param  xStart
- * \param  yStart
- * \param  dir
- * \return Jump count
+ * @brief 计算一个方向上颜色跳变次数
+ *
+ * 此函数遍历图像中的一行或一列，统计从亮模块到暗模块或反之的转换次数。
+ *
+ * @param dec 解码上下文，提供解码环境信息
+ * @param reg 区域对象，包含当前分析区域的属性
+ * @param xStart 开始搜索的坐标X位置
+ * @param yStart 开始搜索的坐标Y位置
+ * @param dir 搜索方向，向右(DmtxDirRight)或向上(DmtxDirUp)
  */
 static int countJumpTally(DmtxDecode *dec, DmtxRegion *reg, int xStart, int yStart, DmtxDirection dir)
 {
@@ -840,7 +929,7 @@ static int countJumpTally(DmtxDecode *dec, DmtxRegion *reg, int xStart, int ySta
     int jumpCount = 0;
     int jumpThreshold;
     int tModule, tPrev;
-    int darkOnLight;
+    int darkOnLight;  // 白底黑码：1，黑底白码：0
     int color;
 
     DmtxAssert(xStart == 0 || yStart == 0);

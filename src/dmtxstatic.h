@@ -218,9 +218,9 @@ static DmtxPassFail bresLineStep(DmtxBresLine *line, int travel, int outward);
 /*static void WriteDiagnosticImage(DmtxDecode *dec, DmtxRegion *reg, char *imagePath);*/
 
 /* dmtxdecode.c */
-static void tallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, int tally[][24], int xOrigin, int yOrigin, int mapWidth,
-                             int mapHeight, DmtxDirection dir);
-static DmtxPassFail populateArrayFromMatrix(DmtxDecode *dec, DmtxRegion *reg, DmtxMessage *msg);
+static void tallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, INOUT int tally[][24], int xOrigin, int yOrigin,
+                             int mapWidth, int mapHeight, DmtxDirection dir);
+static DmtxPassFail populateArrayFromMatrix(DmtxDecode *dec, DmtxRegion *reg, OUT DmtxMessage *msg);
 
 /* dmtxdecodescheme.c */
 static DmtxPassFail decodeDataStream(DmtxMessage *msg, int sizeIdx, unsigned char *outputStart);
@@ -242,7 +242,8 @@ static int encodeDataCodewords(DmtxByteList *input, DmtxByteList *output, int si
                                int fnc1);
 
 /* dmtxplacemod.c */
-static int modulePlacementEcc200(unsigned char *modules, unsigned char *codewords, int sizeIdx, int moduleOnColor);
+static int modulePlacementEcc200(INOUT unsigned char *modules, OUT unsigned char *codewords, int sizeIdx,
+                                 int moduleOnColor);
 static void patternShapeStandard(unsigned char *modules, int mappingRows, int mappingCols, int row, int col,
                                  unsigned char *codeword, int moduleOnColor);
 static void patternShapeSpecial1(unsigned char *modules, int mappingRows, int mappingCols, unsigned char *codeword,
@@ -360,6 +361,7 @@ static DmtxCallbackBuildMatrixRegion cbBuildMatrixRegion = NULL;
 static DmtxCallbackBuildMatrix cbBuildMatrix = NULL;
 static DmtxCallbackPlotPoint cbPlotPoint = NULL;
 static DmtxCallbackXfrmPlotPoint cbXfrmPlotPoint = NULL;
+static DmtxCallbackPlotModule cbPlotModule = NULL;
 static DmtxCallbackFinal cbFinal = NULL;
 #endif
 

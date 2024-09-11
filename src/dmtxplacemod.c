@@ -63,21 +63,15 @@ int dmtxSymbolModuleStatus(DmtxMessage *message, int sizeIdx, int symbolRow, int
 }
 
 /**
- * @brief 逻辑关系：位与模块位置之间的映射
+ * @brief 通过DataMatrix数据区的二进制矩阵，根据DataMatrix的排列规则，得到码字(codewords)
  *
- * 此函数根据指定的大小索引(sizeIdx)和模块颜色标识(moduleOnColor)，在模块数组(modules)上布置
- * ECC200 Data Matrix 码的编码字(codewords)。
- *
- * 处理标准模式和特殊角落模式的布局。
- *
- * @param[in, out] modules 用于绘制Data Matrix码的二维模块数组
- * @param[in]      codewords 存储编码数据的字节数组
- * @param[in]      sizeIdx Data Matrix符号的大小索引
- * @param[in]      moduleOnColor 指定模块颜色属性的标志，如红色、绿色或蓝色
- *
- * @return 已读取的编码字数量
+ * @param[in,out] modules DataMatrix数据区矩阵
+ * @param[out] codewords 存储码字的数组
+ * @param[in] sizeIdx DataMatrix符号种类索引
+ * @param[in] moduleOnColor 指定模块颜色属性的标志，如红色、绿色或蓝色
  */
-static int modulePlacementEcc200(unsigned char *modules, unsigned char *codewords, int sizeIdx, int moduleOnColor)
+static int modulePlacementEcc200(INOUT unsigned char *modules, OUT unsigned char *codewords, int sizeIdx,
+                                 int moduleOnColor)
 {
     int row, col, chr;
     int mappingRows, mappingCols;
@@ -339,14 +333,13 @@ static void placeModule(unsigned char *modules, int mappingRows, int mappingCols
         row += 4 - ((mappingCols + 4) % 8);
     }
 
-    /* If module has already been assigned then we are decoding the pattern into codewords */
-    if ((modules[row * mappingCols + col] & DmtxModuleAssigned) != 0) {
+    if ((modules[row * mappingCols + col] & DmtxModuleAssigned) != 0) { /* 解码 */
         if ((modules[row * mappingCols + col] & moduleOnColor) != 0) {
             *codeword |= mask;
         } else {
             *codeword &= (0xff ^ mask);
         }
-    } else { /* Otherwise we are encoding the codewords into a pattern */
+    } else { /* 编码 */
         if ((*codeword & mask) != 0x00) {
             modules[row * mappingCols + col] |= moduleOnColor;
         }

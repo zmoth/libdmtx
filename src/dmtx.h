@@ -50,18 +50,18 @@ extern "C"
 #define DmtxFormatMatrix 0
 #define DmtxFormatMosaic 1
 
-#define DmtxSymbolSquareCount 24
-#define DmtxSymbolRectCount 6
+#define DmtxSymbolSquareCount 24 /**< 正方形二维码种类个数 */
+#define DmtxSymbolRectCount 6    /**< 长方形二维码种类个数 */
 
-#define DmtxModuleOff 0x00
-#define DmtxModuleOnRed 0x01
-#define DmtxModuleOnGreen 0x02
-#define DmtxModuleOnBlue 0x04
-#define DmtxModuleOnRGB 0x07 /* OnRed | OnGreen | OnBlue */
-#define DmtxModuleOn 0x07
-#define DmtxModuleUnsure 0x08
-#define DmtxModuleAssigned 0x10
-#define DmtxModuleVisited 0x20
+#define DmtxModuleOff 0x00           /**< bit0 */
+#define DmtxModuleOnRed 0x01         /**< 红 */
+#define DmtxModuleOnGreen 0x02       /**< 绿 */
+#define DmtxModuleOnBlue 0x04        /**< 蓝 */
+#define DmtxModuleOnRGB 0x07         /* OnRed | OnGreen | OnBlue */
+#define DmtxModuleOn DmtxModuleOnRGB /**< bit1 */
+#define DmtxModuleUnsure 0x08        /**< 不确定 */
+#define DmtxModuleAssigned 0x10      /**< 已分配 */
+#define DmtxModuleVisited 0x20       /**< 已访问 */
 #define DmtxModuleData 0x40
 
 #define dmtxLogTrace(...) dmtxLog(DmtxLogTrace, __FILE__, __LINE__, __VA_ARGS__)
@@ -71,9 +71,9 @@ extern "C"
 #define dmtxLogError(...) dmtxLog(DmtxLogError, __FILE__, __LINE__, __VA_ARGS__)
 #define dmtxLogFatal(...) dmtxLog(DmtxLogFatal, __FILE__, __LINE__, __VA_ARGS__)
 
-#define IN    /*表示输入参数，指针指向的值不会修改*/
-#define OUT   /*表示输出参数，指针指向的值会修改，且不会读*/
-#define INOUT /*表示输入输出参数，指针指向的值会修改，且会读取*/
+#define IN    /* 表示输入参数，指针指向的值不会修改 */
+#define OUT   /* 表示输出参数，指针指向的值会修改，且不会读 */
+#define INOUT /* 表示输入输出参数，指针指向的值会修改，且会读取 */
 
     typedef enum
     {
@@ -147,20 +147,20 @@ extern "C"
 
     typedef enum
     {
-        DmtxSymAttribSymbolRows,
-        DmtxSymAttribSymbolCols,
-        DmtxSymAttribDataRegionRows,
-        DmtxSymAttribDataRegionCols,
-        DmtxSymAttribHorizDataRegions,
-        DmtxSymAttribVertDataRegions,
-        DmtxSymAttribMappingMatrixRows,
-        DmtxSymAttribMappingMatrixCols,
-        DmtxSymAttribInterleavedBlocks,
-        DmtxSymAttribBlockErrorWords,
-        DmtxSymAttribBlockMaxCorrectable,
-        DmtxSymAttribSymbolDataWords,
-        DmtxSymAttribSymbolErrorWords,
-        DmtxSymAttribSymbolMaxCorrectable
+        DmtxSymAttribSymbolRows,          /**< 二维码码元总行数（包括L形框和点线）*/
+        DmtxSymAttribSymbolCols,          /**< 二维码码元总列数（包括L形框和点线）*/
+        DmtxSymAttribDataRegionRows,      /**< 单区块二维码数据区码元行数（不包括L形框和点线）*/
+        DmtxSymAttribDataRegionCols,      /**< 单区块二维码数据区码元列数（不包括L形框和点线）*/
+        DmtxSymAttribHorizDataRegions,    /**< 水平方向区块个数 */
+        DmtxSymAttribVertDataRegions,     /**< 垂直方向区块个数 */
+        DmtxSymAttribMappingMatrixRows,   /**< 二维码数据区码元总行数（不包括L形框和点线）*/
+        DmtxSymAttribMappingMatrixCols,   /**< 二维码数据区码元总列数（不包括L形框和点线）*/
+        DmtxSymAttribInterleavedBlocks,   /**< */
+        DmtxSymAttribBlockErrorWords,     /**< */
+        DmtxSymAttribBlockMaxCorrectable, /**< */
+        DmtxSymAttribSymbolDataWords,     /**< */
+        DmtxSymAttribSymbolErrorWords,    /**< */
+        DmtxSymAttribSymbolMaxCorrectable /**< */
     } DmtxSymAttribute;
 
     typedef enum
@@ -367,67 +367,66 @@ extern "C"
     typedef struct DmtxRegion_struct
     {
         /* Trail blazing values */
-        int jumpToPos;           /* */
-        int jumpToNeg;           /* */
-        int stepsTotal;          /* */
-        DmtxPixelLoc finalPos;   /* */
-        DmtxPixelLoc finalNeg;   /* */
-        DmtxPixelLoc boundMin;   /* */
-        DmtxPixelLoc boundMax;   /* */
-        DmtxPointFlow flowBegin; /* */
+        int jumpToPos;           /**< */
+        int jumpToNeg;           /**< */
+        int stepsTotal;          /**< */
+        DmtxPixelLoc finalPos;   /**< */
+        DmtxPixelLoc finalNeg;   /**< */
+        DmtxPixelLoc boundMin;   /**< */
+        DmtxPixelLoc boundMax;   /**< */
+        DmtxPointFlow flowBegin; /**< */
 
         /* Orientation values */
-        int polarity; /* */
-        int stepR;
-        int stepT;
-        DmtxPixelLoc locR; /* remove if stepR works above */
-        DmtxPixelLoc locT; /* remove if stepT works above */
+        int polarity;      /**< */
+        int stepR;         /**< */
+        int stepT;         /**< */
+        DmtxPixelLoc locR; /**< remove if stepR works above */
+        DmtxPixelLoc locT; /**< remove if stepT works above */
 
         /* Region fitting values */
-        int leftKnown;           /* known == 1; unknown == 0 */
-        int leftAngle;           /* hough angle of left edge */
-        DmtxPixelLoc leftLoc;    /* known (arbitrary) location on left edge */
-        DmtxBestLine leftLine;   /* */
-        int bottomKnown;         /* known == 1; unknown == 0 */
-        int bottomAngle;         /* hough angle of bottom edge */
-        DmtxPixelLoc bottomLoc;  /* known (arbitrary) location on bottom edge */
-        DmtxBestLine bottomLine; /* */
-        int topKnown;            /* known == 1; unknown == 0 */
-        int topAngle;            /* hough angle of top edge */
-        DmtxPixelLoc topLoc;     /* known (arbitrary) location on top edge */
-        int rightKnown;          /* known == 1; unknown == 0 */
-        int rightAngle;          /* hough angle of right edge */
-        DmtxPixelLoc rightLoc;   /* known (arbitrary) location on right edge */
+        int leftKnown;           /**< known == 1; unknown == 0 */
+        int leftAngle;           /**< hough angle of left edge */
+        DmtxPixelLoc leftLoc;    /**< known (arbitrary) location on left edge */
+        DmtxBestLine leftLine;   /**< */
+        int bottomKnown;         /**< known == 1; unknown == 0 */
+        int bottomAngle;         /**< hough angle of bottom edge */
+        DmtxPixelLoc bottomLoc;  /**< known (arbitrary) location on bottom edge */
+        DmtxBestLine bottomLine; /**< */
+        int topKnown;            /**< known == 1; unknown == 0 */
+        int topAngle;            /**< hough angle of top edge */
+        DmtxPixelLoc topLoc;     /**< known (arbitrary) location on top edge */
+        int rightKnown;          /**< known == 1; unknown == 0 */
+        int rightAngle;          /**< hough angle of right edge */
+        DmtxPixelLoc rightLoc;   /**< known (arbitrary) location on right edge */
 
         /* Region calibration values */
-        int onColor;     /* */
-        int offColor;    /* */
-        int sizeIdx;     /* Index of arrays that store Data Matrix constants */
-        int symbolRows;  /* Number of total rows in symbol including alignment patterns */
-        int symbolCols;  /* Number of total columns in symbol including alignment patterns */
-        int mappingRows; /* Number of data rows in symbol */
-        int mappingCols; /* Number of data columns in symbol */
+        int onColor;     /**< 代表bit1的颜色值 */
+        int offColor;    /**< 代表bit0的颜色值*/
+        int sizeIdx;     /**< 二维码类型索引，总共有 DmtxSymbolSquareCount + DmtxSymbolRectCount 种 */
+        int symbolRows;  /**< 二维码码元行数（包括L形框和点线） */
+        int symbolCols;  /**< 二维码码元列数（包括L形框和点线）*/
+        int mappingRows; /**< 二维码数据区码元行数 */
+        int mappingCols; /**< 二维码数据区码元列数 */
 
-        /* Transform values */
-        DmtxMatrix3 raw2fit; /* 3x3 transformation from raw image to fitted barcode grid */
-        DmtxMatrix3 fit2raw; /* 3x3 transformation from fitted barcode grid to raw image */
+        /* 变换矩阵 */
+        DmtxMatrix3 raw2fit; /**< 3x3 变换矩阵，从图像坐标系到二维码坐标系 */
+        DmtxMatrix3 fit2raw; /**< 3x3 变换矩阵，从二维码坐标系到图像坐标系 */
     } DmtxRegion;
 
     /**
-     * @struct DmtxMessage
-     * @brief DmtxMessage
+     * @brief DataMatrix编码内容
      */
     typedef struct DmtxMessage_struct
     {
-        size_t arraySize;  /* mappingRows * mappingCols */
-        size_t codeSize;   /* Size of encoded data (data words + error words) */
-        size_t outputSize; /* Size of buffer used to hold decoded data */
-        int outputIdx;     /* Internal index used to store output progress */
-        int padCount;
-        int fnc1;              /* Character to represent FNC1, or DmtxUndefined */
-        unsigned char *array;  /* Pointer to internal representation of Data Matrix modules */
-        unsigned char *code;   /* Pointer to internal storage of code words (data and error) */
-        unsigned char *output; /* Pointer to internal storage of decoded output */
+        size_t arraySize;      /**< 二维码数据区码元行数x列数(mappingRows * mappingCols) */
+        size_t codeSize;       /**< 编码数据的总大小，包括数据字和纠错字 */
+        size_t outputSize;     /**< Size of buffer used to hold decoded data */
+        int outputIdx;         /**< Internal index used to store output progress */
+        int padCount;          /**< */
+        int fnc1;              /**< 表示FNC1或DmtxUndefined的字符 */
+        unsigned char *array;  /**< 指向DataMatrix数据区二进制矩阵的指针 */
+        unsigned char *code;   /**< 指向码字（数据字和纠错字）的指针 */
+        unsigned char *output; /**< 指向二维码码值的指针 */
     } DmtxMessage;
 
     /**
@@ -585,7 +584,7 @@ extern "C"
     extern /*@exposed@*/ unsigned char *dmtxDecodeGetCache(DmtxDecode *dec, int x, int y);
     extern DmtxPassFail dmtxDecodeGetPixelValue(DmtxDecode *dec, int x, int y, int channel, OUT int *value);
     extern DmtxMessage *dmtxDecodeMatrixRegion(DmtxDecode *dec, DmtxRegion *reg, int fix);
-    extern DmtxMessage *dmtxDecodePopulatedArray(int sizeIdx, DmtxMessage *msg, int fix);
+    extern DmtxMessage *dmtxDecodePopulatedArray(int sizeIdx, INOUT DmtxMessage *msg, int fix);
     extern DmtxMessage *dmtxDecodeMosaicRegion(DmtxDecode *dec, DmtxRegion *reg, int fix);
     extern unsigned char *dmtxDecodeCreateDiagnostic(DmtxDecode *dec, OUT int *totalBytes, OUT int *headerBytes,
                                                      int style);
@@ -675,13 +674,14 @@ extern "C"
     typedef void (*DmtxCallbackBuildMatrix)(DmtxMatrix3 matrix);
     typedef void (*DmtxCallbackPlotPoint)(DmtxPixelLoc loc, float colorHue, int paneNbr, int dispType);
     typedef void (*DmtxCallbackXfrmPlotPoint)(DmtxVector2 point, DmtxMatrix3 xfrm, int paneNbr, int dispType);
+    typedef void (*DmtxCallbackPlotModule)(DmtxDecode *info, DmtxRegion *region, int row, int col, float colorHue);
     typedef void (*DmtxCallbackFinal)(DmtxDecode *decode, DmtxRegion *region);
-    // typedef void (*DmtxCallbackPlotModule)(DmtxDecode *info, DmtxRegion *region, int row, int col, DmtxColor3 color);
 
     extern void dmtxCallbackBuildMatrixRegion(DmtxCallbackBuildMatrixRegion cb);
     extern void dmtxCallbackBuildMatrix(DmtxCallbackBuildMatrix cb);
     extern void dmtxCallbackPlotPoint(DmtxCallbackPlotPoint cb);
     extern void dmtxCallbackXfrmPlotPoint(DmtxCallbackXfrmPlotPoint cb);
+    extern void dmtxCallbackPlotModule(DmtxCallbackPlotModule cb);
     extern void dmtxCallbackFinal(DmtxCallbackFinal cb);
 #endif
 
