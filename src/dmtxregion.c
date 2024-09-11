@@ -674,6 +674,12 @@ static int readModuleColor(DmtxDecode *dec, DmtxRegion *reg, int symbolRow, int 
 
         // dmtxLogDebug("%dx%d", (int)(p.x + 0.5), (int)(p.y + 0.5));
 
+#ifdef DEBUG_CALLBACK
+        if (cbPlotModule) {
+            cbPlotModule(dec, reg, (int)(p.x + 0.5), (int)(p.y + 0.5), 0);
+        }
+#endif
+
         dmtxDecodeGetPixelValue(dec, (int)(p.x + 0.5), (int)(p.y + 0.5), colorPlane, &colorTmp);
         color += colorTmp;
     }

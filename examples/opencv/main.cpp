@@ -47,6 +47,58 @@ cv::Scalar hsv2rgb(float h, float s = 1.0F, float v = 1.0F)
     return CV_RGB(r * 255, g * 255, b * 255);
 }
 
+// 计算交点
+cv::Point findIntersection(cv::Point p1, double theta1, cv::Point p2, double theta2)
+{
+    // 将角度转换为弧度
+    double rad1 = theta1 * M_PI / 180.0;
+    double rad2 = theta2 * M_PI / 180.0;
+
+    // 处理特殊情况：垂直直线
+    bool isVertical1 = std::abs(rad1) == M_PI / 2;
+    bool isVertical2 = std::abs(rad2) == M_PI / 2;
+
+    // 处理垂直直线的情况
+    if (isVertical1 && isVertical2) {
+        throw std::invalid_argument("Both lines are vertical, no unique intersection.");
+    } else if (isVertical1) {
+        // 第一条直线垂直，第二条直线非垂直
+        double x = p1.x;
+        double m2 = std::tan(rad2);
+        double b2 = p2.y - m2 * p2.x;
+        double y = m2 * x + b2;
+        return cv::Point((int)x, (int)y);
+    } else if (isVertical2) {
+        // 第二条直线垂直，第一条直线非垂直
+        double x = p2.x;
+        double m1 = std::tan(rad1);
+        double b1 = p1.y - m1 * p1.x;
+        double y = m1 * x + b1;
+        return cv::Point((int)x, (int)y);
+    }
+
+    // 计算斜率
+    double m1 = std::tan(rad1);
+    double m2 = std::tan(rad2);
+
+    // 如果斜率相同，则两条直线平行或重合，无法计算交点
+    if (m1 == m2) {
+        throw std::invalid_argument("Lines are parallel or coincident.");
+    }
+
+    // 求解直线方程中的常数项
+    double b1 = p1.y - m1 * p1.x;
+    double b2 = p2.y - m2 * p2.x;
+
+    // 求解 x
+    double x = (b2 - b1) / (m1 - m2);
+
+    // 求解 y
+    double y = m1 * x + b1;
+
+    return cv::Point((int)x, (int)y);
+}
+
 void buildMatrixRegion(DmtxRegion *reg)
 {
     cv::Mat s = img.clone();
@@ -115,62 +167,20 @@ void plotPoint(DmtxPixelLoc loc, float colorHue, int paneNbr, int dispType)
     cv::waitKey(1);
 }
 
-// 计算交点
-cv::Point findIntersection(cv::Point p1, double theta1, cv::Point p2, double theta2)
+void plotModule(DmtxDecode *dec, DmtxRegion *reg, int row, int col, float colorHue)
 {
-    // 将角度转换为弧度
-    double rad1 = theta1 * M_PI / 180.0;
-    double rad2 = theta2 * M_PI / 180.0;
-
-    // 处理特殊情况：垂直直线
-    bool isVertical1 = std::abs(rad1) == M_PI / 2;
-    bool isVertical2 = std::abs(rad2) == M_PI / 2;
-
-    // 处理垂直直线的情况
-    if (isVertical1 && isVertical2) {
-        throw std::invalid_argument("Both lines are vertical, no unique intersection.");
-    } else if (isVertical1) {
-        // 第一条直线垂直，第二条直线非垂直
-        double x = p1.x;
-        double m2 = std::tan(rad2);
-        double b2 = p2.y - m2 * p2.x;
-        double y = m2 * x + b2;
-        return cv::Point((int)x, (int)y);
-    } else if (isVertical2) {
-        // 第二条直线垂直，第一条直线非垂直
-        double x = p2.x;
-        double m1 = std::tan(rad1);
-        double b1 = p1.y - m1 * p1.x;
-        double y = m1 * x + b1;
-        return cv::Point((int)x, (int)y);
-    }
-
-    // 计算斜率
-    double m1 = std::tan(rad1);
-    double m2 = std::tan(rad2);
-
-    // 如果斜率相同，则两条直线平行或重合，无法计算交点
-    if (m1 == m2) {
-        throw std::invalid_argument("Lines are parallel or coincident.");
-    }
-
-    // 求解直线方程中的常数项
-    double b1 = p1.y - m1 * p1.x;
-    double b2 = p2.y - m2 * p2.x;
-
-    // 求解 x
-    double x = (b2 - b1) / (m1 - m2);
-
-    // 求解 y
-    double y = m1 * x + b1;
-
-    return cv::Point((int)x, (int)y);
+    cv::Mat s = img.clone();
+    cv::circle(s, cv::Point(row, gImage->height - col), 3, hsv2rgb(colorHue), -1);
+    cv::namedWindow("plotModule", cv::WINDOW_NORMAL | cv::WINDOW_KEEPRATIO);
+    cv::imshow("plotModule", s);
+    cv::waitKey(1);
 }
 
 int main(int argc, char *argv[])
 {
     dmtxCallbackBuildMatrixRegion(buildMatrixRegion);
     dmtxCallbackPlotPoint(plotPoint);
+    // dmtxCallbackPlotModule(plotModule);
 
     DmtxDecode *dec;
     DmtxRegion *reg;
