@@ -11,8 +11,8 @@
  * Vadim A. Misbakh-Soloviov <dmtx@mva.name>
  * Mike Laughton <mike@dragonflylogic.com>
  *
- * \file dmtxsymbol.c
- * \brief Data Matrix symbol attributes
+ * @file dmtxsymbol.c
+ * @brief Data Matrix symbol attributes
  */
 
 #include "dmtx.h"
@@ -37,10 +37,10 @@ extern int getSizeIdxFromSymbolDimension(int rows, int cols)
 }
 
 /**
- * \brief  Retrieve property based on symbol size
- * \param  attribute
- * \param  sizeIdx
- * \return Attribute value
+ * @brief 根据规格索引返回二维码规格各个参数
+ * @param[in] attribute 属性 @ref DmtxSymAttribute
+ * @param[in] sizeIdx 规格索引
+ * @return 属性值
  */
 extern int dmtxGetSymbolAttribute(int attribute, int sizeIdx)
 {

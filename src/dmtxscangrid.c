@@ -10,8 +10,8 @@
  * Vadim A. Misbakh-Soloviov <dmtx@mva.name>
  * Mike Laughton <mike@dragonflylogic.com>
  *
- * \file dmtxscangrid.c
- * \brief Scan grid tracking
+ * @file dmtxscangrid.c
+ * @brief Scan grid tracking
  */
 
 #include <assert.h>
@@ -21,9 +21,7 @@
 #include "dmtxstatic.h"
 
 /**
- * \brief  Initialize scan grid pattern
- * \param  dec
- * \return Initialized grid
+ * @brief 初始化扫描网格
  */
 static DmtxScanGrid initScanGrid(DmtxDecode *dec)
 {

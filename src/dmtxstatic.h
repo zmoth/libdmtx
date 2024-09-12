@@ -10,8 +10,8 @@
  * Vadim A. Misbakh-Soloviov <dmtx@mva.name>
  * Mike Laughton <mike@dragonflylogic.com>
  *
- * \file dmtxstatic.h
- * \brief Static header
+ * @file dmtxstatic.h
+ * @brief Static header
  */
 
 #ifndef __DMTXSTATIC_H__
@@ -102,21 +102,21 @@
         }                                \
     } while (0)
 
-typedef enum
+typedef enum DmtxEncodeOption_enum
 {
     DmtxEncodeNormal,  /* Use normal scheme behavior (e.g., ASCII auto) */
     DmtxEncodeCompact, /* Use only compact format within scheme */
     DmtxEncodeFull     /* Use only fully expanded format within scheme */
 } DmtxEncodeOption;
 
-typedef enum
+typedef enum DmtxRange_enum
 {
     DmtxRangeGood,
     DmtxRangeBad,
     DmtxRangeEnd
 } DmtxRange;
 
-typedef enum
+typedef enum DmtxEdge_enum
 {
     DmtxEdgeTop = 0x01 << 0,
     DmtxEdgeBottom = 0x01 << 1,
@@ -124,7 +124,7 @@ typedef enum
     DmtxEdgeRight = 0x01 << 3
 } DmtxEdge;
 
-typedef enum
+typedef enum DmtxMaskBit_enum
 {
     DmtxMaskBit8 = 0x01 << 0,
     DmtxMaskBit7 = 0x01 << 1,
@@ -142,10 +142,10 @@ typedef enum
  */
 typedef struct DmtxFollow_struct
 {
-    unsigned char *ptr;
-    unsigned char neighbor;
-    int step;
-    DmtxPixelLoc loc;
+    unsigned char *ptr;     /**<  */
+    unsigned char neighbor; /**<  */
+    int step;               /**<  */
+    DmtxPixelLoc loc;       /**< 图像像素坐标 */
 } DmtxFollow;
 
 /**
@@ -154,19 +154,19 @@ typedef struct DmtxFollow_struct
  */
 typedef struct DmtxBresLine_struct
 {
-    int xStep;
-    int yStep;
-    int xDelta;
-    int yDelta;
-    int steep;
-    int xOut;
-    int yOut;
-    int travel;
-    int outward;
-    int error;
-    DmtxPixelLoc loc;
-    DmtxPixelLoc loc0;
-    DmtxPixelLoc loc1;
+    int xStep;         /**<  */
+    int yStep;         /**<  */
+    int xDelta;        /**<  */
+    int yDelta;        /**<  */
+    int steep;         /**<  */
+    int xOut;          /**<  */
+    int yOut;          /**<  */
+    int travel;        /**<  */
+    int outward;       /**<  */
+    int error;         /**<  */
+    DmtxPixelLoc loc;  /**<  */
+    DmtxPixelLoc loc0; /**<  */
+    DmtxPixelLoc loc1; /**<  */
 } DmtxBresLine;
 
 typedef struct C40TextState_struct
@@ -175,7 +175,7 @@ typedef struct C40TextState_struct
     DmtxBoolean upperShift;
 } C40TextState;
 
-typedef struct
+typedef struct DmtxLogEvent_struct
 {
     va_list ap;
     const char *fmt;

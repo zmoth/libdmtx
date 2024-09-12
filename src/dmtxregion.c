@@ -11,8 +11,8 @@
  * Vadim A. Misbakh-Soloviov <dmtx@mva.name>
  * Mike Laughton <mike@dragonflylogic.com>
  *
- * \file dmtxregion.c
- * \brief Detect barcode regions
+ * @file dmtxregion.c
+ * @brief Detect barcode regions
  */
 
 #include <assert.h>
@@ -26,9 +26,9 @@
 #define DMTX_HOUGH_RES 180
 
 /**
- * \brief  Create copy of existing region struct
- * \param  None
- * \return Initialized DmtxRegion struct
+ * @brief  Create copy of existing region struct
+ * @param  None
+ * @return Initialized DmtxRegion struct
  */
 extern DmtxRegion *dmtxRegionCreate(DmtxRegion *reg)
 {
@@ -45,9 +45,9 @@ extern DmtxRegion *dmtxRegionCreate(DmtxRegion *reg)
 }
 
 /**
- * \brief  Destroy region struct
- * \param  reg
- * \return void
+ * @brief  Destroy region struct
+ * @param  reg
+ * @return void
  */
 extern DmtxPassFail dmtxRegionDestroy(DmtxRegion **reg)
 {
@@ -63,10 +63,9 @@ extern DmtxPassFail dmtxRegionDestroy(DmtxRegion **reg)
 }
 
 /**
- * \brief  Find next barcode region
- * \param  dec Pointer to DmtxDecode information struct
- * \param  timeout Pointer to timeout time (NULL if none)
- * \return Detected region (if found)
+ * @brief 寻找下一个二维码区域
+ * @param dec Pointer to DmtxDecode information struct
+ * @param timeout 超时时间 (如果为NULL则不限时)
  */
 extern DmtxRegion *dmtxRegionFindNext(DmtxDecode *dec, DmtxTime *timeout)
 {
@@ -81,13 +80,13 @@ extern DmtxRegion *dmtxRegionFindNext(DmtxDecode *dec, DmtxTime *timeout)
             break;
         }
 
-        /* Scan location for presence of valid barcode region */
+        /* 扫描确认loc坐标位置是否存在二维码区域 */
         reg = dmtxRegionScanPixel(dec, loc.x, loc.y);
         if (reg != NULL) {
-            return reg;
+            return reg;  // 成功找到一个二维码区域
         }
 
-        /* Ran out of time? */
+        /* 超时检测 */
         if (timeout != NULL && dmtxTimeExceeded(*timeout)) {
             break;
         }
@@ -97,10 +96,7 @@ extern DmtxRegion *dmtxRegionFindNext(DmtxDecode *dec, DmtxTime *timeout)
 }
 
 /**
- * \brief  Scan individual pixel for presence of barcode edge
- * \param  dec Pointer to DmtxDecode information struct
- * \param  loc Pixel location
- * \return Detected region (if any)
+ * @brief 将坐标点(x,y)作为二维码L型框的边缘点去匹配二维码包围框
  */
 extern DmtxRegion *dmtxRegionScanPixel(DmtxDecode *dec, int x, int y)
 {
@@ -137,7 +133,7 @@ extern DmtxRegion *dmtxRegionScanPixel(DmtxDecode *dec, int x, int y)
         return NULL;
     }
 
-    /* Define top edge */
+    /* 匹配顶部点线 */
     if (matrixRegionAlignCalibEdge(dec, &reg, DmtxEdgeTop) == DmtxFail) {
         return NULL;
     }
@@ -145,7 +141,7 @@ extern DmtxRegion *dmtxRegionScanPixel(DmtxDecode *dec, int x, int y)
         return NULL;
     }
 
-    /* Define right edge */
+    /* 匹配右侧点线 */
     if (matrixRegionAlignCalibEdge(dec, &reg, DmtxEdgeRight) == DmtxFail) {
         return NULL;
     }
@@ -278,7 +274,7 @@ static DmtxPassFail matrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, Dm
         maxDiagonal = DmtxUndefined;
     }
 
-    /* Follow to end in both directions */
+    /* 以十字搜索像素点为起点，分别从正负方向寻边 */
     err = trailBlazeContinuous(dec, reg, begin, maxDiagonal);
     if (err == DmtxFail || reg->stepsTotal < 40) {
         trailClear(dec, reg, 0x40);
@@ -301,6 +297,7 @@ static DmtxPassFail matrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, Dm
         }
     }
 
+    /* 寻找第一条直线 */
     line1x = findBestSolidLine(dec, reg, 0, 0, +1, DmtxUndefined);
     if (line1x.mag < 5) {
         trailClear(dec, reg, 0x40);
@@ -308,15 +305,17 @@ static DmtxPassFail matrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, Dm
     }
 
     err = findTravelLimits(dec, reg, &line1x);
-    if (line1x.distSq < 100 || line1x.devn * 10 >= sqrt((double)line1x.distSq)) {
+    if (err == DmtxFail || line1x.distSq < 100 || line1x.devn * 10 >= sqrt((double)line1x.distSq)) {
         trailClear(dec, reg, 0x40);
         return DmtxFail;
     }
     DmtxAssert(line1x.stepPos >= line1x.stepNeg);
 
+    /* 第一条直线正向搜索另一条直线 */
     fTmp = followSeek(dec, reg, line1x.stepPos + 5);
     line2p = findBestSolidLine(dec, reg, fTmp.step, line1x.stepNeg, +1, line1x.angle);
 
+    /* 第一条直线负向搜索另一条直线 */
     fTmp = followSeek(dec, reg, line1x.stepNeg - 5);
     line2n = findBestSolidLine(dec, reg, fTmp.step, line1x.stepPos, -1, line1x.angle);
     if (max(line2p.mag, line2n.mag) < 5) {
@@ -326,7 +325,7 @@ static DmtxPassFail matrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, Dm
     if (line2p.mag > line2n.mag) {
         line2x = line2p;
         err = findTravelLimits(dec, reg, &line2x);
-        if (line2x.distSq < 100 || line2x.devn * 10 >= sqrt((double)line2x.distSq)) {
+        if (err == DmtxFail || line2x.distSq < 100 || line2x.devn * 10 >= sqrt((double)line2x.distSq)) {
             return DmtxFail;
         }
 
@@ -362,7 +361,7 @@ static DmtxPassFail matrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, Dm
     } else {
         line2x = line2n;
         err = findTravelLimits(dec, reg, &line2x);
-        if (line2x.distSq < 100 || line2x.devn / sqrt((double)line2x.distSq) >= 0.1) {
+        if (err == DmtxFail || line2x.distSq < 100 || line2x.devn / sqrt((double)line2x.distSq) >= 0.1) {
             return DmtxFail;
         }
 
@@ -410,8 +409,7 @@ static DmtxPassFail matrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, Dm
 }
 
 /**
- *
- *
+ * @brief 计算两个像素点之间的欧几里得距离的平方
  */
 static long distanceSquared(DmtxPixelLoc a, DmtxPixelLoc b)
 {
@@ -980,8 +978,7 @@ static int countJumpTally(DmtxDecode *dec, DmtxRegion *reg, int xStart, int ySta
 }
 
 /**
- *
- *
+ * @brief 从像素坐标寻找其在指定颜色平面的梯度方向
  */
 static DmtxPointFlow getPointFlow(DmtxDecode *dec, int colorPlane, DmtxPixelLoc loc, int arrive)
 {
@@ -994,6 +991,14 @@ static DmtxPointFlow getPointFlow(DmtxDecode *dec, int colorPlane, DmtxPixelLoc 
     int color, colorPattern[8];
     DmtxPointFlow flow;
 
+    // 以loc坐标为中心按照如下所示顺序获取周边的8个像素值
+    // @ref dmtxNeighborNone
+    //       Y+
+    //       |
+    //    6  5  4
+    // —— 7  8  3  ——> X+
+    //    0  1  2
+    //       |
     for (patternIdx = 0; patternIdx < 8; patternIdx++) {
         xAdjust = loc.x + dmtxPatternX[patternIdx];
         yAdjust = loc.y + dmtxPatternY[patternIdx];
@@ -1003,7 +1008,7 @@ static DmtxPointFlow getPointFlow(DmtxDecode *dec, int colorPlane, DmtxPixelLoc 
         }
     }
 
-    /* Calculate this pixel's flow intensity for each direction (-45, 0, 45, 90) */
+    /* 计算四个方向上的流动强度 (-45, 0, 45, 90) */
     compassMax = 0;
     for (compass = 0; compass < 4; compass++) {
         /* Add portion from each position in the convolution matrix pattern */
@@ -1031,18 +1036,19 @@ static DmtxPointFlow getPointFlow(DmtxDecode *dec, int colorPlane, DmtxPixelLoc 
             }
         }
 
-        /* Identify strongest compass flow */
+        /* 确定最强的梯度流动方向 */
         if (compass != 0 && abs(mag[compass]) > abs(mag[compassMax])) {
             compassMax = compass;
         }
     }
 
     /* Convert signed compass direction into unique flow directions (0-7) */
-    flow.plane = colorPlane;
-    flow.arrive = arrive;
-    flow.depart = (mag[compassMax] > 0) ? compassMax + 4 : compassMax;
-    flow.mag = abs(mag[compassMax]);
-    flow.loc = loc;
+    flow.plane = colorPlane;  // 颜色平面（彩色RGB三个平面中的一个）
+    flow.arrive = arrive;     // 抵达方向 8
+    flow.depart = (mag[compassMax] > 0) ? compassMax + 4
+                                        : compassMax;  // 离开方向  假设是水平方向就需要判断是向左(<-),还是向右(->)
+    flow.mag = abs(mag[compassMax]);  // 梯度强度
+    flow.loc = loc;                   // 原始像素位置
 
     return flow;
 }
@@ -1101,8 +1107,17 @@ static DmtxPointFlow findStrongestNeighbor(DmtxDecode *dec, DmtxPointFlow center
 }
 
 /**
+ * @brief 根据指定步数从当前区域的起始点追踪到新位置
  *
+ * 此函数从数据矩阵区域的起始追踪点出发，按照给定的步数（正向或负向），
+ * 逐步调用`FollowStep`函数进行追踪，并返回达到的新位置信息。此功能
+ * 支持快速跳转到区域内的指定追踪步骤，用于优化和控制追踪流程。
  *
+ * @param dec 解码上下文，用于缓存访问
+ * @param reg 当前数据矩阵区域信息，包含追踪起始位置、步数上限等
+ * @param seek 相对于起始点的追踪步数，正值表示正向追踪，负值表示反向追踪
+ *
+ * @return 返回追踪到达的新位置信息（DmtxFollow 结构体）
  */
 static DmtxFollow followSeek(DmtxDecode *dec, DmtxRegion *reg, int seek)
 {
@@ -1127,8 +1142,7 @@ static DmtxFollow followSeek(DmtxDecode *dec, DmtxRegion *reg, int seek)
 }
 
 /**
- *
- *
+ * @brief 根据指定像素坐标初始化追踪起始信息
  */
 static DmtxFollow followSeekLoc(DmtxDecode *dec, DmtxPixelLoc loc)
 {
@@ -1144,8 +1158,12 @@ static DmtxFollow followSeekLoc(DmtxDecode *dec, DmtxPixelLoc loc)
 }
 
 /**
+ * @brief 寻找followBeg的下一个点
  *
- *
+ * @param dec 解码上下文，包含缓存访问等信息
+ * @param reg 当前处理的区域信息，包括追踪步数、跳跃目标位置等
+ * @param followBeg 起始点
+ * @param sign 追踪方向，+1 表示正向追踪，-1 表示负向追踪
  */
 static DmtxFollow followStep(DmtxDecode *dec, DmtxRegion *reg, DmtxFollow followBeg, int sign)
 {
@@ -1212,7 +1230,7 @@ static DmtxFollow followStep2(DmtxDecode *dec, DmtxFollow followBeg, int sign)
 }
 
 /**
- * @brief 追踪匹配DataMatrix的'L'型连续直线
+ * @brief 从flowBegin点出发，分别从正负方向寻找连续的边界线
  *
  * vaiiiooo
  * --------
@@ -1252,7 +1270,7 @@ static DmtxPassFail trailBlazeContinuous(DmtxDecode *dec, DmtxRegion *reg, DmtxP
                 break;
             }
 
-            /* Find the strongest eligible neighbor */
+            /* 寻找梯度最大的下一个点 */
             flowNext = findStrongestNeighbor(dec, flow, sign);
             if (flowNext.mag < 50) {
                 break;
@@ -1447,8 +1465,19 @@ static int trailClear(DmtxDecode *dec, DmtxRegion *reg, int clearMask)
 }
 
 /**
+ * @brief 查找最佳实线
  *
+ * 该函数用于在给定的解码上下文和区域内，根据霍夫变换找到最佳实线。
+ * 它考虑了路径流的方向，并尝试避免指定的角度。
  *
+ * @param dec 解码上下文
+ * @param reg 区域信息
+ * @param step0 起始步长
+ * @param step1 结束步长
+ * @param streamDir 流的方向
+ * @param houghAvoid 霍夫变换中要避免的角度
+ *
+ * @return DmtxBestLine 返回最佳实线的信息
  */
 static DmtxBestLine findBestSolidLine(DmtxDecode *dec, DmtxRegion *reg, int step0, int step1, int streamDir,
                                       int houghAvoid)
@@ -1702,7 +1731,7 @@ static DmtxPassFail findTravelLimits(DmtxDecode *dec, DmtxRegion *reg, DmtxBestL
             if (posWander >= -3 * 256 && posWander <= 3 * 256) {
                 distSq = (int)distanceSquared(followPos.loc, negMax);
                 if (distSq > distSqMax) {
-                    posMax = followPos.loc;
+                    posMax = followPos.loc;  // 更新
                     distSqMax = distSq;
                     line->stepPos = followPos.step;
                     line->locPos = followPos.loc;
@@ -1726,7 +1755,7 @@ static DmtxPassFail findTravelLimits(DmtxDecode *dec, DmtxRegion *reg, DmtxBestL
             if (negWander >= -3 * 256 && negWander < 3 * 256) {
                 distSq = (int)distanceSquared(followNeg.loc, posMax);
                 if (distSq > distSqMax) {
-                    negMax = followNeg.loc;
+                    negMax = followNeg.loc;  // 更新
                     distSqMax = distSq;
                     line->stepNeg = followNeg.step;
                     line->locNeg = followNeg.loc;

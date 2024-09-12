@@ -11,8 +11,8 @@
  * Vadim A. Misbakh-Soloviov <dmtx@mva.name>
  * Mike Laughton <mike@dragonflylogic.com>
  *
- * \file dmtx.h
- * \brief Main libdmtx header
+ * @file dmtx.h
+ * @brief Main libdmtx header
  */
 
 #ifndef __DMTX_H__
@@ -57,7 +57,7 @@ extern "C"
 #define DmtxModuleOnRed 0x01         /**< 红 */
 #define DmtxModuleOnGreen 0x02       /**< 绿 */
 #define DmtxModuleOnBlue 0x04        /**< 蓝 */
-#define DmtxModuleOnRGB 0x07         /* OnRed | OnGreen | OnBlue */
+#define DmtxModuleOnRGB 0x07         /**< OnRed | OnGreen | OnBlue */
 #define DmtxModuleOn DmtxModuleOnRGB /**< bit1 */
 #define DmtxModuleUnsure 0x08        /**< 不确定 */
 #define DmtxModuleAssigned 0x10      /**< 已分配 */
@@ -75,7 +75,7 @@ extern "C"
 #define OUT   /* 表示输出参数，指针指向的值会修改，且不会读 */
 #define INOUT /* 表示输入输出参数，指针指向的值会修改，且会读取 */
 
-    typedef enum
+    typedef enum DmtxStatus_enum
     {
         DmtxStatusEncoding, /* Encoding is currently underway */
         DmtxStatusComplete, /* Encoding is done and everything went well */
@@ -83,7 +83,7 @@ extern "C"
         DmtxStatusFatal     /* Something happened that should never happen */
     } DmtxStatus;
 
-    typedef enum
+    typedef enum DmtxScheme_enum
     {
         DmtxSchemeAutoFast = -2,
         DmtxSchemeAutoBest = -1,
@@ -95,11 +95,13 @@ extern "C"
         DmtxSchemeBase256
     } DmtxScheme;
 
-    typedef enum
+    typedef enum DmtxSymbolSize_enum
     {
         DmtxSymbolRectAuto = -3,
         DmtxSymbolSquareAuto = -2,
         DmtxSymbolShapeAuto = -1,
+
+        /* 正方形 */
         DmtxSymbol10x10 = 0,
         DmtxSymbol12x12,
         DmtxSymbol14x14,
@@ -124,6 +126,8 @@ extern "C"
         DmtxSymbol120x120,
         DmtxSymbol132x132,
         DmtxSymbol144x144,
+
+        /* 长方形 */
         DmtxSymbol8x18,
         DmtxSymbol8x32,
         DmtxSymbol12x26,
@@ -132,7 +136,7 @@ extern "C"
         DmtxSymbol16x48
     } DmtxSymbolSize;
 
-    typedef enum
+    typedef enum DmtxDirection_enum
     {
         DmtxDirNone = 0x00,
         DmtxDirUp = 0x01 << 0,
@@ -145,7 +149,7 @@ extern "C"
         DmtxDirLeftDown = DmtxDirLeft | DmtxDirDown
     } DmtxDirection;
 
-    typedef enum
+    typedef enum DmtxSymAttribute_enum
     {
         DmtxSymAttribSymbolRows,          /**< 二维码码元总行数（包括L形框和点线）*/
         DmtxSymAttribSymbolCols,          /**< 二维码码元总列数（包括L形框和点线）*/
@@ -163,7 +167,7 @@ extern "C"
         DmtxSymAttribSymbolMaxCorrectable /**< */
     } DmtxSymAttribute;
 
-    typedef enum
+    typedef enum DmtxCornerLoc_enum
     {
         DmtxCorner00 = 0x01 << 0,
         DmtxCorner10 = 0x01 << 1,
@@ -171,40 +175,43 @@ extern "C"
         DmtxCorner01 = 0x01 << 3
     } DmtxCornerLoc;
 
-    typedef enum
+    typedef enum DmtxProperty_enum
     {
         /* Encoding properties */
-        DmtxPropScheme = 100,
-        DmtxPropSizeRequest,
-        DmtxPropMarginSize,
-        DmtxPropModuleSize,
-        DmtxPropFnc1,
+        DmtxPropScheme = 100, /**<  */
+        DmtxPropSizeRequest,  /**<  */
+        DmtxPropMarginSize,   /**<  */
+        DmtxPropModuleSize,   /**<  */
+        DmtxPropFnc1,         /**<  */
+
         /* Decoding properties */
-        DmtxPropEdgeMin = 200,
-        DmtxPropEdgeMax,
-        DmtxPropScanGap,
-        DmtxPropSquareDevn,
-        DmtxPropSymbolSize,
-        DmtxPropEdgeThresh,
-        /* Image properties */
-        DmtxPropWidth = 300,
-        DmtxPropHeight,
-        DmtxPropPixelPacking,
-        DmtxPropBitsPerPixel,
-        DmtxPropBytesPerPixel,
-        DmtxPropRowPadBytes,
-        DmtxPropRowSizeBytes,
-        DmtxPropImageFlip,
-        DmtxPropChannelCount,
+        DmtxPropEdgeMin = 200, /**<  */
+        DmtxPropEdgeMax,       /**<  */
+        DmtxPropScanGap,       /**<  */
+        DmtxPropSquareDevn,    /**<  */
+        DmtxPropSymbolSize,    /**<  */
+        DmtxPropEdgeThresh,    /**<  */
+
+        /* 图像属性 @ref DmtxImage */
+        DmtxPropWidth = 300,   /**< 图像宽度 */
+        DmtxPropHeight,        /**< 图像高度 */
+        DmtxPropPixelPacking,  /**< 图像格式类型，像素打包方式 @ref DmtxPackOrder */
+        DmtxPropBitsPerPixel,  /**< 每像素所需要的bit数 */
+        DmtxPropBytesPerPixel, /**< 每像素所需要的byte数 */
+        DmtxPropRowPadBytes,   /**< 每行像素在内存中的填充或对齐字节数 */
+        DmtxPropRowSizeBytes,  /**< 每一行（包括填充）在内存中的总字节数 */
+        DmtxPropImageFlip,     /**< 图像是否需要翻转，通常用于处理上下颠倒的图像 @ref DmtxFlip */
+        DmtxPropChannelCount,  /**< 图像通道数 */
+
         /* Image modifiers */
-        DmtxPropXmin = 400,
-        DmtxPropXmax,
-        DmtxPropYmin,
-        DmtxPropYmax,
-        DmtxPropScale
+        DmtxPropXmin = 400, /**< ROI X坐标最小值(如果未设置则为0) */
+        DmtxPropXmax,       /**< ROI X坐标最大值(如果未设置则为图像宽度-1) */
+        DmtxPropYmin,       /**< ROI Y坐标最小值(如果未设置则为0) */
+        DmtxPropYmax,       /**< ROI Y坐标最大值(如果未设置则为图像高度-1) */
+        DmtxPropScale       /**< 图像缩放比例 */
     } DmtxProperty;
 
-    typedef enum
+    typedef enum DmtxPackOrder_enum
     {
         /* Custom format */
         DmtxPackCustom = 100,
@@ -232,14 +239,14 @@ extern "C"
         DmtxPack32bppCMYK
     } DmtxPackOrder;
 
-    typedef enum
+    typedef enum DmtxFlip_enum
     {
         DmtxFlipNone = 0x00,
         DmtxFlipX = 0x01 << 0,
         DmtxFlipY = 0x01 << 1
     } DmtxFlip;
 
-    typedef enum
+    typedef enum DmtxLogLevel_enum
     {
         DmtxLogTrace,
         DmtxLogDebug,
@@ -329,40 +336,34 @@ extern "C"
     } DmtxImage;
 
     /**
-     * @struct DmtxPointFlow
-     * @brief DmtxPointFlow
+     * @brief 图像像素点及其梯度流动方向
      */
     typedef struct DmtxPointFlow_struct
     {
-        int plane;
-        int arrive;
-        int depart;
-        int mag;
-        DmtxPixelLoc loc;
+        int plane;        /**< 多通道平面索引 */
+        int arrive;       /**< 梯度方向起点 */
+        int depart;       /**< 梯度方向终点 */
+        int mag;          /**< 梯度幅值 */
+        DmtxPixelLoc loc; /**< 像素的坐标 */
     } DmtxPointFlow;
 
-    /**
-     * @struct DmtxBestLine
-     * @brief DmtxBestLine
-     */
     typedef struct DmtxBestLine_struct
     {
-        int angle;
-        int hOffset;
-        int mag;
-        int stepBeg;
-        int stepPos;
-        int stepNeg;
-        int distSq;
-        double devn;
-        DmtxPixelLoc locBeg;
-        DmtxPixelLoc locPos;
-        DmtxPixelLoc locNeg;
+        int angle;           /**< 线条的角度，单位：度 */
+        int hOffset;         /**< */
+        int mag;             /**< 幅值 */
+        int stepBeg;         /**< */
+        int stepPos;         /**< 正方向步进位置 */
+        int stepNeg;         /**< 负方向步进位置 */
+        int distSq;          /**< */
+        double devn;         /**< */
+        DmtxPixelLoc locBeg; /**< 起始位置点 */
+        DmtxPixelLoc locPos; /**< 正方向点（线段端点） */
+        DmtxPixelLoc locNeg; /**< 负方向点（线段端点） */
     } DmtxBestLine;
 
     /**
-     * @struct DmtxRegion
-     * @brief DmtxRegion
+     * @brief 二维码区域(包围框)
      */
     typedef struct DmtxRegion_struct
     {
@@ -374,7 +375,7 @@ extern "C"
         DmtxPixelLoc finalNeg;   /**< */
         DmtxPixelLoc boundMin;   /**< */
         DmtxPixelLoc boundMax;   /**< */
-        DmtxPointFlow flowBegin; /**< */
+        DmtxPointFlow flowBegin; /**< 搜索起点，十字搜索抛出的点 */
 
         /* Orientation values */
         int polarity;      /**< */
@@ -440,10 +441,10 @@ extern "C"
         int maxExtent; /* Size of bounding grid region (2^N - 1) */
         int xOffset;   /* Offset to obtain image X coordinate */
         int yOffset;   /* Offset to obtain image Y coordinate */
-        int xMin;      /* Minimum X in image coordinate system */
-        int xMax;      /* Maximum X in image coordinate system */
-        int yMin;      /* Minimum Y in image coordinate system */
-        int yMax;      /* Maximum Y in image coordinate system */
+        int xMin;      /**< ROI X坐标最小值(如果未设置则为0) */
+        int xMax;      /**< ROI X坐标最大值(如果未设置则为图像宽度-1) */
+        int yMin;      /**< ROI Y坐标最小值(如果未设置则为0) */
+        int yMax;      /**< ROI Y坐标最大值(如果未设置则为图像高度-1) */
 
         /* reset for each level */
         int total;      /* Total number of crosses at this size */
