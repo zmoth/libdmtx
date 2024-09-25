@@ -74,8 +74,6 @@ set_target_properties(
 
 # Add tests if DMTX is the main project
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-  add_definitions(-DDEBUG_CALLBACK)
-
   # EXAMPLES
   add_subdirectory(examples)
 

@@ -149,11 +149,9 @@ extern DmtxRegion *dmtxRegionScanPixel(DmtxDecode *dec, int x, int y)
         return NULL;
     }
 
-#ifdef DEBUG_CALLBACK
     if (cbBuildMatrixRegion) {
         cbBuildMatrixRegion(&reg);
     }
-#endif
 
     /* 计算最匹配的二维码符号尺寸 */
     if (matrixRegionFindSize(dec, &reg) == DmtxFail) {
@@ -217,11 +215,9 @@ static DmtxPointFlow matrixRegionSeekEdge(DmtxDecode *dec, DmtxPixelLoc loc)
         if (flowPos.arrive == (flowPosBack.arrive + 4) % 8 && flowNeg.arrive == (flowNegBack.arrive + 4) % 8) {
             // 如果沿着flow点往正负方向走，如果下一个点能够通过同样的方式走回到flow点，那么认为这个点是有可能形成一个闭合的形状的
             flow.arrive = dmtxNeighborNone;
-#ifdef DEBUG_CALLBACK
             if (cbPlotPoint) {
                 cbPlotPoint(flow.loc, 0.0F, 1, 1);
             }
-#endif
             return flow;
         }
     }
@@ -396,12 +392,10 @@ static DmtxPassFail matrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, Dm
         }
     }
 
-#ifdef DEBUG_CALLBACK
     if (cbPlotPoint) {
         cbPlotPoint(reg->locR, 180.0F /*青*/, 1, 1);
         cbPlotPoint(reg->locT, 180.0F /*青*/, 1, 1);
     }
-#endif
 
     reg->leftKnown = reg->bottomKnown = 1;
 
@@ -672,11 +666,9 @@ static int readModuleColor(DmtxDecode *dec, DmtxRegion *reg, int symbolRow, int 
 
         // dmtxLogDebug("%dx%d", (int)(p.x + 0.5), (int)(p.y + 0.5));
 
-#ifdef DEBUG_CALLBACK
         if (cbPlotModule) {
             cbPlotModule(dec, reg, (int)(p.x + 0.5), (int)(p.y + 0.5), 0);
         }
-#endif
 
         dmtxDecodeGetPixelValue(dec, (int)(p.x + 0.5), (int)(p.y + 0.5), colorPlane, &colorTmp);
         color += colorTmp;
@@ -1312,11 +1304,9 @@ static DmtxPassFail trailBlazeContinuous(DmtxDecode *dec, DmtxRegion *reg, DmtxP
                 boundMin.y = flow.loc.y;
             }
 
-#ifdef DEBUG_CALLBACK
             if (cbPlotPoint) {
                 cbPlotPoint(flow.loc, (sign > 0) ? 0.0F /*红*/ : 180.0F /*青*/, 1, 2);
             }
-#endif
         }
 
         if (sign > 0) {
@@ -1580,11 +1570,9 @@ static DmtxBestLine findBestSolidLine(DmtxDecode *dec, DmtxRegion *reg, int step
             }
         }
 
-#ifdef DEBUG_CALLBACK
         if (cbPlotPoint) {
             cbPlotPoint(follow.loc, (sign > 1) ? 120.0F + step : 300.0F + step, 1, 2);
         }
-#endif
 
         follow = followStep(dec, reg, follow, sign);
     }
@@ -1671,11 +1659,9 @@ static DmtxBestLine findBestSolidLine2(DmtxDecode *dec, DmtxPixelLoc loc0, int t
             }
         }
 
-#ifdef DEBUG_CALLBACK
         if (cbPlotPoint) {
             cbPlotPoint(follow.loc, (sign > 1) ? 300.0F /*品红*/ : 120.0F /*绿*/, 1, 2);
         }
-#endif
 
         follow = followStep2(dec, follow, sign);
     }
@@ -1770,12 +1756,10 @@ static DmtxPassFail findTravelLimits(DmtxDecode *dec, DmtxRegion *reg, DmtxBestL
             break;
         }
 
-#ifdef DEBUG_CALLBACK
         if (cbPlotPoint) {
             cbPlotPoint(followPos.loc, 60.0F /*黄*/, 1, 2);
             cbPlotPoint(followNeg.loc, 240.0F /*蓝*/, 1, 2);
         }
-#endif
 
         followPos = followStep(dec, reg, followPos, +1);
         followNeg = followStep(dec, reg, followNeg, -1);
@@ -1783,12 +1767,10 @@ static DmtxPassFail findTravelLimits(DmtxDecode *dec, DmtxRegion *reg, DmtxBestL
     line->devn = max(posWanderMaxLock - posWanderMinLock, negWanderMaxLock - negWanderMinLock) / 256;
     line->distSq = distSqMax;
 
-#ifdef DEBUG_CALLBACK
     if (cbPlotPoint) {
         cbPlotPoint(posMax, 120.0F /*绿*/, 1, 1);
         cbPlotPoint(negMax, 120.0F /*绿*/, 1, 1);
     }
-#endif
 
     return DmtxPass;
 }
@@ -1926,12 +1908,10 @@ static DmtxBresLine bresLineInit(DmtxPixelLoc loc0, DmtxPixelLoc loc1, DmtxPixel
     line.outward = 0;
     line.error = (line.steep) ? line.yDelta / 2 : line.xDelta / 2;
 
-#ifdef DEBUG_CALLBACK
     if (cbPlotPoint) {
         cbPlotPoint(loc0, 240.0F /*蓝*/, 1, 1);
         cbPlotPoint(loc1, 240.0F /*蓝*/, 1, 1);
     }
-#endif
 
     return line;
 }

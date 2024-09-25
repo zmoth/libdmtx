@@ -670,7 +670,6 @@ extern "C"
     extern void dmtxLogSetQuiet(DmtxBoolean enable);
 
     /* dmtxcallback.c */
-#ifdef DEBUG_CALLBACK
     typedef void (*DmtxCallbackBuildMatrixRegion)(DmtxRegion *region);
     typedef void (*DmtxCallbackBuildMatrix)(DmtxMatrix3 matrix);
     typedef void (*DmtxCallbackPlotPoint)(DmtxPixelLoc loc, float colorHue, int paneNbr, int dispType);
@@ -684,7 +683,6 @@ extern "C"
     extern void dmtxCallbackXfrmPlotPoint(DmtxCallbackXfrmPlotPoint cb);
     extern void dmtxCallbackPlotModule(DmtxCallbackPlotModule cb);
     extern void dmtxCallbackFinal(DmtxCallbackFinal cb);
-#endif
 
     extern char *dmtxVersion(void);
 

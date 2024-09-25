@@ -1,8 +1,6 @@
 #include "dmtx.h"
 #include "dmtxstatic.h"
 
-#ifdef DEBUG_CALLBACK
-
 void dmtxCallbackBuildMatrixRegion(DmtxCallbackBuildMatrixRegion cb)
 {
     cbBuildMatrixRegion = cb;
@@ -32,5 +30,3 @@ void dmtxCallbackFinal(DmtxCallbackFinal cb)
 {
     cbFinal = cb;
 }
-
-#endif

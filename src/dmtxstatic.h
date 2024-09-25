@@ -356,14 +356,12 @@ static const int dmtxPatternX[] = {-1, 0, 1, 1, 1, 0, -1, -1};
 static const int dmtxPatternY[] = {-1, -1, -1, 0, 1, 1, 1, 0};
 static const DmtxPointFlow dmtxBlankEdge = {0, 0, 0, DmtxUndefined, {-1, -1}};
 
-#ifdef DEBUG_CALLBACK
 static DmtxCallbackBuildMatrixRegion cbBuildMatrixRegion = NULL;
 static DmtxCallbackBuildMatrix cbBuildMatrix = NULL;
 static DmtxCallbackPlotPoint cbPlotPoint = NULL;
 static DmtxCallbackXfrmPlotPoint cbXfrmPlotPoint = NULL;
 static DmtxCallbackPlotModule cbPlotModule = NULL;
 static DmtxCallbackFinal cbFinal = NULL;
-#endif
 
 /*@ +charint @*/
 
