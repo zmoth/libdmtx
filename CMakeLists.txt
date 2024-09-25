@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 3.5)
 
+include(cmake/version.cmake)
+get_git_version(PROJECT_VERSION)
+
 set(PROJECT_DESCRIPTION "libdmtx is a software library that enables programs to read and write Data Matrix barcodes of the modern ECC200 variety.")
-set(PROJECT_HOMEPAGE_URL "https://github.com/dmtx/libdmtx")
+set(PROJECT_HOMEPAGE_URL "https://github.com/zmoth/libdmtx.git")
 
 project(
   dmtx
-  VERSION 0.7.7
+  VERSION ${PROJECT_VERSION}
   DESCRIPTION ${PROJECT_DESCRIPTION}
   HOMEPAGE_URL ${PROJECT_HOMEPAGE_URL}
   LANGUAGES C
@@ -32,6 +35,14 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_INSTALL_BINDIR})
   endif()
 endif()
+
+message(STATUS "[${PROJECT_NAME}] ${PROJECT_NAME} v${PROJECT_VERSION}")
+message(STATUS "[${PROJECT_NAME}] ${PROJECT_DESCRIPTION}")
+message(STATUS "[${PROJECT_NAME}] C: ${CMAKE_C_STANDARD}; Cpp: ${CMAKE_CXX_STANDARD}")
+message(STATUS "[${PROJECT_NAME}] C 编译器: ${CMAKE_C_COMPILER_ID}; Cpp 编译器: ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "[${PROJECT_NAME}] OS: ${CMAKE_SYSTEM_NAME}")
+message(STATUS "[${PROJECT_NAME}] install默认安装位置: ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "[${PROJECT_NAME}] 此CMakeLists.txt是否是顶层 ${PROJECT_IS_TOP_LEVEL}")
 
 if(DMTX_SHARED)
   add_library(${PROJECT_NAME} SHARED "src/dmtx.c")
