@@ -18,7 +18,10 @@ function(get_git_version version)
     # 如果有错误则设置版本号为0.0.0
     if(NOT DEFINED GIT_TAG_ERROR OR NOT "${GIT_TAG_ERROR}" STREQUAL "")
         set(GIT_TAG_VERSION "0.0.0")
+        message(WARNING "GIT_TAG_ERROR: ${GIT_TAG_ERROR}")
     endif()
+
+    message(STATUS "${GIT_TAG_VERSION}")
 
     # 获取并解析版本号
     string(REGEX MATCH "^[0-9]+\\.[0-9]+\\.[0-9]+$" PROJECT_VERSION ${GIT_TAG_VERSION})
