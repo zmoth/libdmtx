@@ -14,7 +14,7 @@ function(get_git_version version)
 
         if(NOT DEFINED GIT_TAG_ERROR OR NOT "${GIT_TAG_ERROR}" STREQUAL "")
             execute_process(
-                COMMAND ${GIT_EXECUTABLE} fetch --tags
+                COMMAND ${GIT_EXECUTABLE} fetch --unshallow # TODO: How not to get all the historical information
                 TIMEOUT 5
             )
 
