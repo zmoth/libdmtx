@@ -11,6 +11,22 @@ function(get_git_version version)
             OUTPUT_STRIP_TRAILING_WHITESPACE
             TIMEOUT 5
         )
+
+        if(NOT DEFINED GIT_TAG_ERROR OR NOT "${GIT_TAG_ERROR}" STREQUAL "")
+            execute_process(
+                COMMAND ${GIT_EXECUTABLE} fetch --tags
+                TIMEOUT 5
+            )
+
+            execute_process(
+                COMMAND ${GIT_EXECUTABLE} describe --tags
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                OUTPUT_VARIABLE GIT_TAG_VERSION
+                ERROR_VARIABLE GIT_TAG_ERROR
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                TIMEOUT 5
+            )
+        endif()
     else()
         message(WARNING "Not found Git")
     endif()
