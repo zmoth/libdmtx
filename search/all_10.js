@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['m_5fpi_0',['M_PI',['../dmtx_8h.html#ae71449b1cc6e6250b91f539153a7a0d3',1,'dmtx.h']]],
+  ['m_5fpi_5f2_1',['M_PI_2',['../dmtx_8h.html#a958e4508ed28ee5cc04249144312c15f',1,'dmtx.h']]],
+  ['mag_2',['mag',['../structDmtxPointFlow__struct.html#a39b82c8f6a8770e60de80a9ee0e335b2',1,'DmtxPointFlow_struct::mag'],['../structDmtxBestLine__struct.html#a645cae3f2e5317d2667fb05a00d0cc4d',1,'DmtxBestLine_struct::mag']]],
+  ['make_20install_20step_3',['Problems with &quot;sudo make install&quot; step',['../index.html#autotoc_md9',1,'']]],
+  ['make_20step_4',['Problems with &quot;make&quot; step',['../index.html#autotoc_md8',1,'']]],
+  ['mappingcols_5',['mappingCols',['../structDmtxRegion__struct.html#a70cfee8b02025556133e390177472e11',1,'DmtxRegion_struct']]],
+  ['mappingrows_6',['mappingRows',['../structDmtxRegion__struct.html#a946ea28d36e10b885cedf54411e9d659',1,'DmtxRegion_struct']]],
+  ['marginsize_7',['marginSize',['../structDmtxEncode__struct.html#aefebe9e2214d74c349180ba9b5f2b3b6',1,'DmtxEncode_struct']]],
+  ['matrix_20software_8',['libdmtx - Open Source Data Matrix Software',['../index.html',1,'']]],
+  ['matrixregionaligncalibedge_9',['matrixRegionAlignCalibEdge',['../dmtxregion_8c.html#a28a000f40ec59bc0e9761d4dfb17db66',1,'matrixRegionAlignCalibEdge(DmtxDecode *dec, DmtxRegion *reg, int edgeLoc):&#160;dmtxregion.c'],['../dmtxstatic_8h.html#a28a000f40ec59bc0e9761d4dfb17db66',1,'matrixRegionAlignCalibEdge(DmtxDecode *dec, DmtxRegion *reg, int edgeLoc):&#160;dmtxstatic.h']]],
+  ['matrixregionfindsize_10',['matrixRegionFindSize',['../dmtxregion_8c.html#a2ab363fd0e072bd9fab50ea69e6a75f7',1,'matrixRegionFindSize(DmtxDecode *dec, DmtxRegion *reg):&#160;dmtxregion.c'],['../dmtxstatic_8h.html#a2ab363fd0e072bd9fab50ea69e6a75f7',1,'matrixRegionFindSize(DmtxDecode *dec, DmtxRegion *reg):&#160;dmtxstatic.h']]],
+  ['matrixregionorientation_11',['matrixRegionOrientation',['../dmtxregion_8c.html#aff12bc24073e91536a8592b707bcacfa',1,'matrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, DmtxPointFlow begin):&#160;dmtxregion.c'],['../dmtxstatic_8h.html#a0d0d8511086211d259b582137ef7151f',1,'matrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, DmtxPointFlow flowBegin):&#160;dmtxstatic.h']]],
+  ['matrixregionseekedge_12',['matrixRegionSeekEdge',['../dmtxregion_8c.html#aff3d37511b7001192aac3f21fe7bac1d',1,'matrixRegionSeekEdge(DmtxDecode *dec, DmtxPixelLoc loc):&#160;dmtxregion.c'],['../dmtxstatic_8h.html#a31ae114d359ae2f80c5b4566614fcce0',1,'matrixRegionSeekEdge(DmtxDecode *dec, DmtxPixelLoc loc0):&#160;dmtxstatic.h']]],
+  ['max_13',['max',['../dmtxstatic_8h.html#ab95f7757e11b270d27b95ec0d8e798b5',1,'dmtxstatic.h']]],
+  ['max_5fcallbacks_14',['MAX_CALLBACKS',['../dmtxlog_8c.html#aea0bffe478318f476a4bedee63256b2c',1,'dmtxlog.c']]],
+  ['max_5ferror_5fword_5fcount_15',['MAX_ERROR_WORD_COUNT',['../dmtxreedsol_8c.html#a498495385b5ae8d03d440271d15fbad8',1,'dmtxreedsol.c']]],
+  ['maxextent_16',['maxExtent',['../structDmtxScanGrid__struct.html#a2c7b4a3232e1e637c38baa588e8000cf',1,'DmtxScanGrid_struct']]],
+  ['message_17',['message',['../structDmtxEncode__struct.html#af90ef06843c0bf8d3a7851d2d718c70b',1,'DmtxEncode_struct']]],
+  ['method_18',['method',['../structDmtxEncode__struct.html#ac3fb14e3b43302b4efa3ff97f40a5e62',1,'DmtxEncode_struct']]],
+  ['min_19',['min',['../dmtxstatic_8h.html#a8195a86b6d75b9a3939505e8bb50021e',1,'dmtxstatic.h']]],
+  ['minextent_20',['minExtent',['../structDmtxScanGrid__struct.html#a0ead9f2446d9b7421446952c7802a96a',1,'DmtxScanGrid_struct']]],
+  ['moduleplacementecc200_21',['modulePlacementEcc200',['../dmtxplacemod_8c.html#ae36c57bf8c5267dc0d11b8a6eb65299b',1,'modulePlacementEcc200(INOUT unsigned char *modules, OUT unsigned char *codewords, int sizeIdx, int moduleOnColor):&#160;dmtxplacemod.c'],['../dmtxstatic_8h.html#ae36c57bf8c5267dc0d11b8a6eb65299b',1,'modulePlacementEcc200(INOUT unsigned char *modules, OUT unsigned char *codewords, int sizeIdx, int moduleOnColor):&#160;dmtxstatic.h']]],
+  ['modulesize_22',['moduleSize',['../structDmtxEncode__struct.html#a8f56e0b91ca9f742a3289b35162cfcad',1,'DmtxEncode_struct']]]
+];

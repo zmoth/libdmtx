@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['scale_0',['scale',['../structDmtxDecode__struct.html#af7edf044d338ebde734a9649ea0bd5ad',1,'DmtxDecode_struct']]],
+  ['scangap_1',['scanGap',['../structDmtxDecode__struct.html#abd224577196e1c9c26e87401fd2b6b97',1,'DmtxDecode_struct']]],
+  ['scheme_2',['scheme',['../structDmtxEncode__struct.html#ab00c3e1ae3fa5f4e0b8b5eb34768d3be',1,'DmtxEncode_struct']]],
+  ['sec_3',['sec',['../structDmtxTime__struct.html#a1d4dfc30c4512e1dde102e1e39d3bcb7',1,'DmtxTime_struct']]],
+  ['shift_4',['shift',['../structC40TextState__struct.html#acb2dda7bbff8239f99fac2ab568be77a',1,'C40TextState_struct']]],
+  ['sizeidx_5',['sizeIdx',['../structDmtxEncodeStream__struct.html#a124a5a5f36977a0417e43b07e89ac991',1,'DmtxEncodeStream_struct::sizeIdx'],['../structDmtxRegion__struct.html#a7519a7fb83ce0ff98aa93b5eabe4d7fb',1,'DmtxRegion_struct::sizeIdx']]],
+  ['sizeidxexpected_6',['sizeIdxExpected',['../structDmtxDecode__struct.html#aa298403f5d51319f61e5a948e648859b',1,'DmtxDecode_struct']]],
+  ['sizeidxrequest_7',['sizeIdxRequest',['../structDmtxEncode__struct.html#a56d01c91a465f2ddfcb0507b388c7b11',1,'DmtxEncode_struct']]],
+  ['squaredevn_8',['squareDevn',['../structDmtxDecode__struct.html#a3d07a6fb6d5e30125b6226dd2e645f29',1,'DmtxDecode_struct']]],
+  ['startpos_9',['startPos',['../structDmtxScanGrid__struct.html#a07150c223ed5a575957a641589afb729',1,'DmtxScanGrid_struct']]],
+  ['status_10',['status',['../structDmtxEncodeStream__struct.html#adc379bd2343a57dabd3d639e5bda8ec3',1,'DmtxEncodeStream_struct']]],
+  ['steep_11',['steep',['../structDmtxBresLine__struct.html#a2362805b2fdb362a9ee16297ccd2a244',1,'DmtxBresLine_struct']]],
+  ['step_12',['step',['../structDmtxFollow__struct.html#adaea068d3cd0d10be9bb22d10e08d105',1,'DmtxFollow_struct']]],
+  ['stepbeg_13',['stepBeg',['../structDmtxBestLine__struct.html#a8dc10dcce684f1bd0195e0f3f450d168',1,'DmtxBestLine_struct']]],
+  ['stepneg_14',['stepNeg',['../structDmtxBestLine__struct.html#affd075fcb50277f453624250d0f1db71',1,'DmtxBestLine_struct']]],
+  ['steppos_15',['stepPos',['../structDmtxBestLine__struct.html#a813319d30f000af90c20e32f9f50933a',1,'DmtxBestLine_struct']]],
+  ['stepr_16',['stepR',['../structDmtxRegion__struct.html#a2d10d533ca04da1b6c4484ea5e6f1abf',1,'DmtxRegion_struct']]],
+  ['stepstotal_17',['stepsTotal',['../structDmtxRegion__struct.html#a0875173fa8442ad8298fb7d9c2c2fee2',1,'DmtxRegion_struct']]],
+  ['stept_18',['stepT',['../structDmtxRegion__struct.html#a05c2f922e441e5f6fe94ad6c38ae45b2',1,'DmtxRegion_struct']]],
+  ['symbolcols_19',['symbolCols',['../structDmtxRegion__struct.html#aa8831eb784be61d3ab9c6df413304e5d',1,'DmtxRegion_struct']]],
+  ['symbolrows_20',['symbolRows',['../structDmtxRegion__struct.html#aa358324be63371205e79603fd20d8299',1,'DmtxRegion_struct']]]
+];

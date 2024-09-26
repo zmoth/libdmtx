@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['cache_0',['cache',['../structDmtxDecode__struct.html#aca4b57114330bb3b5bc53d1b8222f54d',1,'DmtxDecode_struct']]],
+  ['callbacks_1',['callbacks',['../dmtxlog_8c.html#a38367a766a6e5583a1d7cd3552a45585',1,'dmtxlog.c']]],
+  ['capacity_2',['capacity',['../structDmtxByteList__struct.html#abde60c87b09f337cf51c3962e900aeab',1,'DmtxByteList_struct']]],
+  ['cbbuildmatrix_3',['cbBuildMatrix',['../dmtxstatic_8h.html#adab56bfb9aea877497d8a8c8c511789f',1,'dmtxstatic.h']]],
+  ['cbbuildmatrixregion_4',['cbBuildMatrixRegion',['../dmtxstatic_8h.html#add719f39108aff018d62ed6b2594af05',1,'dmtxstatic.h']]],
+  ['cbfinal_5',['cbFinal',['../dmtxstatic_8h.html#aeaee581b0a19e7047b7527ce3316685d',1,'dmtxstatic.h']]],
+  ['cbplotmodule_6',['cbPlotModule',['../dmtxstatic_8h.html#abc8d397e03ec18809d31ab9ed2334fc3',1,'dmtxstatic.h']]],
+  ['cbplotpoint_7',['cbPlotPoint',['../dmtxstatic_8h.html#ad04fa14c8c29680083faa3ddcc067d40',1,'dmtxstatic.h']]],
+  ['cbxfrmplotpoint_8',['cbXfrmPlotPoint',['../dmtxstatic_8h.html#a2013203276d20acc554e2032c7a9114a',1,'dmtxstatic.h']]],
+  ['channel_9',['channel',['../structDmtxChannelGroup__struct.html#a051b5dd6b9ce737485925602771dd1d1',1,'DmtxChannelGroup_struct']]],
+  ['channelcount_10',['channelCount',['../structDmtxImage__struct.html#ac56f027eed8d3cca1f3a22a48d6b2442',1,'DmtxImage_struct']]],
+  ['channelstart_11',['channelStart',['../structDmtxImage__struct.html#a70efe187625316714d9998064be87203',1,'DmtxImage_struct']]],
+  ['code_12',['code',['../structDmtxMessage__struct.html#a30c63aa7585fd9d46c2d2c4c99cc2823',1,'DmtxMessage_struct']]],
+  ['codesize_13',['codeSize',['../structDmtxMessage__struct.html#a4ffb173881482226b897fd389b6ecbe9',1,'DmtxMessage_struct']]],
+  ['currentlength_14',['currentLength',['../structDmtxChannel__struct.html#acd698b73fdf8d3ec06c431df47491e2a',1,'DmtxChannel_struct']]],
+  ['currentscheme_15',['currentScheme',['../structDmtxEncodeStream__struct.html#a0ee1710b1a506e5d311c274040bfd655',1,'DmtxEncodeStream_struct']]]
+];
