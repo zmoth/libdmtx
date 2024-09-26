@@ -62,19 +62,11 @@ jobs:
       with:
         submodules: true
 
-    - name: Cache OpenCV
-      id: opencv-cache
-      uses: actions/cache@v2
+    - name: Install Doxygen
+      if: startsWith (matrix.os, 'ubuntu')
+      uses: ssciwr/doxygen-install@v1
       with:
-        path: ./opencv-install
-        key: ${{ runner.os }}-opencv-cache
-    
-    - name: Install OpenCV
-      uses: rayandrews/with-opencv-action@v1
-      with:  
-        dir: ./opencv-install
-        cached: ${{ steps.opencv-cache.outputs.cache-hit }}
-        opencv-version: '4.5.0'
+        version: "1.12.0"
 
     - name: Setup VS tools (Windows)
       if: startsWith (matrix.os, 'windows')
@@ -83,7 +75,8 @@ jobs:
         arch: x64
 
     - name: Configure (${{ matrix.configuration }})
-      run: cmake -S . -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -Ddmtx_BUILD_TESTING=OFF -Ddmtx_BUILD_DOCS=OFF
+      if: startsWith (matrix.os, 'ubuntu')
+      run: cmake -S . -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -Ddmtx_BUILD_EXAMPLES=OFF -Ddmtx_BUILD_TESTING=OFF
 
     - name: Build with ${{ matrix.compiler }}
       run: cmake --build build --config ${{ matrix.configuration }}
