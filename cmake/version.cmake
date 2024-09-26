@@ -11,6 +11,8 @@ function(get_git_version version)
             OUTPUT_STRIP_TRAILING_WHITESPACE
             TIMEOUT 5
         )
+    else()
+        message(WARNING "Not found Git")
     endif()
 
     # 如果有错误则设置版本号为0.0.0

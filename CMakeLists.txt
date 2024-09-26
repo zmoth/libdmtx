@@ -14,8 +14,16 @@ project(
   LANGUAGES C
 )
 
-# DMTX library
-option(DMTX_SHARED "Build DMTX as shared library" ${BUILD_SHARED_LIBS})
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+  set(PROJECT_IS_TOP_LEVEL ON)
+else()
+  set(PROJECT_IS_TOP_LEVEL OFF)
+endif()
+
+option(DMTX_SHARED "Build DMTX as shared library" ${BUILD_SHARED_LIBS}) # DMTX library
+option(${PROJECT_NAME}_BUILD_EXAMPLES "是否编译例程" ${PROJECT_IS_TOP_LEVEL})
+option(${PROJECT_NAME}_BUILD_TESTING "是否使用测试" ${PROJECT_IS_TOP_LEVEL})
+option(${PROJECT_NAME}_BUILD_DOCS "是否生成文档" ${PROJECT_IS_TOP_LEVEL})
 
 if(MSVC)
   add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
@@ -42,7 +50,11 @@ message(STATUS "[${PROJECT_NAME}] C: ${CMAKE_C_STANDARD}; Cpp: ${CMAKE_CXX_STAND
 message(STATUS "[${PROJECT_NAME}] C 编译器: ${CMAKE_C_COMPILER_ID}; Cpp 编译器: ${CMAKE_CXX_COMPILER_ID}")
 message(STATUS "[${PROJECT_NAME}] OS: ${CMAKE_SYSTEM_NAME}")
 message(STATUS "[${PROJECT_NAME}] install默认安装位置: ${CMAKE_INSTALL_PREFIX}")
+
 message(STATUS "[${PROJECT_NAME}] 此CMakeLists.txt是否是顶层 ${PROJECT_IS_TOP_LEVEL}")
+message(STATUS "[${PROJECT_NAME}] 编译用例 ${${PROJECT_NAME}_BUILD_EXAMPLES}")
+message(STATUS "[${PROJECT_NAME}] 编译测试 ${${PROJECT_NAME}_BUILD_TESTING}")
+message(STATUS "[${PROJECT_NAME}] 编译文档 ${${PROJECT_NAME}_BUILD_DOCS}")
 
 if(DMTX_SHARED)
   add_library(${PROJECT_NAME} SHARED "src/dmtx.c")
@@ -83,19 +95,24 @@ set_target_properties(
   RUNTIME_OUTPUT_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
 )
 
-# Add tests if DMTX is the main project
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-  # EXAMPLES
+# EXAMPLES
+if(${${PROJECT_NAME}_BUILD_EXAMPLES})
   add_subdirectory(examples)
+endif()
 
-  include(cmake/doxygen.cmake)
-
+# TEST
+if(${${PROJECT_NAME}_BUILD_TESTING})
   include(CTest)
 
-  if(BUILD_TESTING)
-    add_subdirectory("test")
-  endif()
+  add_subdirectory("test")
+endif()
 
+# DOCS
+if(${${PROJECT_NAME}_BUILD_DOCS})
+  include(cmake/doxygen.cmake)
+endif()
+
+if(PROJECT_IS_TOP_LEVEL)
   # INSTALL
   install(TARGETS ${PROJECT_NAME} LIBRARY ARCHIVE RUNTIME PUBLIC_HEADER)
 
