@@ -26,7 +26,7 @@
 #define ISDIGIT(n) (n > 47 && n < 58)
 
 /**
- * \brief  Initialize encode struct with default values
+ * \brief Initialize encode struct with default values
  * \return Initialized DmtxEncode struct
  */
 extern DmtxEncode *dmtxEncodeCreate(void)
@@ -63,8 +63,8 @@ extern DmtxEncode *dmtxEncodeCreate(void)
 }
 
 /**
- * \brief  Deinitialize encode struct
- * \param  enc
+ * \brief Deinitialize encode struct
+ * \param enc
  * \return void
  */
 extern DmtxPassFail dmtxEncodeDestroy(DmtxEncode **enc)
@@ -90,10 +90,10 @@ extern DmtxPassFail dmtxEncodeDestroy(DmtxEncode **enc)
 }
 
 /**
- * \brief  Set encoding behavior property
- * \param  enc
- * \param  prop
- * \param  value
+ * \brief Set encoding behavior property
+ * \param enc
+ * \param prop
+ * \param value
  * \return DmtxPass | DmtxFail
  */
 extern DmtxPassFail dmtxEncodeSetProp(DmtxEncode *enc, int prop, int value)
@@ -138,9 +138,9 @@ extern DmtxPassFail dmtxEncodeSetProp(DmtxEncode *enc, int prop, int value)
 }
 
 /**
- * \brief  Get encoding behavior property
- * \param  enc
- * \param  prop
+ * \brief Get encoding behavior property
+ * \param enc
+ * \param prop
  * \return value
  */
 extern int dmtxEncodeGetProp(DmtxEncode *enc, int prop)
@@ -162,11 +162,10 @@ extern int dmtxEncodeGetProp(DmtxEncode *enc, int prop)
 }
 
 /**
- * \brief  Convert message into Data Matrix image
- * \param  enc
- * \param  inputSize
- * \param  inputString
- * \param  sizeIdxRequest
+ * \brief Convert message into Data Matrix image
+ * \param enc
+ * \param inputSize
+ * \param inputString
  * \return DmtxPass | DmtxFail
  */
 extern DmtxPassFail dmtxEncodeDataMatrix(DmtxEncode *enc, int inputSize, unsigned char *inputString)
@@ -241,7 +240,7 @@ extern DmtxPassFail dmtxEncodeDataMatrix(DmtxEncode *enc, int inputSize, unsigne
 }
 
 /**
- * \brief  Convert message into Data Mosaic image
+ * \brief Convert message into Data Mosaic image
  *
  *  1) count how many codewords it would take to encode the whole thing
  *  2) take ceiling N of codeword count divided by 3
@@ -252,10 +251,9 @@ extern DmtxPassFail dmtxEncodeDataMatrix(DmtxEncode *enc, int inputSize, unsigne
  *     to 3 and try with next larger size
  *  6) take the 3 different images you created and write out a new barcode
  *
- * \param  enc
- * \param  inputSize
- * \param  inputString
- * \param  sizeIdxRequest
+ * \param enc
+ * \param inputSize
+ * \param inputString
  * \return DmtxPass | DmtxFail
  */
 extern DmtxPassFail dmtxEncodeDataMosaic(DmtxEncode *enc, int inputSize, unsigned char *inputString)
@@ -383,12 +381,7 @@ extern DmtxPassFail dmtxEncodeDataMosaic(DmtxEncode *enc, int inputSize, unsigne
 }
 
 /**
- * \brief  Convert input into message using specific encodation scheme
- * \param  buf
- * \param  inputString
- * \param  inputSize
- * \param  scheme
- * \param  sizeIdx
+ * \brief Convert input into message using specific encodation scheme
  * \return Count of encoded data words
  *
  * Future: pass DmtxEncode to this function with an error reason field, which
@@ -416,9 +409,8 @@ static int encodeDataCodewords(DmtxByteList *input, DmtxByteList *output, int si
 }
 
 /**
- * \brief  Write encoded message to image
- * \param  enc
- * \return void
+ * \brief Write encoded message to image
+ * \param enc
  */
 static void printPattern(DmtxEncode *enc)
 {

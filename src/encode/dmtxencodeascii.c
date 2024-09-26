@@ -20,7 +20,7 @@
 #include "dmtxstatic.h"
 
 /**
- * Simple single scheme encoding uses "Normal"
+ * \brief Simple single scheme encoding uses "Normal"
  * The optimizer needs to track "Expanded" and "Compact" streams separately, so they
  * are called explicitly.
  *
@@ -196,9 +196,9 @@ static DmtxByteList encodeTmpRemainingInAscii(DmtxEncodeStream *stream, DmtxByte
 }
 
 /**
- * \brief  Randomize 253 state
- * \param  codewordValue
- * \param  codewordPosition
+ * \brief Randomize 253 state
+ * \param cwValue codewordValue
+ * \param cwPosition codewordPosition
  * \return Randomized value
  */
 static DmtxByte randomize253State(DmtxByte cwValue, int cwPosition)

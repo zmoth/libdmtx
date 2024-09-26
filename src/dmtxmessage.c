@@ -22,9 +22,9 @@
 #include "dmtxstatic.h"
 
 /**
- * \brief  Allocate memory for message
- * \param  sizeIdx
- * \param  symbolFormat DmtxFormatMatrix | DmtxFormatMosaic
+ * \brief Allocate memory for message
+ * \param sizeIdx
+ * \param symbolFormat DmtxFormatMatrix | DmtxFormatMosaic
  * \return Address of allocated memory
  */
 extern DmtxMessage *dmtxMessageCreate(int sizeIdx, int symbolFormat)
@@ -80,8 +80,8 @@ extern DmtxMessage *dmtxMessageCreate(int sizeIdx, int symbolFormat)
 }
 
 /**
- * \brief  Free memory previously allocated for message
- * \param  message
+ * \brief Free memory previously allocated for message
+ * \param msg
  * \return void
  */
 extern DmtxPassFail dmtxMessageDestroy(DmtxMessage **msg)

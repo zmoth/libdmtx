@@ -11,16 +11,16 @@
  * Vadim A. Misbakh-Soloviov <dmtx@mva.name>
  * Mike Laughton <mike@dragonflylogic.com>
  *
- * @file dmtxsymbol.c
- * @brief Data Matrix symbol attributes
+ * \file dmtxsymbol.c
+ * \brief Data Matrix symbol attributes
  */
 
 #include "dmtx.h"
 
 /**
- * \brief  Retrieve symbol index from rows and columns
- * \param  rows
- * \param  cols
+ * \brief Retrieve symbol index from rows and columns
+ * \param rows
+ * \param cols
  * \return sizeIdx value
  */
 extern int getSizeIdxFromSymbolDimension(int rows, int cols)
@@ -37,10 +37,10 @@ extern int getSizeIdxFromSymbolDimension(int rows, int cols)
 }
 
 /**
- * @brief 根据规格索引返回二维码规格各个参数
- * @param[in] attribute 属性 @ref DmtxSymAttribute
- * @param[in] sizeIdx 规格索引
- * @return 属性值
+ * \brief 根据规格索引返回二维码规格各个参数
+ * \param[in] attribute 属性 \ref DmtxSymAttribute
+ * \param[in] sizeIdx 规格索引
+ * \return 属性值
  */
 extern int dmtxGetSymbolAttribute(int attribute, int sizeIdx)
 {
@@ -110,9 +110,9 @@ extern int dmtxGetSymbolAttribute(int attribute, int sizeIdx)
 }
 
 /**
- * \brief  Retrieve data size for a specific symbol size and block number
- * \param  sizeIdx
- * \param  blockIdx
+ * \brief Retrieve data size for a specific symbol size and block number
+ * \param sizeIdx
+ * \param blockIdx
  * \return Attribute value
  */
 extern int dmtxGetBlockDataSize(int sizeIdx, int blockIdx)
@@ -134,9 +134,9 @@ extern int dmtxGetBlockDataSize(int sizeIdx, int blockIdx)
 }
 
 /**
- * \brief  Determine symbol size based on data size and requested properties
- * \param  dataWords
- * \param  sizeIdxRequest
+ * \brief Determine symbol size based on data size and requested properties
+ * \param dataWords
+ * \param sizeIdxRequest
  * \return Symbol size index (or DmtxUndefined if none)
  */
 static int findSymbolSize(int dataWords, int sizeIdxRequest)

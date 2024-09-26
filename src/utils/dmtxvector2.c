@@ -10,8 +10,8 @@
  * Vadim A. Misbakh-Soloviov <dmtx@mva.name>
  * Mike Laughton <mike@dragonflylogic.com>
  *
- * @file dmtxvector2.c
- * @brief 二维向量数学运算
+ * \file dmtxvector2.c
+ * \brief 二维向量数学运算
  */
 
 #include <assert.h>
@@ -21,7 +21,7 @@
 #include "dmtxstatic.h"
 
 /**
- * @brief 向量相加
+ * \brief 向量相加
  */
 extern DmtxVector2 *dmtxVector2AddTo(INOUT DmtxVector2 *v1, const DmtxVector2 *v2)
 {
@@ -32,7 +32,7 @@ extern DmtxVector2 *dmtxVector2AddTo(INOUT DmtxVector2 *v1, const DmtxVector2 *v
 }
 
 /**
- * @brief 向量相加
+ * \brief 向量相加
  */
 extern DmtxVector2 *dmtxVector2Add(OUT DmtxVector2 *vOut, const DmtxVector2 *v1, const DmtxVector2 *v2)
 {
@@ -42,7 +42,7 @@ extern DmtxVector2 *dmtxVector2Add(OUT DmtxVector2 *vOut, const DmtxVector2 *v1,
 }
 
 /**
- * @brief 向量相减
+ * \brief 向量相减
  */
 extern DmtxVector2 *dmtxVector2SubFrom(INOUT DmtxVector2 *v1, const DmtxVector2 *v2)
 {
@@ -53,7 +53,7 @@ extern DmtxVector2 *dmtxVector2SubFrom(INOUT DmtxVector2 *v1, const DmtxVector2 
 }
 
 /**
- * @brief 向量相减
+ * \brief 向量相减
  */
 extern DmtxVector2 *dmtxVector2Sub(OUT DmtxVector2 *vOut, const DmtxVector2 *v1, const DmtxVector2 *v2)
 {
@@ -63,7 +63,7 @@ extern DmtxVector2 *dmtxVector2Sub(OUT DmtxVector2 *vOut, const DmtxVector2 *v1,
 }
 
 /**
- * @brief 向量数乘
+ * \brief 向量数乘
  */
 extern DmtxVector2 *dmtxVector2ScaleBy(INOUT DmtxVector2 *v, double s)
 {
@@ -74,7 +74,7 @@ extern DmtxVector2 *dmtxVector2ScaleBy(INOUT DmtxVector2 *v, double s)
 }
 
 /**
- * @brief 向量数乘
+ * \brief 向量数乘
  */
 extern DmtxVector2 *dmtxVector2Scale(OUT DmtxVector2 *vOut, const DmtxVector2 *v, double s)
 {
@@ -84,7 +84,7 @@ extern DmtxVector2 *dmtxVector2Scale(OUT DmtxVector2 *vOut, const DmtxVector2 *v
 }
 
 /**
- * @brief 二维向量叉积
+ * \brief 二维向量叉积
  */
 extern double dmtxVector2Cross(const DmtxVector2 *v1, const DmtxVector2 *v2)
 {
@@ -92,7 +92,7 @@ extern double dmtxVector2Cross(const DmtxVector2 *v1, const DmtxVector2 *v2)
 }
 
 /**
- * @brief 归一化
+ * \brief 归一化
  */
 extern double dmtxVector2Norm(INOUT DmtxVector2 *v)
 {
@@ -110,7 +110,7 @@ extern double dmtxVector2Norm(INOUT DmtxVector2 *v)
 }
 
 /**
- * @brief 二维向量点积
+ * \brief 二维向量点积
  */
 extern double dmtxVector2Dot(const DmtxVector2 *v1, const DmtxVector2 *v2)
 {
@@ -118,7 +118,7 @@ extern double dmtxVector2Dot(const DmtxVector2 *v1, const DmtxVector2 *v2)
 }
 
 /**
- * @brief 二维向量的模
+ * \brief 二维向量的模
  */
 extern double dmtxVector2Mag(const DmtxVector2 *v)
 {
@@ -126,7 +126,7 @@ extern double dmtxVector2Mag(const DmtxVector2 *v)
 }
 
 /**
- * @brief 计算点到直线的垂直距离
+ * \brief 计算点到直线的垂直距离
  */
 extern double dmtxDistanceFromRay2(const DmtxRay2 *r, const DmtxVector2 *q)
 {
@@ -157,15 +157,15 @@ extern double dmtxDistanceAlongRay2(const DmtxRay2 *r, const DmtxVector2 *q)
 }
 
 /**
- * @brief 判断两条直线是否相交，并计算交点。
+ * \brief 判断两条直线是否相交，并计算交点。
  *
  * 用向量叉乘求直线交点 https://www.cnblogs.com/zhb2000/p/vector-cross-product-solve-intersection.html
  *
- * @param point 交点坐标（如果存在）
- * @param p0 第一条直线
- * @param p1 第二条直线
+ * \param point 交点坐标（如果存在）
+ * \param p0 第一条直线
+ * \param p1 第二条直线
  *
- * @return 返回DmtxPass表示射线相交，并已计算出交点；返回DmtxFail表示射线不相交或几乎平行。
+ * \return 返回DmtxPass表示射线相交，并已计算出交点；返回DmtxFail表示射线不相交或几乎平行。
  */
 extern DmtxPassFail dmtxRay2Intersect(OUT DmtxVector2 *point, const DmtxRay2 *p0, const DmtxRay2 *p1)
 {
@@ -184,13 +184,13 @@ extern DmtxPassFail dmtxRay2Intersect(OUT DmtxVector2 *point, const DmtxRay2 *p0
 }
 
 /**
- * @brief 计算直线上特定位置的点
+ * \brief 计算直线上特定位置的点
  *
  * I = p + t·v
  *
- * @param[out] point 点I的坐标。
- * @param[in] r 直线
- * @param[in] t 表示沿射线方向的位置参数（从射线起点开始测量的距离）。
+ * \param[out] point 点I的坐标。
+ * \param[in] r 直线
+ * \param[in] t 表示沿射线方向的位置参数（从射线起点开始测量的距离）。
  */
 extern DmtxPassFail dmtxPointAlongRay2(OUT DmtxVector2 *point, const DmtxRay2 *r, double t)
 {

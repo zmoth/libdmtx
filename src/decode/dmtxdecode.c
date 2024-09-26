@@ -16,12 +16,6 @@
  * \brief Decode regions
  */
 
-/**
- * \brief  Initialize decode struct with default values
- * \param  img
- * \return Initialized DmtxDecode struct
- */
-
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>  // for snprintf
@@ -31,6 +25,10 @@
 #include "dmtx.h"
 #include "dmtxstatic.h"
 
+/**
+ * \brief Initialize decode struct with default values
+ * \return Initialized DmtxDecode struct
+ */
 extern DmtxDecode *dmtxDecodeCreate(DmtxImage *img, int scale)
 {
     DmtxDecode *dec;
@@ -72,8 +70,8 @@ extern DmtxDecode *dmtxDecodeCreate(DmtxImage *img, int scale)
 }
 
 /**
- * \brief  Deinitialize decode struct
- * \param  dec
+ * \brief Deinitialize decode struct
+ * \param dec
  * \return void
  */
 extern DmtxPassFail dmtxDecodeDestroy(DmtxDecode **dec)
@@ -94,10 +92,10 @@ extern DmtxPassFail dmtxDecodeDestroy(DmtxDecode **dec)
 }
 
 /**
- * \brief  Set decoding behavior property
- * \param  dec
- * \param  prop
- * \param  value
+ * \brief Set decoding behavior property
+ * \param dec
+ * \param prop
+ * \param value
  * \return DmtxPass | DmtxFail
  */
 extern DmtxPassFail dmtxDecodeSetProp(DmtxDecode *dec, int prop, int value)
@@ -160,9 +158,9 @@ extern DmtxPassFail dmtxDecodeSetProp(DmtxDecode *dec, int prop, int value)
 }
 
 /**
- * \brief  Get decoding behavior property
- * \param  dec
- * \param  prop
+ * \brief Get decoding behavior property
+ * \param dec
+ * \param prop
  * \return value
  */
 extern int dmtxDecodeGetProp(DmtxDecode *dec, int prop)
@@ -204,10 +202,10 @@ extern int dmtxDecodeGetProp(DmtxDecode *dec, int prop)
 }
 
 /**
- * \brief  Returns xxx
- * \param  img
- * \param  Scaled x coordinate
- * \param  Scaled y coordinate
+ * \brief Returns xxx
+ * \param dec
+ * \param x Scaled x coordinate
+ * \param y Scaled y coordinate
  * \return Scaled pixel offset
  */
 extern unsigned char *dmtxDecodeGetCache(DmtxDecode *dec, int x, int y)
@@ -230,7 +228,7 @@ extern unsigned char *dmtxDecodeGetCache(DmtxDecode *dec, int x, int y)
 }
 
 /**
- * @brief 获取图像像素
+ * \brief 获取图像像素
  */
 extern DmtxPassFail dmtxDecodeGetPixelValue(DmtxDecode *dec, int x, int y, int channel, OUT int *value)
 {
@@ -269,7 +267,7 @@ extern DmtxPassFail dmtxDecodeGetPixelValue(DmtxDecode *dec, int x, int y, int c
 }
 
 /**
- * \brief  Fill the region covered by the quadrilateral given by (p0,p1,p2,p3) in the cache.
+ * \brief Fill the region covered by the quadrilateral given by (p0,p1,p2,p3) in the cache.
  */
 static void cacheFillQuad(DmtxDecode *dec, DmtxPixelLoc p0, DmtxPixelLoc p1, DmtxPixelLoc p2, DmtxPixelLoc p3)
 {
@@ -333,7 +331,7 @@ static void cacheFillQuad(DmtxDecode *dec, DmtxPixelLoc p0, DmtxPixelLoc p1, Dmt
 }
 
 /**
- * @brief 解码拟合的二维码区域
+ * \brief 解码拟合的二维码区域
  */
 extern DmtxMessage *dmtxDecodeMatrixRegion(DmtxDecode *dec, DmtxRegion *reg, int fix /*DmtxUndefined*/)
 {
@@ -380,13 +378,13 @@ extern DmtxMessage *dmtxDecodeMatrixRegion(DmtxDecode *dec, DmtxRegion *reg, int
 }
 
 /**
- * @brief 从DataMatrix数据区二进制矩阵解码，并将结果写入msg->output
+ * \brief 从DataMatrix数据区二进制矩阵解码，并将结果写入msg->output
  *
- * @param[in] sizeIdx 数据矩阵的尺寸索引，对应不同的符号大小。
- * @param[in,out] msg 已经填充模块状态的解码消息结构体实例。
- * @param[in] fix 纠错级别指示符，指定解码时使用的错误纠正能力, 默认DmtxUndefined
+ * \param[in] sizeIdx 数据矩阵的尺寸索引，对应不同的符号大小。
+ * \param[in,out] msg 已经填充模块状态的解码消息结构体实例。
+ * \param[in] fix 纠错级别指示符，指定解码时使用的错误纠正能力, 默认DmtxUndefined
  *
- * @note 使用此函数时，应将msg变量重新赋值为该函数的返回值，因为当返回NULL时，表示msg已被释放，不应再被使用。
+ * \note 使用此函数时，应将msg变量重新赋值为该函数的返回值，因为当返回NULL时，表示msg已被释放，不应再被使用。
  *       示例用法：msg = dmtxDecodePopulatedArray(sizeidx, msg, fix);
  */
 DmtxMessage *dmtxDecodePopulatedArray(int sizeIdx, INOUT DmtxMessage *msg, int fix /*DmtxUndefined*/)
@@ -429,10 +427,10 @@ DmtxMessage *dmtxDecodePopulatedArray(int sizeIdx, INOUT DmtxMessage *msg, int f
 }
 
 /**
- * \brief  Convert fitted Data Mosaic region into a decoded message
- * \param  dec
- * \param  reg
- * \param  fix
+ * \brief Convert fitted Data Mosaic region into a decoded message
+ * \param dec
+ * \param reg
+ * \param fix
  * \return Decoded message
  */
 extern DmtxMessage *dmtxDecodeMosaicRegion(DmtxDecode *dec, DmtxRegion *reg, int fix)
@@ -581,19 +579,19 @@ extern unsigned char *dmtxDecodeCreateDiagnostic(DmtxDecode *dec, int *totalByte
 }
 
 /**
- * @brief 通过指定方向对判断bit为1的码元位置记录对应的值
+ * \brief 通过指定方向对判断bit为1的码元位置记录对应的值
  *
  * 此函数遍历数据矩阵区域中的模块，根据模块颜色跳变的阈值来累加计数器（tally），
  * 以此推断模块的明暗状态（代表二进制值）。它支持向上、向下、向左、向右四个方向的遍历。
  *
- * @param[in] dec 解码上下文，包含解码配置和辅助函数
- * @param[in] reg 当前处理的数据矩阵区域信息
- * @param[in,out] tally 二维数组，用于累加模块状态的计数
- * @param[in] xOrigin 起始位置X坐标
- * @param[in] yOrigin 起始位置Y坐标
- * @param[in] mapWidth 单区块码元宽度
- * @param[in] mapHeight 单区块码元高度
- * @param[in] dir 遍历方向
+ * \param[in] dec 解码上下文，包含解码配置和辅助函数
+ * \param[in] reg 当前处理的数据矩阵区域信息
+ * \param[in,out] tally 二维数组，用于累加模块状态的计数
+ * \param[in] xOrigin 起始位置X坐标
+ * \param[in] yOrigin 起始位置Y坐标
+ * \param[in] mapWidth 单区块码元宽度
+ * \param[in] mapHeight 单区块码元高度
+ * \param[in] dir 遍历方向
  */
 static void tallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, INOUT int tally[][24], int xOrigin, int yOrigin,
                              int mapWidth, int mapHeight, DmtxDirection dir)
@@ -694,15 +692,15 @@ static void tallyModuleJumps(DmtxDecode *dec, DmtxRegion *reg, INOUT int tally[]
 }
 
 /**
- * @brief 根据模块颜色填充数组以确定码字值。
+ * \brief 根据模块颜色填充数组以确定码字值。
  *
  * 此函数遍历数据矩阵的各个区域，统计每个模块的颜色跳变，以推断出每个模块是黑（代表1）还是白（代表0）。
  * 这一过程对于解码数据矩阵中的信息至关重要。函数首先计算整个符号的区域数量、区域尺寸等关键属性，
  * 然后根据模块颜色对比和累加的“跳跃”计数来确定每个模块的状态，最后更新消息数组以反映解码结果。
  *
- * @param[in] dec 解码上下文，包含解码配置和辅助函数。
- * @param[in] reg 当前处理的数据矩阵区域信息。
- * @param[out] msg 根据图像更新array
+ * \param[in] dec 解码上下文，包含解码配置和辅助函数。
+ * \param[in] reg 当前处理的数据矩阵区域信息。
+ * \param[out] msg 根据图像更新array
  */
 static DmtxPassFail populateArrayFromMatrix(DmtxDecode *dec, DmtxRegion *reg, OUT DmtxMessage *msg)
 {

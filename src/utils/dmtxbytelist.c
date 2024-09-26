@@ -10,7 +10,7 @@
  * Vadim A. Misbakh-Soloviov <dmtx@mva.name>
  * Mike Laughton <mike@dragonflylogic.com>
  *
- * \file file.c
+ * \file dmtxbytelist.c
  */
 
 #include <stdio.h>

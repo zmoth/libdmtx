@@ -31,7 +31,7 @@
 #include "dmtxstatic.h"
 
 /**
- * Use #include to merge the individual .c source files into a single combined
+ * Use `#include` to merge the individual `.c` source files into a single combined
  * file during preprocessing. This allows the project to be organized in files
  * of like-functionality while still keeping a clean namespace. Specifically,
  * internal functions can be static without losing the ability to access them

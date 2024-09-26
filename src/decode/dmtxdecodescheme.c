@@ -21,10 +21,10 @@
 #include "dmtxstatic.h"
 
 /**
- * \brief  Translate encoded data stream into final output
- * \param  msg
- * \param  sizeIdx
- * \param  outputStart
+ * \brief Translate encoded data stream into final output
+ * \param msg
+ * \param sizeIdx
+ * \param outputStart
  * \return void
  */
 extern DmtxPassFail decodeDataStream(DmtxMessage *msg, int sizeIdx, unsigned char *outputStart)
@@ -98,7 +98,6 @@ extern DmtxPassFail decodeDataStream(DmtxMessage *msg, int sizeIdx, unsigned cha
 
 /**
  * \brief  Determine next encodation scheme
- * \param  encScheme
  * \param  cw
  * \return Pointer to next undecoded codeword
  */
@@ -204,10 +203,10 @@ static void pushOutputMacroTrailer(DmtxMessage *msg)
 }
 
 /**
- * \brief  Decode stream assuming standard ASCII encodation
- * \param  msg
- * \param  ptr
- * \param  dataEnd
+ * \brief Decode stream assuming standard ASCII encodation
+ * \param msg
+ * \param ptr
+ * \param dataEnd
  * \return Pointer to next undecoded codeword
  *         NULL if an error was detected in the stream
  */
@@ -260,11 +259,11 @@ static unsigned char *decodeSchemeAscii(DmtxMessage *msg, unsigned char *ptr, un
 }
 
 /**
- * \brief  Decode stream assuming C40 or Text encodation
- * \param  msg
- * \param  ptr
- * \param  dataEnd
- * \param  encScheme
+ * \brief Decode stream assuming C40 or Text encodation
+ * \param msg
+ * \param ptr
+ * \param dataEnd
+ * \param encScheme
  * \return Pointer to next undecoded codeword
  */
 static unsigned char *decodeSchemeC40Text(DmtxMessage *msg, unsigned char *ptr, unsigned char *dataEnd,
@@ -355,10 +354,10 @@ static unsigned char *decodeSchemeC40Text(DmtxMessage *msg, unsigned char *ptr, 
 }
 
 /**
- * \brief  Decode stream assuming X12 encodation
- * \param  msg
- * \param  ptr
- * \param  dataEnd
+ * \brief Decode stream assuming X12 encodation
+ * \param msg
+ * \param ptr
+ * \param dataEnd
  * \return Pointer to next undecoded codeword
  */
 static unsigned char *decodeSchemeX12(DmtxMessage *msg, unsigned char *ptr, unsigned char *dataEnd)
@@ -411,10 +410,10 @@ static unsigned char *decodeSchemeX12(DmtxMessage *msg, unsigned char *ptr, unsi
 }
 
 /**
- * \brief  Decode stream assuming EDIFACT encodation
- * \param  msg
- * \param  ptr
- * \param  dataEnd
+ * \brief Decode stream assuming EDIFACT encodation
+ * \param msg
+ * \param ptr
+ * \param dataEnd
  * \return Pointer to next undecoded codeword
  */
 static unsigned char *decodeSchemeEdifact(DmtxMessage *msg, unsigned char *ptr, unsigned char *dataEnd)
@@ -493,10 +492,10 @@ static unsigned char *decodeSchemeEdifact(DmtxMessage *msg, unsigned char *ptr, 
 }
 
 /**
- * \brief  Decode stream assuming Base 256 encodation
- * \param  msg
- * \param  ptr
- * \param  dataEnd
+ * \brief Decode stream assuming Base 256 encodation
+ * \param msg
+ * \param ptr
+ * \param dataEnd
  * \return Pointer to next undecoded codeword,
  *         NULL if an error was detected in the stream
  */

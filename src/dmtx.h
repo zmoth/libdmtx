@@ -11,8 +11,8 @@
  * Vadim A. Misbakh-Soloviov <dmtx@mva.name>
  * Mike Laughton <mike@dragonflylogic.com>
  *
- * @file dmtx.h
- * @brief Main libdmtx header
+ * \file dmtx.h
+ * \brief Main libdmtx header
  */
 
 #ifndef __DMTX_H__
@@ -192,15 +192,15 @@ extern "C"
         DmtxPropSymbolSize,    /**<  */
         DmtxPropEdgeThresh,    /**<  */
 
-        /* 图像属性 @ref DmtxImage */
+        /* 图像属性 \ref DmtxImage */
         DmtxPropWidth = 300,   /**< 图像宽度 */
         DmtxPropHeight,        /**< 图像高度 */
-        DmtxPropPixelPacking,  /**< 图像格式类型，像素打包方式 @ref DmtxPackOrder */
+        DmtxPropPixelPacking,  /**< 图像格式类型，像素打包方式 \ref DmtxPackOrder */
         DmtxPropBitsPerPixel,  /**< 每像素所需要的bit数 */
         DmtxPropBytesPerPixel, /**< 每像素所需要的byte数 */
         DmtxPropRowPadBytes,   /**< 每行像素在内存中的填充或对齐字节数 */
         DmtxPropRowSizeBytes,  /**< 每一行（包括填充）在内存中的总字节数 */
-        DmtxPropImageFlip,     /**< 图像是否需要翻转，通常用于处理上下颠倒的图像 @ref DmtxFlip */
+        DmtxPropImageFlip,     /**< 图像是否需要翻转，通常用于处理上下颠倒的图像 \ref DmtxFlip */
         DmtxPropChannelCount,  /**< 图像通道数 */
 
         /* Image modifiers */
@@ -257,12 +257,12 @@ extern "C"
     } DmtxLogLevel;
 
     /**
-     * @brief DmtxMatrix3 类型定义，表示一个3x3的双精度浮点数矩阵
+     * \brief DmtxMatrix3 类型定义，表示一个3x3的双精度浮点数矩阵
      */
     typedef double DmtxMatrix3[3][3];
 
     /**
-     * @brief 像素坐标
+     * \brief 像素坐标
      */
     typedef struct DmtxPixelLoc_struct
     {
@@ -271,7 +271,7 @@ extern "C"
     } DmtxPixelLoc;
 
     /**
-     * @brief 二维向量
+     * \brief 二维向量
      */
     typedef struct DmtxVector2_struct
     {
@@ -280,7 +280,7 @@ extern "C"
     } DmtxVector2;
 
     /**
-     * @brief 向量表示的直线(线段)
+     * \brief 向量表示的直线(线段)
      */
     typedef struct DmtxRay2_struct
     {
@@ -293,8 +293,8 @@ extern "C"
     typedef unsigned char DmtxByte;
 
     /**
-     * @struct DmtxByteList
-     * @brief DmtxByteList
+     * \struct DmtxByteList
+     * \brief DmtxByteList
      * Use signed int for length fields instead of size_t to play nicely with RS
      * arithmetic
      */
@@ -323,12 +323,12 @@ extern "C"
     {
         int width;             /**< 图像的宽度，以像素为单位 */
         int height;            /**< 图像的高度，以像素为单位 */
-        int pixelPacking;      /**< 图像格式类型，像素打包方式 @ref DmtxPackOrder */
+        int pixelPacking;      /**< 图像格式类型，像素打包方式 \ref DmtxPackOrder */
         int bitsPerPixel;      /**< 每个像素的位数 */
         int bytesPerPixel;     /**< 每个像素的字节数 */
         int rowPadBytes;       /**< 每行像素在内存中的填充或对齐字节数 */
         int rowSizeBytes;      /**< 每一行（包括填充）在内存中的总字节数 */
-        int imageFlip;         /**< 图像是否需要翻转，通常用于处理上下颠倒的图像 @ref DmtxFlip */
+        int imageFlip;         /**< 图像是否需要翻转，通常用于处理上下颠倒的图像 \ref DmtxFlip */
         int channelCount;      /**< 图像的通道数量，如RGB图像为3，CMYK图像为4 */
         int channelStart[4];   /**< 每个通道在像素数据中的起始位置（位偏移） */
         int bitsPerChannel[4]; /**< 每个通道的位数，描述每个颜色分量的精度 */
@@ -336,7 +336,7 @@ extern "C"
     } DmtxImage;
 
     /**
-     * @brief 图像像素点及其梯度流动方向
+     * \brief 图像像素点及其梯度流动方向
      */
     typedef struct DmtxPointFlow_struct
     {
@@ -363,7 +363,7 @@ extern "C"
     } DmtxBestLine;
 
     /**
-     * @brief 二维码区域(包围框)
+     * \brief 二维码区域(包围框)
      */
     typedef struct DmtxRegion_struct
     {
@@ -415,7 +415,7 @@ extern "C"
     } DmtxRegion;
 
     /**
-     * @brief DataMatrix编码内容
+     * \brief DataMatrix编码内容
      */
     typedef struct DmtxMessage_struct
     {
@@ -431,8 +431,8 @@ extern "C"
     } DmtxMessage;
 
     /**
-     * @struct DmtxScanGrid
-     * @brief DmtxScanGrid
+     * \struct DmtxScanGrid
+     * \brief DmtxScanGrid
      */
     typedef struct DmtxScanGrid_struct
     {
@@ -460,8 +460,8 @@ extern "C"
     } DmtxScanGrid;
 
     /**
-     * @struct DmtxTime
-     * @brief DmtxTime
+     * \struct DmtxTime
+     * \brief DmtxTime
      */
     typedef struct DmtxTime_struct
     {
@@ -470,8 +470,8 @@ extern "C"
     } DmtxTime;
 
     /**
-     * @struct DmtxDecode
-     * @brief DmtxDecode
+     * \struct DmtxDecode
+     * \brief DmtxDecode
      */
     typedef struct DmtxDecode_struct
     {
@@ -499,8 +499,8 @@ extern "C"
     } DmtxDecode;
 
     /**
-     * @struct DmtxEncode
-     * @brief DmtxEncode
+     * \struct DmtxEncode
+     * \brief DmtxEncode
      */
     typedef struct DmtxEncode_struct
     {
@@ -521,8 +521,8 @@ extern "C"
     } DmtxEncode;
 
     /**
-     * @struct DmtxChannel
-     * @brief DmtxChannel
+     * \struct DmtxChannel
+     * \brief DmtxChannel
      */
     typedef struct DmtxChannel_struct
     {
@@ -538,8 +538,8 @@ extern "C"
 
     /* Wrap in a struct for fast copies */
     /**
-     * @struct DmtxChannelGroup
-     * @brief DmtxChannelGroup
+     * \struct DmtxChannelGroup
+     * \brief DmtxChannelGroup
      */
     typedef struct DmtxChannelGroup_struct
     {
@@ -547,8 +547,8 @@ extern "C"
     } DmtxChannelGroup;
 
     /**
-     * @struct DmtxTriplet
-     * @brief DmtxTriplet
+     * \struct DmtxTriplet
+     * \brief DmtxTriplet
      */
     typedef struct DmtxTriplet_struct
     {
@@ -556,8 +556,8 @@ extern "C"
     } DmtxTriplet;
 
     /**
-     * @struct DmtxQuadruplet
-     * @brief DmtxQuadruplet
+     * \struct DmtxQuadruplet
+     * \brief DmtxQuadruplet
      */
     typedef struct DmtxQuadruplet_struct
     {

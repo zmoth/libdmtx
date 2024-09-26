@@ -27,7 +27,7 @@
 #    define DMTX_TIME_PREC_USEC 1
 
 /**
- * \brief  GETTIMEOFDAY version
+ * \brief GETTIMEOFDAY version
  * \return Time now
  */
 extern DmtxTime dmtxTimeNow(void)
@@ -52,7 +52,7 @@ extern DmtxTime dmtxTimeNow(void)
 #    define DMTX_TIME_PREC_USEC 1
 
 /**
- * \brief  MICROSOFT VC++ version
+ * \brief MICROSOFT VC++ version
  * \return Time now
  */
 extern DmtxTime dmtxTimeNow(void)
@@ -80,7 +80,7 @@ extern DmtxTime dmtxTimeNow(void)
 #    define DMTX_TIME_PREC_USEC 1000000
 
 /**
- * \brief  Generic 1 second resolution version
+ * \brief Generic 1 second resolution version
  * \return Time now
  */
 extern DmtxTime dmtxTimeNow(void)
@@ -102,9 +102,9 @@ extern DmtxTime dmtxTimeNow(void)
 #endif
 
 /**
- * \brief  Add milliseconds to time t
- * \param  t
- * \param  msec
+ * \brief Add milliseconds to time t
+ * \param t
+ * \param msec
  * \return Adjusted time
  */
 extern DmtxTime dmtxTimeAdd(DmtxTime t, long msec)
@@ -132,8 +132,8 @@ extern DmtxTime dmtxTimeAdd(DmtxTime t, long msec)
 }
 
 /**
- * \brief  Determine whether the received timeout has been exceeded
- * \param  timeout
+ * \brief Determine whether the received timeout has been exceeded
+ * \param timeout
  * \return 1 (true) | 0 (false)
  */
 extern int dmtxTimeExceeded(DmtxTime timeout)

@@ -244,9 +244,9 @@ static void base256OutputChainRemoveFirst(DmtxEncodeStream *stream)
 }
 
 /**
- * \brief  Randomize 255 state
- * \param  value
- * \param  position
+ * \brief Randomize 255 state
+ * \param value
+ * \param position
  * \return Randomized value
  */
 static DmtxByte randomize255State(DmtxByte value, int position)
@@ -260,9 +260,9 @@ static DmtxByte randomize255State(DmtxByte value, int position)
 }
 
 /**
- * \brief  Unrandomize 255 state
- * \param  value
- * \param  idx
+ * \brief Unrandomize 255 state
+ * \param value
+ * \param idx
  * \return Unrandomized value
  */
 static unsigned char unRandomize255State(unsigned char value, int idx)

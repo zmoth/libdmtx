@@ -10,8 +10,8 @@
  * Vadim A. Misbakh-Soloviov <dmtx@mva.name>
  * Mike Laughton <mike@dragonflylogic.com>
  *
- * @file dmtxscangrid.c
- * @brief Scan grid tracking
+ * \file dmtxscangrid.c
+ * \brief Scan grid tracking
  */
 
 #include <assert.h>
@@ -21,7 +21,7 @@
 #include "dmtxstatic.h"
 
 /**
- * @brief 初始化扫描网格
+ * \brief 初始化扫描网格
  */
 static DmtxScanGrid initScanGrid(DmtxDecode *dec)
 {
@@ -68,11 +68,9 @@ static DmtxScanGrid initScanGrid(DmtxDecode *dec)
 }
 
 /**
- * \brief  Return the next good location (which may be the current location),
- *         and advance grid progress one position beyond that. If no good
- *         locations remain then return DmtxRangeEnd.
- * \param  grid
- * \return void
+ * \brief Return the next good location (which may be the current location),
+ *        and advance grid progress one position beyond that. If no good
+ *        locations remain then return DmtxRangeEnd.
  */
 static int popGridLocation(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
 {
@@ -90,9 +88,8 @@ static int popGridLocation(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
 }
 
 /**
- * \brief  Extract current grid position in pixel coordinates and return
- *         whether location is good, bad, or end
- * \param  grid
+ * \brief Extract current grid position in pixel coordinates and return
+ *        whether location is good, bad, or end
  * \return Pixel location
  */
 static int getGridCoordinates(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
@@ -165,9 +162,7 @@ static int getGridCoordinates(DmtxScanGrid *grid, DmtxPixelLoc *locPtr)
 }
 
 /**
- * \brief  Update derived fields based on current state
- * \param  grid
- * \return void
+ * \brief Update derived fields based on current state
  */
 static void setDerivedFields(DmtxScanGrid *grid)
 {

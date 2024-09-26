@@ -172,10 +172,9 @@ static DmtxByte streamInputPeekNext(DmtxEncodeStream *stream)
 }
 
 /**
- * used as each input cw is processed
+ * \brief used as each input cw is processed
  *
- * \param value Value to populate, can be null (for blind dequeues)
- * \param stream
+ * \param stream Value to populate, can be null (for blind dequeues)
  */
 static DmtxByte streamInputAdvanceNext(DmtxEncodeStream *stream)
 {
@@ -191,10 +190,9 @@ static DmtxByte streamInputAdvanceNext(DmtxEncodeStream *stream)
 }
 
 /**
- * used as each input cw is processed
+ * \brief used as each input cw is processed
  *
- * \param value Value to populate, can be null (for blind dequeues)
- * \param stream
+ * \param stream Value to populate, can be null (for blind dequeues)
  */
 static void streamInputAdvancePrev(DmtxEncodeStream *stream)
 {

@@ -10,8 +10,8 @@
  * Vadim A. Misbakh-Soloviov <dmtx@mva.name>
  * Mike Laughton <mike@dragonflylogic.com>
  *
- * @file dmtxstatic.h
- * @brief Static header
+ * \file dmtxstatic.h
+ * \brief Static header
  */
 
 #ifndef __DMTXSTATIC_H__
@@ -137,8 +137,8 @@ typedef enum DmtxMaskBit_enum
 } DmtxMaskBit;
 
 /**
- * @struct DmtxFollow
- * @brief DmtxFollow
+ * \struct DmtxFollow
+ * \brief DmtxFollow
  */
 typedef struct DmtxFollow_struct
 {
@@ -149,8 +149,8 @@ typedef struct DmtxFollow_struct
 } DmtxFollow;
 
 /**
- * @struct DmtxBresLine
- * @brief DmtxBresLine
+ * \struct DmtxBresLine
+ * \brief DmtxBresLine
  */
 typedef struct DmtxBresLine_struct
 {

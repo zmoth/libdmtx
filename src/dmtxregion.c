@@ -11,8 +11,8 @@
  * Vadim A. Misbakh-Soloviov <dmtx@mva.name>
  * Mike Laughton <mike@dragonflylogic.com>
  *
- * @file dmtxregion.c
- * @brief Detect barcode regions
+ * \file dmtxregion.c
+ * \brief Detect barcode regions
  */
 
 #include <assert.h>
@@ -26,9 +26,8 @@
 #define DMTX_HOUGH_RES 180
 
 /**
- * @brief  Create copy of existing region struct
- * @param  None
- * @return Initialized DmtxRegion struct
+ * \brief Create copy of existing region struct
+ * \return Initialized DmtxRegion struct
  */
 extern DmtxRegion *dmtxRegionCreate(DmtxRegion *reg)
 {
@@ -45,9 +44,9 @@ extern DmtxRegion *dmtxRegionCreate(DmtxRegion *reg)
 }
 
 /**
- * @brief  Destroy region struct
- * @param  reg
- * @return void
+ * \brief Destroy region struct
+ * \param reg
+ * \return void
  */
 extern DmtxPassFail dmtxRegionDestroy(DmtxRegion **reg)
 {
@@ -63,9 +62,9 @@ extern DmtxPassFail dmtxRegionDestroy(DmtxRegion **reg)
 }
 
 /**
- * @brief 寻找下一个二维码区域
- * @param dec Pointer to DmtxDecode information struct
- * @param timeout 超时时间 (如果为NULL则不限时)
+ * \brief 寻找下一个二维码区域
+ * \param dec Pointer to DmtxDecode information struct
+ * \param timeout 超时时间 (如果为NULL则不限时)
  */
 extern DmtxRegion *dmtxRegionFindNext(DmtxDecode *dec, DmtxTime *timeout)
 {
@@ -96,7 +95,7 @@ extern DmtxRegion *dmtxRegionFindNext(DmtxDecode *dec, DmtxTime *timeout)
 }
 
 /**
- * @brief 将坐标点(x,y)作为二维码L型框的边缘点去匹配二维码包围框
+ * \brief 将坐标点(x,y)作为二维码L型框的边缘点去匹配二维码包围框
  */
 extern DmtxRegion *dmtxRegionScanPixel(DmtxDecode *dec, int x, int y)
 {
@@ -163,16 +162,16 @@ extern DmtxRegion *dmtxRegionScanPixel(DmtxDecode *dec, int x, int y)
 }
 
 /**
- * @brief 寻找指定像素位置梯度流向，并检查该点是否能形成闭环。如果成功暂定该点在DataMatrix的'L'型边上
+ * \brief 寻找指定像素位置梯度流向，并检查该点是否能形成闭环。如果成功暂定该点在DataMatrix的'L'型边上
  *
  * 该函数分析指定像素位置的各颜色通道，以确定哪个通道展现了最明显的边缘特征。
  * 然后，它通过分析正负方向上的邻近像素强度，精确定位并返回最强边缘的方向向量。
  * 如果找不到清晰的边缘特征，则返回表示空白边缘(dmtxBlankEdge)的默认值。
  *
- * @param dec 解码上下文，包含图像数据和解码设置。
- * @param loc 待分析的像素位置。
+ * \param dec 解码上下文，包含图像数据和解码设置。
+ * \param loc 待分析的像素位置。
  *
- * @return DmtxPointFlow 结构，表示找到的边缘方向和强度；如果未找到有效边缘，则返回 dmtxBlankEdge。
+ * \return DmtxPointFlow 结构，表示找到的边缘方向和强度；如果未找到有效边缘，则返回 dmtxBlankEdge。
  */
 static DmtxPointFlow matrixRegionSeekEdge(DmtxDecode *dec, DmtxPixelLoc loc)
 {
@@ -226,17 +225,17 @@ static DmtxPointFlow matrixRegionSeekEdge(DmtxDecode *dec, DmtxPixelLoc loc)
 }
 
 /**
- * @brief 确定数据矩阵区域的方向和关键边界
+ * \brief 确定数据矩阵区域的方向和关键边界
  *
  * 此函数分析并确定给定解码上下文中数据矩阵区域的方向性、极性和关键坐标点。
  * 它通过跟随边缘、查找最佳直线、评估交叉点等步骤来实现对区域的精确定位。
  *
- * @param dec 解码上下文，包含了解码设置和辅助信息
- * @param reg 待分析的数据矩阵区域结构体，用于存储识别结果
- * @param begin 起始追踪点，用于初始化追踪过程
+ * \param dec 解码上下文，包含了解码设置和辅助信息
+ * \param reg 待分析的数据矩阵区域结构体，用于存储识别结果
+ * \param begin 起始追踪点，用于初始化追踪过程
  *
- * @retval DmtxPass 成功确定区域方向
- * @retval DmtxFail 未能成功确定区域方向或区域不符合预期条件
+ * \retval DmtxPass 成功确定区域方向
+ * \retval DmtxFail 未能成功确定区域方向或区域不符合预期条件
  */
 static DmtxPassFail matrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, DmtxPointFlow begin)
 {
@@ -403,7 +402,7 @@ static DmtxPassFail matrixRegionOrientation(DmtxDecode *dec, DmtxRegion *reg, Dm
 }
 
 /**
- * @brief 计算两个像素点之间的欧几里得距离的平方
+ * \brief 计算两个像素点之间的欧几里得距离的平方
  */
 static long distanceSquared(DmtxPixelLoc a, DmtxPixelLoc b)
 {
@@ -633,16 +632,16 @@ static double rightAngleTrueness(DmtxVector2 c0, DmtxVector2 c1, DmtxVector2 c2,
 }
 
 /**
- * @brief 读取模块（码元）颜色值
+ * \brief 读取模块（码元）颜色值
  *
- * @param dec 解码上下文，包含解码所需的状态信息。
- * @param reg 当前处理的区域信息，用于定位和变换。
- * @param symbolRow 二维码坐标系下的行坐标
- * @param symbolCol 二维码坐标系下的列坐标
- * @param sizeIdx 二维码种类索引
- * @param colorPlane 需要读取的颜色平面索引
+ * \param dec 解码上下文，包含解码所需的状态信息。
+ * \param reg 当前处理的区域信息，用于定位和变换。
+ * \param symbolRow 二维码坐标系下的行坐标
+ * \param symbolCol 二维码坐标系下的列坐标
+ * \param sizeIdx 二维码种类索引
+ * \param colorPlane 需要读取的颜色平面索引
  *
- * @return 返回模块位置的平均颜色值。
+ * \return 返回模块位置的平均颜色值。
  */
 static int readModuleColor(DmtxDecode *dec, DmtxRegion *reg, int symbolRow, int symbolCol, int sizeIdx, int colorPlane)
 {
@@ -678,13 +677,13 @@ static int readModuleColor(DmtxDecode *dec, DmtxRegion *reg, int symbolRow, int 
 }
 
 /**
- * @brief 确定二维码尺寸（点线中黑白点的总数）
+ * \brief 确定二维码尺寸（点线中黑白点的总数）
  *
  * 此函数遍历可能的条形码尺寸，通过计算校准模块上的对比度来确定最佳尺寸索引。
  * 它还会验证找到的尺寸索引是否与条形码图像的边缘和空白空间相匹配。
  *
- * @param[in] dec  解码上下文，包含解码设置和图像信息
- * @param reg  区域结构，用于存储找到的区域信息
+ * \param[in] dec 解码上下文，包含解码设置和图像信息
+ * \param reg 区域结构，用于存储找到的区域信息
  */
 static DmtxPassFail matrixRegionFindSize(DmtxDecode *dec, DmtxRegion *reg)
 {
@@ -907,15 +906,15 @@ static DmtxPassFail matrixRegionFindSize(DmtxDecode *dec, DmtxRegion *reg)
 }
 
 /**
- * @brief 计算一个方向上颜色跳变次数
+ * \brief 计算一个方向上颜色跳变次数
  *
  * 此函数遍历图像中的一行或一列，统计从亮模块到暗模块或反之的转换次数。
  *
- * @param dec 解码上下文，提供解码环境信息
- * @param reg 区域对象，包含当前分析区域的属性
- * @param xStart 开始搜索的坐标X位置
- * @param yStart 开始搜索的坐标Y位置
- * @param dir 搜索方向，向右(DmtxDirRight)或向上(DmtxDirUp)
+ * \param dec 解码上下文，提供解码环境信息
+ * \param reg 区域对象，包含当前分析区域的属性
+ * \param xStart 开始搜索的坐标X位置
+ * \param yStart 开始搜索的坐标Y位置
+ * \param dir 搜索方向，向右(DmtxDirRight)或向上(DmtxDirUp)
  */
 static int countJumpTally(DmtxDecode *dec, DmtxRegion *reg, int xStart, int yStart, DmtxDirection dir)
 {
@@ -970,7 +969,7 @@ static int countJumpTally(DmtxDecode *dec, DmtxRegion *reg, int xStart, int ySta
 }
 
 /**
- * @brief 从像素坐标寻找其在指定颜色平面的梯度方向
+ * \brief 从像素坐标寻找其在指定颜色平面的梯度方向
  */
 static DmtxPointFlow getPointFlow(DmtxDecode *dec, int colorPlane, DmtxPixelLoc loc, int arrive)
 {
@@ -984,7 +983,7 @@ static DmtxPointFlow getPointFlow(DmtxDecode *dec, int colorPlane, DmtxPixelLoc 
     DmtxPointFlow flow;
 
     // 以loc坐标为中心按照如下所示顺序获取周边的8个像素值
-    // @ref dmtxNeighborNone
+    // \ref dmtxNeighborNone
     //       Y+
     //       |
     //    6  5  4
@@ -1099,17 +1098,17 @@ static DmtxPointFlow findStrongestNeighbor(DmtxDecode *dec, DmtxPointFlow center
 }
 
 /**
- * @brief 根据指定步数从当前区域的起始点追踪到新位置
+ * \brief 根据指定步数从当前区域的起始点追踪到新位置
  *
  * 此函数从数据矩阵区域的起始追踪点出发，按照给定的步数（正向或负向），
  * 逐步调用`FollowStep`函数进行追踪，并返回达到的新位置信息。此功能
  * 支持快速跳转到区域内的指定追踪步骤，用于优化和控制追踪流程。
  *
- * @param dec 解码上下文，用于缓存访问
- * @param reg 当前数据矩阵区域信息，包含追踪起始位置、步数上限等
- * @param seek 相对于起始点的追踪步数，正值表示正向追踪，负值表示反向追踪
+ * \param dec 解码上下文，用于缓存访问
+ * \param reg 当前数据矩阵区域信息，包含追踪起始位置、步数上限等
+ * \param seek 相对于起始点的追踪步数，正值表示正向追踪，负值表示反向追踪
  *
- * @return 返回追踪到达的新位置信息（DmtxFollow 结构体）
+ * \return 返回追踪到达的新位置信息（DmtxFollow 结构体）
  */
 static DmtxFollow followSeek(DmtxDecode *dec, DmtxRegion *reg, int seek)
 {
@@ -1134,7 +1133,7 @@ static DmtxFollow followSeek(DmtxDecode *dec, DmtxRegion *reg, int seek)
 }
 
 /**
- * @brief 根据指定像素坐标初始化追踪起始信息
+ * \brief 根据指定像素坐标初始化追踪起始信息
  */
 static DmtxFollow followSeekLoc(DmtxDecode *dec, DmtxPixelLoc loc)
 {
@@ -1150,12 +1149,12 @@ static DmtxFollow followSeekLoc(DmtxDecode *dec, DmtxPixelLoc loc)
 }
 
 /**
- * @brief 寻找followBeg的下一个点
+ * \brief 寻找followBeg的下一个点
  *
- * @param dec 解码上下文，包含缓存访问等信息
- * @param reg 当前处理的区域信息，包括追踪步数、跳跃目标位置等
- * @param followBeg 起始点
- * @param sign 追踪方向，+1 表示正向追踪，-1 表示负向追踪
+ * \param dec 解码上下文，包含缓存访问等信息
+ * \param reg 当前处理的区域信息，包括追踪步数、跳跃目标位置等
+ * \param followBeg 起始点
+ * \param sign 追踪方向，+1 表示正向追踪，-1 表示负向追踪
  */
 static DmtxFollow followStep(DmtxDecode *dec, DmtxRegion *reg, DmtxFollow followBeg, int sign)
 {
@@ -1222,7 +1221,7 @@ static DmtxFollow followStep2(DmtxDecode *dec, DmtxFollow followBeg, int sign)
 }
 
 /**
- * @brief 从flowBegin点出发，分别从正负方向寻找连续的边界线
+ * \brief 从flowBegin点出发，分别从正负方向寻找连续的边界线
  *
  * vaiiiooo
  * --------
@@ -1455,19 +1454,19 @@ static int trailClear(DmtxDecode *dec, DmtxRegion *reg, int clearMask)
 }
 
 /**
- * @brief 查找最佳实线
+ * \brief 查找最佳实线
  *
  * 该函数用于在给定的解码上下文和区域内，根据霍夫变换找到最佳实线。
  * 它考虑了路径流的方向，并尝试避免指定的角度。
  *
- * @param dec 解码上下文
- * @param reg 区域信息
- * @param step0 起始步长
- * @param step1 结束步长
- * @param streamDir 流的方向
- * @param houghAvoid 霍夫变换中要避免的角度
+ * \param dec 解码上下文
+ * \param reg 区域信息
+ * \param step0 起始步长
+ * \param step1 结束步长
+ * \param streamDir 流的方向
+ * \param houghAvoid 霍夫变换中要避免的角度
  *
- * @return DmtxBestLine 返回最佳实线的信息
+ * \return DmtxBestLine 返回最佳实线的信息
  */
 static DmtxBestLine findBestSolidLine(DmtxDecode *dec, DmtxRegion *reg, int step0, int step1, int streamDir,
                                       int houghAvoid)

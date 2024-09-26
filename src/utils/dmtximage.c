@@ -10,8 +10,8 @@
  * Vadim A. Misbakh-Soloviov <dmtx@mva.name>
  * Mike Laughton <mike@dragonflylogic.com>
  *
- * @file dmtximage.c
- * @brief Image handling
+ * \file dmtximage.c
+ * \brief Image handling
  */
 
 #include <assert.h>
@@ -71,9 +71,9 @@
  */
 
 /**
- * @brief 创建一个新的图像对象
+ * \brief 创建一个新的图像对象
  *
- * @note 创建的图像对象需要在不再使用时通过调用 dmtxImageDestroy 进行销毁。
+ * \note 创建的图像对象需要在不再使用时通过调用 dmtxImageDestroy 进行销毁。
  */
 extern DmtxImage *dmtxImageCreate(unsigned char *pxl, int width, int height, int pack)
 {
@@ -160,9 +160,9 @@ extern DmtxImage *dmtxImageCreate(unsigned char *pxl, int width, int height, int
 }
 
 /**
- * @brief Free libdmtx image memory
- * @param[in] img pointer to img location
- * @return DmtxFail | DmtxPass
+ * \brief Free libdmtx image memory
+ * \param[in] img pointer to img location
+ * \return DmtxFail | DmtxPass
  */
 extern DmtxPassFail dmtxImageDestroy(DmtxImage **img)
 {
@@ -178,7 +178,7 @@ extern DmtxPassFail dmtxImageDestroy(DmtxImage **img)
 }
 
 /**
- * @brief 设置图像的颜色通道信息，包括每个通道的起始位和位数。
+ * \brief 设置图像的颜色通道信息，包括每个通道的起始位和位数。
  */
 extern DmtxPassFail dmtxImageSetChannel(DmtxImage *img, int channelStart, int bitsPerChannel)
 {
@@ -198,8 +198,7 @@ extern DmtxPassFail dmtxImageSetChannel(DmtxImage *img, int channelStart, int bi
 }
 
 /**
- * @brief 设置图像属性
- * @param[in] img pointer to image
+ * \brief 设置图像属性
  */
 extern DmtxPassFail dmtxImageSetProp(DmtxImage *img, int prop, int value)
 {
@@ -223,9 +222,8 @@ extern DmtxPassFail dmtxImageSetProp(DmtxImage *img, int prop, int value)
 }
 
 /**
- * @brief 获取图像属性
- * @param[in] img pointer to image
- * @return 失败返回 DmtxUndefined
+ * \brief 获取图像属性
+ * \return 失败返回 DmtxUndefined
  */
 extern int dmtxImageGetProp(DmtxImage *img, int prop)
 {
@@ -260,7 +258,7 @@ extern int dmtxImageGetProp(DmtxImage *img, int prop)
 }
 
 /**
- * @brief 根据给定的坐标 (x, y) 计算并返回图像中对应像素的字节偏移量
+ * \brief 根据给定的坐标 (x, y) 计算并返回图像中对应像素的字节偏移量
  */
 extern int dmtxImageGetByteOffset(DmtxImage *img, int x, int y)
 {
@@ -279,18 +277,18 @@ extern int dmtxImageGetByteOffset(DmtxImage *img, int x, int y)
 }
 
 /**
- * @brief 获取指定坐标的像素值
+ * \brief 获取指定坐标的像素值
  *
  * 此函数用于获取图像中指定坐标 (x, y) 处特定颜色通道的像素值。
  * 如果坐标超出图像边界或通道索引无效，则返回失败。
  *
- * @param[in] img 指向图像对象的指针
- * @param[in] x 像素的 X 轴坐标
- * @param[in] y 像素的 Y 轴坐标
- * @param[in] channel 要获取值的颜色通道索引
- * @param[out] value 用于存储像素值的指针
+ * \param[in] img 指向图像对象的指针
+ * \param[in] x 像素的 X 轴坐标
+ * \param[in] y 像素的 Y 轴坐标
+ * \param[in] channel 要获取值的颜色通道索引
+ * \param[out] value 用于存储像素值的指针
  *
- * @return 返回 DmtxPass 表示成功，DmtxFail 表示失败
+ * \return 返回 DmtxPass 表示成功，DmtxFail 表示失败
  */
 extern DmtxPassFail dmtxImageGetPixelValue(DmtxImage *img, int x, int y, int channel, int *value)
 {
@@ -334,7 +332,7 @@ extern DmtxPassFail dmtxImageGetPixelValue(DmtxImage *img, int x, int y, int cha
 }
 
 /**
- * @brief 设置指定坐标、通道的像素值
+ * \brief 设置指定坐标、通道的像素值
  */
 extern DmtxPassFail dmtxImageSetPixelValue(DmtxImage *img, int x, int y, int channel, int value)
 {
@@ -378,12 +376,12 @@ extern DmtxPassFail dmtxImageSetPixelValue(DmtxImage *img, int x, int y, int cha
 }
 
 /**
- * @brief 判断坐标 (x, y) 是否在图像范围内
- * @param[in] img
- * @param[in] margin width
- * @param[in] x coordinate
- * @param[in] y coordinate
- * @return DmtxTrue | DmtxFalse
+ * \brief 判断坐标 (x, y) 是否在图像范围内
+ * \param[in] img
+ * \param[in] margin width
+ * \param[in] x coordinate
+ * \param[in] y coordinate
+ * \return DmtxTrue | DmtxFalse
  */
 extern DmtxBoolean dmtxImageContainsInt(DmtxImage *img, int margin, int x, int y)
 {
@@ -397,11 +395,11 @@ extern DmtxBoolean dmtxImageContainsInt(DmtxImage *img, int margin, int x, int y
 }
 
 /**
- * @brief 判断坐标 (x, y) 是否在图像范围内
- * @param[in] img
- * @param[in] x coordinate
- * @param[in] y coordinate
- * @return DmtxTrue | DmtxFalse
+ * \brief 判断坐标 (x, y) 是否在图像范围内
+ * \param[in] img
+ * \param[in] x coordinate
+ * \param[in] y coordinate
+ * \return DmtxTrue | DmtxFalse
  */
 extern DmtxBoolean dmtxImageContainsFloat(DmtxImage *img, double x, double y)
 {
@@ -415,7 +413,7 @@ extern DmtxBoolean dmtxImageContainsFloat(DmtxImage *img, double x, double y)
 }
 
 /**
- * @brief 根据给定的打包方式（pack）返回每个像素所占的位数
+ * \brief 根据给定的打包方式（pack）返回每个像素所占的位数
  */
 static int getBitsPerPixel(int pack)
 {

@@ -63,12 +63,12 @@ int dmtxSymbolModuleStatus(DmtxMessage *message, int sizeIdx, int symbolRow, int
 }
 
 /**
- * @brief 通过DataMatrix数据区的二进制矩阵，根据DataMatrix的排列规则，得到码字(codewords)
+ * \brief 通过DataMatrix数据区的二进制矩阵，根据DataMatrix的排列规则，得到码字(codewords)
  *
- * @param[in,out] modules DataMatrix数据区矩阵
- * @param[out] codewords 存储码字的数组
- * @param[in] sizeIdx DataMatrix符号种类索引
- * @param[in] moduleOnColor 指定模块颜色属性的标志，如红色、绿色或蓝色
+ * \param[in,out] modules DataMatrix数据区矩阵
+ * \param[out] codewords 存储码字的数组
+ * \param[in] sizeIdx DataMatrix符号种类索引
+ * \param[in] moduleOnColor 指定模块颜色属性的标志，如红色、绿色或蓝色
  */
 static int modulePlacementEcc200(INOUT unsigned char *modules, OUT unsigned char *codewords, int sizeIdx,
                                  int moduleOnColor)
@@ -133,7 +133,7 @@ static int modulePlacementEcc200(INOUT unsigned char *modules, OUT unsigned char
 }
 
 /**
- * @brief 将标准码字放置到指定的模块位置
+ * \brief 将标准码字放置到指定的模块位置
  *
  * ```
  * |1|2|
@@ -141,13 +141,13 @@ static int modulePlacementEcc200(INOUT unsigned char *modules, OUT unsigned char
  * |6|7|8|
  * ```
  *
- * @param modules 指向存储模块数据的二维数组的指针
- * @param mappingRows 模块映射的行数
- * @param mappingCols 模块映射的列数
- * @param row 标准码字第8位所在的行坐标
- * @param col 标准码字第8位所在的列坐标
- * @param codeword 码字
- * @param moduleOnColor 表示模块开启颜色的整数值
+ * \param modules 指向存储模块数据的二维数组的指针
+ * \param mappingRows 模块映射的行数
+ * \param mappingCols 模块映射的列数
+ * \param row 标准码字第8位所在的行坐标
+ * \param col 标准码字第8位所在的列坐标
+ * \param codeword 码字
+ * \param moduleOnColor 表示模块开启颜色的整数值
  */
 static void patternShapeStandard(unsigned char *modules, int mappingRows, int mappingCols, int row, int col,
                                  unsigned char *codeword, int moduleOnColor)
@@ -163,7 +163,7 @@ static void patternShapeStandard(unsigned char *modules, int mappingRows, int ma
 }
 
 /**
- * @brief 特殊排布1
+ * \brief 特殊排布1
  *
  * 左下角:
  * ```
@@ -177,11 +177,11 @@ static void patternShapeStandard(unsigned char *modules, int mappingRows, int ma
  *   |7|
  *   |8|
  * ```
- * @param  modules
- * @param  mappingRows
- * @param  mappingCols
- * @param  codeword
- * @param  moduleOnColor
+ * \param  modules
+ * \param  mappingRows
+ * \param  mappingCols
+ * \param  codeword
+ * \param  moduleOnColor
  */
 static void patternShapeSpecial1(unsigned char *modules, int mappingRows, int mappingCols, unsigned char *codeword,
                                  int moduleOnColor)
@@ -197,7 +197,7 @@ static void patternShapeSpecial1(unsigned char *modules, int mappingRows, int ma
 }
 
 /**
- * @brief 特殊排布2
+ * \brief 特殊排布2
  *
  * 左下角:
  * ```
@@ -212,11 +212,11 @@ static void patternShapeSpecial1(unsigned char *modules, int mappingRows, int ma
  *       |8|
  * ```
  *
- * @param  modules
- * @param  mappingRows
- * @param  mappingCols
- * @param  codeword
- * @param  moduleOnColor
+ * \param  modules
+ * \param  mappingRows
+ * \param  mappingCols
+ * \param  codeword
+ * \param  moduleOnColor
  */
 static void patternShapeSpecial2(unsigned char *modules, int mappingRows, int mappingCols, unsigned char *codeword,
                                  int moduleOnColor)
@@ -232,7 +232,7 @@ static void patternShapeSpecial2(unsigned char *modules, int mappingRows, int ma
 }
 
 /**
- * @brief 特殊排布3
+ * \brief 特殊排布3
  *
  * 左下角:
  * ```
@@ -248,11 +248,11 @@ static void patternShapeSpecial2(unsigned char *modules, int mappingRows, int ma
  *   |7|
  *   |8|
  * ```
- * @param  modules
- * @param  mappingRows
- * @param  mappingCols
- * @param  codeword
- * @param  moduleOnColor
+ * \param  modules
+ * \param  mappingRows
+ * \param  mappingCols
+ * \param  codeword
+ * \param  moduleOnColor
  */
 static void patternShapeSpecial3(unsigned char *modules, int mappingRows, int mappingCols, unsigned char *codeword,
                                  int moduleOnColor)
@@ -268,7 +268,7 @@ static void patternShapeSpecial3(unsigned char *modules, int mappingRows, int ma
 }
 
 /**
- * @brief 特殊排布4
+ * \brief 特殊排布4
  *
  * 左下角:
  * ```
@@ -286,11 +286,11 @@ static void patternShapeSpecial3(unsigned char *modules, int mappingRows, int ma
  * |6|7|8|
  * ```
  *
- * @param  modules
- * @param  mappingRows
- * @param  mappingCols
- * @param  codeword
- * @param  moduleOnColor
+ * \param  modules
+ * \param  mappingRows
+ * \param  mappingCols
+ * \param  codeword
+ * \param  moduleOnColor
  */
 static void patternShapeSpecial4(unsigned char *modules, int mappingRows, int mappingCols, unsigned char *codeword,
                                  int moduleOnColor)
@@ -307,19 +307,19 @@ static void patternShapeSpecial4(unsigned char *modules, int mappingRows, int ma
 }
 
 /**
- * @brief 位模块放置
+ * \brief 位模块放置
  *
  * 此函数负责在Data Matrix码的模块矩阵中放置或读取单个位模块，取决于当前操作是编码还是解码过程。
  * 它处理边界 wrap-around 逻辑，并根据给定的编码字和模块颜色更新模块状态。
  *
- * @param modules 指向包含模块信息的一维数组，按行优先顺序排列
- * @param mappingRows 数据矩阵映射区域的行数
- * @param mappingCols 数据矩阵映射区域的列数
- * @param row 当前处理模块的行索引
- * @param col 当前处理模块的列索引
- * @param codeword 指向当前处理的编码字的指针，用于解码时读取或编码时设置模块状态
- * @param mask 用于位操作的掩码，帮助区分编码字中的特定位
- * @param moduleOnColor 指定放置模块的颜色属性标记
+ * \param modules 指向包含模块信息的一维数组，按行优先顺序排列
+ * \param mappingRows 数据矩阵映射区域的行数
+ * \param mappingCols 数据矩阵映射区域的列数
+ * \param row 当前处理模块的行索引
+ * \param col 当前处理模块的列索引
+ * \param codeword 指向当前处理的编码字的指针，用于解码时读取或编码时设置模块状态
+ * \param mask 用于位操作的掩码，帮助区分编码字中的特定位
+ * \param moduleOnColor 指定放置模块的颜色属性标记
  */
 static void placeModule(unsigned char *modules, int mappingRows, int mappingCols, int row, int col,
                         unsigned char *codeword, int mask, int moduleOnColor)

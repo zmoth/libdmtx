@@ -23,12 +23,6 @@
 #include "dmtx.h"
 #include "dmtxstatic.h"
 
-/**
- * TODO:
- *   o try doxygen using using the JavaDoc style and JAVADOC_AUTOBRIEF = YES
- *   o switch doxygen to simplified syntax, and using "\file" instead of "@file"
- */
-
 #define NN 255
 #define MAX_ERROR_WORD_COUNT 68
 
@@ -73,19 +67,19 @@ static DmtxByte antilog301[] = {
     66,  132, 37,  74,  148, 5,   10,  20,  40,  80,  160, 109, 218, 153, 31,  62,  124, 248, 221, 151, 3,   6,
     12,  24,  48,  96,  192, 173, 119, 238, 241, 207, 179, 75,  150, 0};
 
-/**
- * Encode xyz.
- * More detailed description.
- * \param message
- * \param sizeIdx
- * \return Function success (DmtxPass|DmtxFail)
- */
 #undef CHKPASS
 #define CHKPASS                   \
     {                             \
         if (passFail == DmtxFail) \
             return DmtxFail;      \
     }
+/**
+ * \brief Encode xyz.
+ * More detailed description.
+ * \param message
+ * \param sizeIdx
+ * \return Function success (DmtxPass|DmtxFail)
+ */
 static DmtxPassFail rsEncode(DmtxMessage *message, int sizeIdx)
 {
     int i, j;
@@ -137,20 +131,20 @@ static DmtxPassFail rsEncode(DmtxMessage *message, int sizeIdx)
     return DmtxPass;
 }
 
-/**
- * Decode xyz.
- * More detailed description.
- * \param code
- * \param sizeIdx
- * \param fix
- * \return Function success (DmtxPass|DmtxFail)
- */
 #undef CHKPASS
 #define CHKPASS                   \
     {                             \
         if (passFail == DmtxFail) \
             return DmtxFail;      \
     }
+/**
+ * \brief Decode xyz.
+ * More detailed description.
+ * \param code
+ * \param sizeIdx
+ * \param fix
+ * \return Function success (DmtxPass|DmtxFail)
+ */
 static DmtxPassFail rsDecode(unsigned char *code, int sizeIdx, int fix)
 {
     int i;
@@ -248,19 +242,19 @@ static DmtxPassFail rsDecode(unsigned char *code, int sizeIdx, int fix)
     return DmtxPass;
 }
 
-/**
- * Populate generator polynomial.
- * More detailed description.
- * \param gen
- * \param errorWordCount
- * \return Function success (DmtxPass|DmtxFail)
- */
 #undef CHKPASS
 #define CHKPASS                   \
     {                             \
         if (passFail == DmtxFail) \
             return DmtxFail;      \
     }
+/**
+ * \brief Populate generator polynomial.
+ * More detailed description.
+ * \param gen
+ * \param errorWordCount
+ * \return Function success (DmtxPass|DmtxFail)
+ */
 static DmtxPassFail rsGenPoly(DmtxByteList *gen, int errorWordCount)
 {
     int i, j;
@@ -283,8 +277,15 @@ static DmtxPassFail rsGenPoly(DmtxByteList *gen, int errorWordCount)
     return DmtxPass;
 }
 
+/* XXX this CHKPASS isn't doing what we want ... really need a error reporting strategy */
+#undef CHKPASS
+#define CHKPASS                   \
+    {                             \
+        if (passFail == DmtxFail) \
+            return DmtxTrue;      \
+    }
 /**
- * Populate generator polynomial.
+ * \brief Populate generator polynomial.
  * Assume we have received bits grouped into mm-bit symbols in rec[i],
  * i=0..(nn-1),  and rec[i] is index form (ie as powers of alpha). We first
  * compute the 2*tt syndromes by substituting alpha**i into rec(X) and
@@ -294,13 +295,6 @@ static DmtxPassFail rsGenPoly(DmtxByteList *gen, int errorWordCount)
  * \param blockErrorWords
  * \return Are error(s) present? (DmtxPass|DmtxFail)
  */
-/* XXX this CHKPASS isn't doing what we want ... really need a error reporting strategy */
-#undef CHKPASS
-#define CHKPASS                   \
-    {                             \
-        if (passFail == DmtxFail) \
-            return DmtxTrue;      \
-    }
 static DmtxBoolean rsComputeSyndromes(DmtxByteList *syn, const DmtxByteList *rec, int blockErrorWords)
 {
     int i, j;
@@ -326,15 +320,6 @@ static DmtxBoolean rsComputeSyndromes(DmtxByteList *syn, const DmtxByteList *rec
     return error;
 }
 
-/**
- * Find the error location polynomial using Berlekamp-Massey.
- * More detailed description.
- * \param elpOut
- * \param syn
- * \param errorWordCount
- * \param maxCorrectable
- * \return Is block repairable? (DmtxTrue|DmtxFalse)
- */
 /* XXX this CHKPASS isn't doing what we want ... really need a error reporting strategy */
 #undef CHKPASS
 #define CHKPASS                   \
@@ -342,6 +327,15 @@ static DmtxBoolean rsComputeSyndromes(DmtxByteList *syn, const DmtxByteList *rec
         if (passFail == DmtxFail) \
             return DmtxFalse;     \
     }
+/**
+ * \brief Find the error location polynomial using Berlekamp-Massey.
+ * More detailed description.
+ * \param elpOut
+ * \param syn
+ * \param errorWordCount
+ * \param maxCorrectable
+ * \return Is block repairable? (DmtxTrue|DmtxFalse)
+ */
 static DmtxBoolean rsFindErrorLocatorPoly(DmtxByteList *elpOut, const DmtxByteList *syn, int errorWordCount,
                                           int maxCorrectable)
 {
@@ -424,8 +418,14 @@ static DmtxBoolean rsFindErrorLocatorPoly(DmtxByteList *elpOut, const DmtxByteLi
     return (lambda <= maxCorrectable) ? DmtxTrue : DmtxFalse;
 }
 
+#undef CHKPASS
+#define CHKPASS                   \
+    {                             \
+        if (passFail == DmtxFail) \
+            return DmtxFalse;     \
+    }
 /**
- * Find roots of the error locator polynomial (Chien Search).
+ * \brief Find roots of the error locator polynomial (Chien Search).
  * If the degree of elp is <= tt, we substitute alpha**i, i=1..n into the elp
  * to get the roots, hence the inverse roots, the error location numbers.
  * If the number of errors located does not equal the degree of the elp, we
@@ -434,12 +434,6 @@ static DmtxBoolean rsFindErrorLocatorPoly(DmtxByteList *elpOut, const DmtxByteLi
  * \param elp
  * \return Is block repairable? (DmtxTrue|DmtxFalse)
  */
-#undef CHKPASS
-#define CHKPASS                   \
-    {                             \
-        if (passFail == DmtxFail) \
-            return DmtxFalse;     \
-    }
 static DmtxBoolean rsFindErrorLocations(DmtxByteList *loc, const DmtxByteList *elp)
 {
     int i, j;
@@ -468,8 +462,14 @@ static DmtxBoolean rsFindErrorLocations(DmtxByteList *loc, const DmtxByteList *e
     return (loc->length == lambda) ? DmtxTrue : DmtxFalse;
 }
 
+#undef CHKPASS
+#define CHKPASS                   \
+    {                             \
+        if (passFail == DmtxFail) \
+            return DmtxFail;      \
+    }
 /**
- * Find the error values and repair.
+ * \brief Find the error values and repair.
  * Solve for the error value at the error location and correct the error. The
  * procedure is that found in Lin and Costello.
  * For the cases where the number of errors is known to be too large to
@@ -482,12 +482,6 @@ static DmtxBoolean rsFindErrorLocations(DmtxByteList *loc, const DmtxByteList *e
  * \param elp
  * \param syn
  */
-#undef CHKPASS
-#define CHKPASS                   \
-    {                             \
-        if (passFail == DmtxFail) \
-            return DmtxFail;      \
-    }
 static DmtxPassFail rsRepairErrors(DmtxByteList *rec, const DmtxByteList *loc, const DmtxByteList *elp,
                                    const DmtxByteList *syn)
 {
