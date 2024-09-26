@@ -11,6 +11,22 @@ function(get_git_version version)
             OUTPUT_STRIP_TRAILING_WHITESPACE
             TIMEOUT 5
         )
+
+        if(NOT DEFINED GIT_TAG_ERROR OR NOT "${GIT_TAG_ERROR}" STREQUAL "")
+            execute_process(
+                COMMAND ${GIT_EXECUTABLE} fetch --unshallow # TODO: How not to get all the historical information
+                TIMEOUT 5
+            )
+
+            execute_process(
+                COMMAND ${GIT_EXECUTABLE} describe --tags
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                OUTPUT_VARIABLE GIT_TAG_VERSION
+                ERROR_VARIABLE GIT_TAG_ERROR
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                TIMEOUT 5
+            )
+        endif()
     else()
         message(WARNING "Not found Git")
     endif()
@@ -18,7 +34,10 @@ function(get_git_version version)
     # 如果有错误则设置版本号为0.0.0
     if(NOT DEFINED GIT_TAG_ERROR OR NOT "${GIT_TAG_ERROR}" STREQUAL "")
         set(GIT_TAG_VERSION "0.0.0")
+        message(WARNING "GIT_TAG_ERROR: ${GIT_TAG_ERROR}")
     endif()
+
+    message(STATUS "${GIT_TAG_VERSION}")
 
     # 获取并解析版本号
     string(REGEX MATCH "^[0-9]+\\.[0-9]+\\.[0-9]+$" PROJECT_VERSION ${GIT_TAG_VERSION})
