@@ -23,7 +23,7 @@ endif()
 option(DMTX_SHARED "Build DMTX as shared library" ${BUILD_SHARED_LIBS}) # DMTX library
 option(${PROJECT_NAME}_BUILD_EXAMPLES "是否编译例程" ${PROJECT_IS_TOP_LEVEL})
 option(${PROJECT_NAME}_BUILD_TESTING "是否使用测试" ${PROJECT_IS_TOP_LEVEL})
-set(${PROJECT_NAME}_BUILD_DOCS ${PROJECT_IS_TOP_LEVEL})
+option(${PROJECT_NAME}_BUILD_DOCS "是否生成文档" ${PROJECT_IS_TOP_LEVEL})
 
 if(MSVC)
   add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")

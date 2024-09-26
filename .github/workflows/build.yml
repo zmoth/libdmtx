@@ -10,23 +10,21 @@ on:
       - "*"
     # 忽略README.md
     paths-ignore:
+      - 'README*'
       - '*.md'
       - 'LICENSE'
       - 'Doxyfile*'
       - '.clang*'
       - '.git*'
-      - '.github/workflows/ubuntu.yml'
-      - '.github/workflows/macos.yml'
   # pull_request时触发workflow
   pull_request:
     paths-ignore:
+      - 'README*'
       - '*.md'
       - 'LICENSE'
       - 'Doxyfile*'
       - '.clang*'
       - '.git*'
-      - '.github/workflows/ubuntu.yml'
-      - '.github/workflows/macos.yml'
       
 jobs:
   build-and-test:
@@ -64,6 +62,11 @@ jobs:
       with:
         submodules: true
 
+    - name: Setup opencv
+      uses: Dovyski/setup-opencv-action@v1.1
+      with:
+        opencv-version: '4.5.0'
+
     - name: Setup VS tools (Windows)
       if: startsWith (matrix.os, 'windows')
       uses: egor-tensin/vs-shell@v2
@@ -71,7 +74,7 @@ jobs:
         arch: x64
 
     - name: Configure (${{ matrix.configuration }})
-      run: cmake -S . -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -Ddmtx_BUILD_EXAMPLES=OFF -Ddmtx_BUILD_TESTING=OFF -Ddmtx_BUILD_DOCS=OFF
+      run: cmake -S . -Bbuild -DCMAKE_BUILD_TYPE=${{ matrix.configuration }} -Ddmtx_BUILD_TESTING=OFF -Ddmtx_BUILD_DOCS=OFF
 
     - name: Build with ${{ matrix.compiler }}
       run: cmake --build build --config ${{ matrix.configuration }}
