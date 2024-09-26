@@ -88,6 +88,8 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   # EXAMPLES
   add_subdirectory(examples)
 
+  include(cmake/doxygen.cmake)
+
   include(CTest)
 
   if(BUILD_TESTING)
